@@ -1,7 +1,7 @@
-from operator import index
-from pprint import pprint
 from typing import List
 import utils
+import uppaal_utils as upu
+import uppaalpy
 
 # Constants used throughout parsing
 const_method_name = "Method name:"
@@ -11,8 +11,11 @@ const_task_effect = "__task_effect"
 
 const_AT_name = "Name:"
 
+const_bool_uppaal = "bool "
+const_semicolon_uppaal = ";"
 
-class FileMethodData:
+
+class MethodData:
     def __init__(self, name, order, effects, preconditions):
         self.method_name = name
         self.order = order
@@ -53,7 +56,7 @@ def parse_effect(line_prec):
 
 def parse_method_ordering(method_name:str, ordering_line: str):
     # First we split the line by whitespaces, which is the separator used for some things
-    print("Method name:", method_name)
+    # print("Method name:", method_name)
     words = ordering_line.split(" ")
     prec_list = []
     effect_list = []
@@ -102,7 +105,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
 
 
 
-def open_and_parse_method_file(filename) -> List[FileMethodData]:
+def open_and_parse_method_file(filename) -> List[MethodData]:
     with open(filename) as file:
         # data = list(file.readlines())
         parsed_data  = []
@@ -117,7 +120,7 @@ def open_and_parse_method_file(filename) -> List[FileMethodData]:
                 preconditions, effects, order = parse_method_ordering(
                             method_name=method_name_parsed, 
                             ordering_line=method_ordering_line)
-                parsed_data.append(FileMethodData(name=method_name_parsed, 
+                parsed_data.append(MethodData(name=method_name_parsed, 
                 preconditions= preconditions, effects= effects, order=order))
             if not method_ordering_line: 
                 break  # EOF/
@@ -134,27 +137,52 @@ def open_and_parse_abstract_tasks_file(filename: str):
             at_methods = []
             if lines[i].startswith(const_AT_name) :
                 at_name = lines[i].split(const_AT_name)[1].replace('\n', "")
-                # print(at_name)
-                # print("at_name: ", at_name)
                 i_copy = i+1
                 if(i_copy in range(len(lines))):
                     while(not lines[i_copy].startswith(const_AT_name) and i_copy < len(lines)):
-                        # print(lines[i_copy])
                         at_methods.append(lines[i_copy].replace("\n", ""))
                         if(i_copy + 1 == len(lines)): break
                         else: i_copy = i_copy + 1
                 at_list.append(utils.AbstractTask(name=at_name, methods=at_methods))
     return at_list
-                
-                
 
-method_data = open_and_parse_method_file("method_orderings.txt")
+
+def extract_predicate_names_and_types(method_data):
+    predicate_dict = dict()
+    for method in method_data:
+        for prec in method.preconditions:
+            if(prec.name not in predicate_dict):
+                predicate_dict[prec.name] = prec.type
+        for effect in method.effects:
+            if(effect.name not in predicate_dict):
+                predicate_dict[effect.name] = effect.type
+    return predicate_dict
+
+def create_predicate_vars_for_uppaal(method_data):
+    predicate_name_list = extract_predicate_names_and_types(method_data)
+    return predicate_name_list
+
+method_data: List[MethodData] = open_and_parse_method_file("method_orderings.txt")
 abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
-for data in method_data:
-    print(data)
-for data in abstract_task_data:
-    print(data)
-    
-# create a data structure where first line parsed is the name of the method and the second is the sequence
-# for data in method_ordering_data:
-    # print(data.)
+
+predicates = create_predicate_vars_for_uppaal(method_data=method_data)
+# print(predicates)
+
+# for data in method_data:
+#     print(data)
+# for data in abstract_task_data:
+#     print(data)
+
+#UPPAAL Region
+# First step, create a NTA with template
+# context = uppaalpy.Context()
+nta = uppaalpy.NTA.from_xml(path="models\empty_method_nta.xml")
+nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
+
+nta_partial = upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
+
+for tp in nta.templates:
+    upu.print_nodes_from_template(tp)
+    upu.add_location(template=tp, id="id3", pos=(200,17), name="location_placed")
+
+nta_partial.to_file(path='models\empty_model.xml')

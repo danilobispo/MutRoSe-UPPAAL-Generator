@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
+<nta>
+	<declaration>// Place global declarations here.</declaration>
+	<template>
+		<name x="5" y="5">method_</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id3" x="200" y="17">
+			<name x="-594" y="-127">location_placed</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">task_1</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id3" x="200" y="17">
+			<name x="-594" y="-127">location_placed</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">task_1</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<system>// Place template instantiations here.
+Process = Template();
+// List one or more processes to be composed into a system.
+system Process;
+    </system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>
