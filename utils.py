@@ -22,6 +22,16 @@ class Effect:
     def __repr__(self) -> str:
         return f'Effect:  ("{self.name}","{self.type}", "{self.value}", "{self.tied_to}")'
 
+class Capability:
+    def __init__(self, name, value, tied_to=None) -> None:
+        #  I may still need to add the type here, capabilities also have types
+        self.name = name
+        self.value = value
+        self.tied_to = tied_to if tied_to is not None else None
+
+    def __repr__(self) -> str:
+        return f'Capability:  ("{self.name}", "{self.value}", "{self.tied_to}")'
+
 class Location:
     def __init__(self, name, preconditions = None, effects = None):
         self.name = name
@@ -38,13 +48,14 @@ class AbstractTask:
         return f'Abstract Task (AT): ("{self.name}","{self.methods}")'
 
 class MethodData:
-    def __init__(self, name, order, effects, preconditions):
+    def __init__(self, name, order, effects, preconditions, capabilities):
         self.method_name = name
         self.order = order
         self.effects = effects
         self.preconditions = preconditions
+        self.capabilities = capabilities
     def __repr__(self) -> str:
-        return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}")'
+        return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}","{self.capabilities}")'
 
 
         

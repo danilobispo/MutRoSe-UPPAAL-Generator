@@ -8,6 +8,7 @@ const_method_name = "Method name:"
 const_precondition = "__method_precondition_"
 const_predicate_arg = "_argument_"
 const_task_effect = "__task_effect"
+const_capability_req = "__method_capability"
 
 const_AT_name = "Name:"
 
@@ -41,7 +42,14 @@ def parse_effect(line_prec):
     # print("effect predicate type: ", predicate_type)
     return utils.Effect(name=predicate_name, type=predicate_type, value=predicate_value)
 
-
+def parse_capability(line_prec):
+    # Let's use destructuring to make the code a little cleaner
+    capability_name = line_prec.split(const_predicate_arg)[0].replace("\n", "")
+    # debug
+    # print("effect predicate name:", predicate_name)
+    # print("effect predicate value:", predicate_value)
+    # print("effect predicate type: ", predicate_type)
+    return utils.Capability(name=capability_name, value=True)
 
 def parse_method_ordering(method_name:str, ordering_line: str):
     # First we split the line by whitespaces, which is the separator used for some things
@@ -49,6 +57,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
     words = ordering_line.split(" ")
     prec_list = []
     effect_list = []
+    capabilities_list = []
     task_method_list = []
     for i in range(len(words)):
         # precondition region
@@ -82,6 +91,16 @@ def parse_method_ordering(method_name:str, ordering_line: str):
             # I still have to send that precondition somewhere
         # end effect region
 
+        #Capabilities region: #
+        elif(words[i].startswith(const_capability_req)):
+            i_copy = i
+            while(words[i_copy+1].find(const_predicate_arg) >= 0):
+                capability = parse_capability(words[i_copy+1])
+                capability.tied_to = task_method_list[-1]
+                capabilities_list.append(capability)
+                i_copy = i_copy + 1
+        #End capabilities region#
+
         # Now they're definitely tasks or methods. This also represents the order of the tasks
         else:
             task_method_list.append(words[i].replace("\n", ""))
@@ -90,7 +109,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
         # print("Precondition:", preco.name, "\n\tType:", preco.type, "\n\tvalue: ", preco.value)
     # for effect in effect_list:
         # print("Effect:", effect.name, "\n\tType:", effect.type, "\n\tvalue: ", effect.value, "\n\tTied to: ", effect.tied_to)
-    return prec_list, effect_list, task_method_list
+    return prec_list, effect_list, task_method_list, capabilities_list
 
 
 
@@ -106,11 +125,11 @@ def open_and_parse_method_file(filename) -> List[utils.MethodData]:
                 break
             else:
                 method_name_parsed=parse_method_name(method_line=method_name_line)
-                preconditions, effects, order = parse_method_ordering(
+                preconditions, effects, order, capabilities =parse_method_ordering(
                             method_name=method_name_parsed, 
                             ordering_line=method_ordering_line)
                 parsed_data.append(utils.MethodData(name=method_name_parsed, 
-                preconditions= preconditions, effects= effects, order=order))
+                preconditions= preconditions, effects= effects, order=order, capabilities=capabilities))
             if not method_ordering_line: 
                 break  # EOF/
     # Debug
@@ -158,7 +177,7 @@ predicates = create_predicate_vars_for_uppaal(method_data=method_data)
 # print(predicates)
 
 for data in method_data:
-    # print(data)
+    print(data)
 
     print("Order:", data.order)
 # for data in abstract_task_data:
