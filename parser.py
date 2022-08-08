@@ -170,24 +170,8 @@ for data in method_data:
 nta = uppaalpy.NTA.from_xml(path="models\empty_method_nta.xml")
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
 
-for m in method_data:
-    template_name = "temp_" + m.method_name
-    upu.add_template(nta= nta_partial, template_name=template_name, template_to_copy=nta.templates[0], 
-    parameters=None, 
-    declaration=None)
 
-    for temp in nta_partial.templates:
-        posX = -572
-        posY = -113
-        if(temp.name.name == template_name):
-            id_count = 1
-            for i in range(len(m.order)):
-                id_str = "id"+str(id_count)
-                upu.add_location(template=temp, id=id_str, pos=(posX, posY), name=m.order[i])
-                id_count = id_count + 1
-                posX = posX + 150
-                # posY = posY + 100
-
+nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial)
 
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)

@@ -56,4 +56,26 @@ def add_template(
         tp_copy.declaration = declaration
 
         nta.templates.append(tp_copy)
+
+
+def generate_uppaal_methods_templates(method_data, nta: uppaalpy.NTA) -> uppaalpy.NTA:
+    for m in method_data:
+        template_name = "temp_" + m.method_name
+        add_template(nta= nta, template_name=template_name, template_to_copy=nta.templates[0], 
+        parameters=None, 
+        declaration=None)
+
+        for temp in nta.templates:
+            posX = -572
+            posY = -113
+            if(temp.name.name == template_name):
+                id_count = 1
+                for i in range(len(m.order)):
+                    id_str = "id"+str(id_count)
+                    add_location(template=temp, id=id_str, pos=(posX, posY), name=m.order[i])
+                    id_count = id_count + 1
+                    posX = posX + 150
+                    # posY = posY + 100
+    return nta
+
         
