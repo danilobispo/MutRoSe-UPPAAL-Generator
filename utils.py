@@ -1,3 +1,6 @@
+from typing import List
+import uppaalpy
+
 
 class Precondition:
     def __init__(self, name, type, value, tied_to=None):
@@ -33,3 +36,22 @@ class AbstractTask:
     
     def __repr__(self) -> str:
         return f'Abstract Task (AT): ("{self.name}","{self.methods}")'
+
+class MethodData:
+    def __init__(self, name, order, effects, preconditions):
+        self.method_name = name
+        self.order = order
+        self.effects = effects
+        self.preconditions = preconditions
+    def __repr__(self) -> str:
+        return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}")'
+
+
+        
+def generate_uppaal_template_from_method(
+    target_nta: uppaalpy.NTA, 
+    template_name: str, 
+    method_order: List[MethodData]):
+    print('kk eaemen')
+
+    

@@ -8,26 +8,210 @@
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id3" x="200" y="17">
-			<name x="-594" y="-127">location_placed</name>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_food-pickup</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">wait-for-food</name>
 		</location>
 		<init ref="id0"/>
 	</template>
 	<template>
-		<name x="5" y="5">task_1</name>
-		<declaration>// Place local declarations here.</declaration>
+		<name x="5" y="5">temp_table-deliver</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id3" x="200" y="17">
-			<name x="-594" y="-127">location_placed</name>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">approach-patient-table</name>
+		</location>
+		<location id="id3" x="-272" y="-113">
+			<name x="-286" y="-144">deliver-to-table</name>
+		</location>
+		<location id="id4" x="-122" y="-113">
+			<name x="-136" y="-144">__method_capability</name>
+		</location>
+		<location id="id5" x="28" y="-113">
+			<name x="14" y="-144">manipulation</name>
 		</location>
 		<init ref="id0"/>
 	</template>
 	<template>
-		<name x="5" y="5">task_1</name>
+		<name x="5" y="5">temp_fetch-deliver</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">FetchMeal</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_fetch-meal-with-human</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">approach-human</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">wait-for-human-to-fetch</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_fetch-meal-with-robot</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">approach-robot</name>
+		</location>
+		<location id="id3" x="-272" y="-113">
+			<name x="-286" y="-144">grasp-meal</name>
+		</location>
+		<location id="id4" x="-122" y="-113">
+			<name x="-136" y="-144">deliver-meal-to-patient</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pickup-with-door-opening</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">navto</name>
+		</location>
+		<location id="id3" x="-272" y="-113">
+			<name x="-286" y="-144">approach-door</name>
+		</location>
+		<location id="id4" x="-122" y="-113">
+			<name x="-136" y="-144">approach-door</name>
+		</location>
+		<location id="id5" x="28" y="-113">
+			<name x="14" y="-144">open-door</name>
+		</location>
+		<location id="id6" x="178" y="-113">
+			<name x="164" y="-144">__method_capability</name>
+		</location>
+		<location id="id7" x="328" y="-113">
+			<name x="314" y="-144">door-opening</name>
+		</location>
+		<location id="id8" x="478" y="-113">
+			<name x="464" y="-144">PickDishesTwoRobotsAtLocation</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pick-dishes-two-robots-at-location</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">PickDishes</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pick-dishes-with-human</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">approach-human</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">wait-for-human-to-place-dish</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pick-dishes-with-robot-at-location</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">pick-patient-dishes</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">load-dishes</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pick-dishes-with-robot-not-at-location</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">pick-patient-dishes</name>
+		</location>
+		<location id="id3" x="-272" y="-113">
+			<name x="-286" y="-144">load-dishes</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pickup-without-door-opening</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">approach-door</name>
+		</location>
+		<location id="id3" x="-272" y="-113">
+			<name x="-286" y="-144">wait-for-door-opening</name>
+		</location>
+		<location id="id4" x="-122" y="-113">
+			<name x="-136" y="-144">PickDishesOneRobotAtLocation</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_pick-dishes-one-robot-at-location</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">PickDishes</name>
+		</location>
+		<init ref="id0"/>
+	</template>
+	<template>
+		<name x="5" y="5">temp_dishes-retrieval</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">navto</name>
+		</location>
+		<location id="id2" x="-422" y="-113">
+			<name x="-436" y="-144">retrieve-dishes</name>
 		</location>
 		<init ref="id0"/>
 	</template>

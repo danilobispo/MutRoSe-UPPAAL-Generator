@@ -14,17 +14,6 @@ const_AT_name = "Name:"
 const_bool_uppaal = "bool "
 const_semicolon_uppaal = ";"
 
-
-class MethodData:
-    def __init__(self, name, order, effects, preconditions):
-        self.method_name = name
-        self.order = order
-        self.effects = effects
-        self.preconditions = preconditions
-    def __repr__(self) -> str:
-        return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}")'
-
-
 def parse_method_name(method_line):
     name = method_line.split(const_method_name)[1].replace("\n", "").replace(" ","")
     # Debug
@@ -105,7 +94,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
 
 
 
-def open_and_parse_method_file(filename) -> List[MethodData]:
+def open_and_parse_method_file(filename) -> List[utils.MethodData]:
     with open(filename) as file:
         # data = list(file.readlines())
         parsed_data  = []
@@ -120,7 +109,7 @@ def open_and_parse_method_file(filename) -> List[MethodData]:
                 preconditions, effects, order = parse_method_ordering(
                             method_name=method_name_parsed, 
                             ordering_line=method_ordering_line)
-                parsed_data.append(MethodData(name=method_name_parsed, 
+                parsed_data.append(utils.MethodData(name=method_name_parsed, 
                 preconditions= preconditions, effects= effects, order=order))
             if not method_ordering_line: 
                 break  # EOF/
@@ -162,14 +151,16 @@ def create_predicate_vars_for_uppaal(method_data):
     predicate_name_list = extract_predicate_names_and_types(method_data)
     return predicate_name_list
 
-method_data: List[MethodData] = open_and_parse_method_file("method_orderings.txt")
+method_data: List[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
 abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
 
 predicates = create_predicate_vars_for_uppaal(method_data=method_data)
 # print(predicates)
 
-# for data in method_data:
-#     print(data)
+for data in method_data:
+    # print(data)
+
+    print("Order:", data.order)
 # for data in abstract_task_data:
 #     print(data)
 
@@ -179,10 +170,31 @@ predicates = create_predicate_vars_for_uppaal(method_data=method_data)
 nta = uppaalpy.NTA.from_xml(path="models\empty_method_nta.xml")
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
 
-nta_partial = upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
+for m in method_data:
+    template_name = "temp_" + m.method_name
+    upu.add_template(nta= nta_partial, template_name=template_name, template_to_copy=nta.templates[0], 
+    parameters=None, 
+    declaration=None)
 
-for tp in nta.templates:
-    upu.print_nodes_from_template(tp)
-    upu.add_location(template=tp, id="id3", pos=(200,17), name="location_placed")
+    for temp in nta_partial.templates:
+        posX = -572
+        posY = -113
+        if(temp.name.name == template_name):
+            id_count = 1
+            for i in range(len(m.order)):
+                id_str = "id"+str(id_count)
+                upu.add_location(template=temp, id=id_str, pos=(posX, posY), name=m.order[i])
+                id_count = id_count + 1
+                posX = posX + 150
+                # posY = posY + 100
+
+
+# Add template example below
+# upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
+
+# for tp in nta_partial.templates:
+#     upu.print_nodes_from_template(tp)
 
 nta_partial.to_file(path='models\empty_model.xml')
+
+#End UPPAAL Region
