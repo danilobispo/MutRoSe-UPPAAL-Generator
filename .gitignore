@@ -1,3 +1,7 @@
 .vscode/launch.json
 
-.__pycache__/
+__pycache__/*
+__pycache__/uppaal_utils.cpython-310.pyc
+__pycache__/parser.cpython-310.pyc
+__pycache__/utils.cpython-310.pyc
+__pycache__/uppaal_utils.cpython-310.pyc
