@@ -127,14 +127,16 @@ def open_and_parse_method_file(filename) -> List[utils.MethodData]:
                     method_name_parsed=parse_method_name(method_line=lines[i])
                     i_copy = i+1
                     if(i_copy in range(len(lines))):
+                        i_method_count = 0
                         while(not lines[i_copy].startswith(const_method_name)):
-                            preconditions, effects, order, capabilities =parse_method_ordering(
-                                    method_name=method_name_parsed, 
+                            preconditions, effects, order, capabilities=parse_method_ordering(
+                                    method_name=method_name_parsed+"_"+str(i_method_count), 
                                     ordering_line=lines[i_copy])
-                            parsed_data.append(utils.MethodData(name=method_name_parsed, 
+                            parsed_data.append(utils.MethodData(name=method_name_parsed+"_"+str(i_method_count), 
                             preconditions= preconditions, effects= effects, order=order, capabilities=capabilities))
                             if(i_copy + 1 == len(lines)): break
                             else: i_copy = i_copy + 1
+                            i_method_count = i_method_count + 1
     # Debug
     for obj in parsed_data:
         print(obj)
