@@ -4,6 +4,7 @@ import uppaal_utils as upu
 import uppaalpy
 
 # Constants used throughout parsing
+const_possible_precs = "Possible orderings for method"
 const_method_name = "Method name:"
 const_precondition = "__method_precondition_"
 const_predicate_arg = "_argument_"
@@ -115,26 +116,28 @@ def parse_method_ordering(method_name:str, ordering_line: str):
 
 def open_and_parse_method_file(filename) -> List[utils.MethodData]:
     with open(filename) as file:
-        # data = list(file.readlines())
+        lines = list(file.readlines())
         parsed_data  = []
         
-        while True:
-            method_name_line = file.readline()
-            method_ordering_line = file.readline()
-            if method_ordering_line == "" or method_name_line == "": 
+        for i in range(len(lines)):
+            if lines[i] == "": 
                 break
-            else:
-                method_name_parsed=parse_method_name(method_line=method_name_line)
-                preconditions, effects, order, capabilities =parse_method_ordering(
-                            method_name=method_name_parsed, 
-                            ordering_line=method_ordering_line)
-                parsed_data.append(utils.MethodData(name=method_name_parsed, 
-                preconditions= preconditions, effects= effects, order=order, capabilities=capabilities))
-            if not method_ordering_line: 
-                break  # EOF/
+            else: 
+                if lines[i].startswith(const_method_name):
+                    method_name_parsed=parse_method_name(method_line=lines[i])
+                    i_copy = i+1
+                    if(i_copy in range(len(lines))):
+                        while(not lines[i_copy].startswith(const_method_name)):
+                            preconditions, effects, order, capabilities =parse_method_ordering(
+                                    method_name=method_name_parsed, 
+                                    ordering_line=lines[i_copy])
+                            parsed_data.append(utils.MethodData(name=method_name_parsed, 
+                            preconditions= preconditions, effects= effects, order=order, capabilities=capabilities))
+                            if(i_copy + 1 == len(lines)): break
+                            else: i_copy = i_copy + 1
     # Debug
-    # for obj in parsed_data:
-    #     print(obj)
+    for obj in parsed_data:
+        print(obj)
     return parsed_data
 
 def open_and_parse_abstract_tasks_file(filename: str):
