@@ -183,7 +183,6 @@ predicates = create_predicate_vars_for_uppaal(method_data=method_data)
 
 for data in method_data:
     print(data)
-
     print("Order:", data.order)
 # for data in abstract_task_data:
 #     print(data)
@@ -191,7 +190,7 @@ for data in method_data:
 #UPPAAL Region
 # First step, create a NTA with template
 # context = uppaalpy.Context()
-nta = uppaalpy.NTA.from_xml(path="models\empty_method_nta.xml")
+nta = uppaalpy.NTA.from_xml(path="models\model_with_conn.xml")
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
 
 
@@ -200,6 +199,7 @@ nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
 
+# Debug
 # for tp in nta_partial.templates:
 #     upu.print_nodes_from_template(tp)
 

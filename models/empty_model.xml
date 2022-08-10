@@ -11,209 +11,168 @@
 		<init ref="id0"/>
 	</template>
 	<template>
-		<name x="5" y="5">temp_food-pickup</name>
+		<name x="5" y="5">temp_check-clean-rooms_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
 		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+			<name x="-586" y="-144">clean-rooms-check</name>
+		</location>
+		<location id="id999" x="-272" y="-113">
+			<name x="-288" y="-144">end_method</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id999"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_room-cleaning-door-open_0</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">clean-room</name>
+		</location>
+		<location id="id999" x="-272" y="-113">
+			<name x="-288" y="-144">end_method</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id999"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_room-cleaning-door-closed_0</name>
+		<location id="id0" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id1" x="-572" y="-113">
+			<name x="-586" y="-144">open-door</name>
 		</location>
 		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">wait-for-food</name>
+			<name x="-436" y="-144">clean-room</name>
+		</location>
+		<location id="id999" x="-122" y="-113">
+			<name x="-138" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
+		<transition>
+			<source ref="id999"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+		</transition>
 	</template>
 	<template>
-		<name x="5" y="5">temp_table-deliver</name>
+		<name x="5" y="5">temp_room-cleaning-door-closed_1</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
 		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+			<name x="-586" y="-144">clean-room</name>
 		</location>
 		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">approach-patient-table</name>
+			<name x="-436" y="-144">open-door</name>
 		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">deliver-to-table</name>
-		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">__method_capability</name>
-		</location>
-		<location id="id5" x="28" y="-113">
-			<name x="14" y="-144">manipulation</name>
+		<location id="id999" x="-122" y="-113">
+			<name x="-138" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
+		<transition>
+			<source ref="id999"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+		</transition>
 	</template>
 	<template>
-		<name x="5" y="5">temp_fetch-deliver</name>
+		<name x="5" y="5">temp_furniture-moving_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
 		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+			<name x="-586" y="-144">move-furniture</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">FetchMeal</name>
+		<location id="id999" x="-272" y="-113">
+			<name x="-288" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
+		<transition>
+			<source ref="id999"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
 	</template>
 	<template>
-		<name x="5" y="5">temp_fetch-meal-with-human</name>
+		<name x="5" y="5">temp_robot-sanitization_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
 		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">approach-human</name>
+			<name x="-586" y="-144">sanitize-robot</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">wait-for-human-to-fetch</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_fetch-meal-with-robot</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">approach-robot</name>
-		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">grasp-meal</name>
-		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">deliver-meal-to-patient</name>
+		<location id="id999" x="-272" y="-113">
+			<name x="-288" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pickup-with-door-opening</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">navto</name>
-		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">approach-door</name>
-		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">approach-door</name>
-		</location>
-		<location id="id5" x="28" y="-113">
-			<name x="14" y="-144">open-door</name>
-		</location>
-		<location id="id6" x="178" y="-113">
-			<name x="164" y="-144">__method_capability</name>
-		</location>
-		<location id="id7" x="328" y="-113">
-			<name x="314" y="-144">door-opening</name>
-		</location>
-		<location id="id8" x="478" y="-113">
-			<name x="464" y="-144">PickDishesTwoRobotsAtLocation</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pick-dishes-two-robots-at-location</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">PickDishes</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pick-dishes-with-human</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">approach-human</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">wait-for-human-to-place-dish</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pick-dishes-with-robot-at-location</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">pick-patient-dishes</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">load-dishes</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pick-dishes-with-robot-not-at-location</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">pick-patient-dishes</name>
-		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">load-dishes</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pickup-without-door-opening</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">approach-door</name>
-		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">wait-for-door-opening</name>
-		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">PickDishesOneRobotAtLocation</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_pick-dishes-one-robot-at-location</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">PickDishes</name>
-		</location>
-		<init ref="id0"/>
-	</template>
-	<template>
-		<name x="5" y="5">temp_dishes-retrieval</name>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
-		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">retrieve-dishes</name>
-		</location>
-		<init ref="id0"/>
+		<transition>
+			<source ref="id999"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
 	</template>
 	<system>// Place template instantiations here.
 Process = Template();

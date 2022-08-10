@@ -1,6 +1,4 @@
 from typing import List
-import uppaalpy
-
 
 class Precondition:
     def __init__(self, name, type, value, tied_to=None):
@@ -56,13 +54,5 @@ class MethodData:
         self.capabilities = capabilities
     def __repr__(self) -> str:
         return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}","{self.capabilities}")'
-
-
-        
-def generate_uppaal_template_from_method(
-    target_nta: uppaalpy.NTA, 
-    template_name: str, 
-    method_order: List[MethodData]):
-    print('kk eaemen')
 
     
