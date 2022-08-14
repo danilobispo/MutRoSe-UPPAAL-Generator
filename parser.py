@@ -17,7 +17,7 @@ const_bool_uppaal = "bool "
 const_semicolon_uppaal = ";"
 
 def parse_method_name(method_line):
-    name = method_line.split(const_method_name)[1].replace("\n", "").replace(" ","")
+    name = method_line.split(const_method_name)[1].replace("\n", "").replace(" ","").replace("-","_")
     # Debug
     # print(name)
     return name
@@ -104,7 +104,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
 
         # Now they're definitely tasks or methods. This also represents the order of the tasks
         else:
-            task_method_list.append(words[i].replace("\n", ""))
+            task_method_list.append(words[i].replace("\n", "").replace("-","_"))
     # print("Task order: ", task_method_list)
     # for preco in prec_list:
         # print("Precondition:", preco.name, "\n\tType:", preco.type, "\n\tvalue: ", preco.value)
