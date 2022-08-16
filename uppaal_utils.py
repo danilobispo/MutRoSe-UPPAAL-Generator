@@ -101,7 +101,7 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
                     if(predicate_type == tvar.var_name):
                         # print("prec_value", predicate_type, "equals to",
                         #         "tvar.name", tvar.var_name)
-                        nta.declaration.text += "bool " + predicate_name + " = false;"
+                        nta.declaration.text += "bool " + predicate_name + ";"
                         nta.declaration.text += "\n"
                         flag = 1
         # Delete the struct declaration, since no predicate was found for that struct
