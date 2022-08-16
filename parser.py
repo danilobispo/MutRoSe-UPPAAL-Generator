@@ -1,4 +1,5 @@
-from typing import List
+import re
+from typing import List, Set
 import utils
 import uppaal_utils as upu
 import uppaalpy
@@ -10,6 +11,8 @@ const_precondition = "__method_precondition_"
 const_predicate_arg = "_argument_"
 const_task_effect = "__task_effect"
 const_capability_req = "__method_capability"
+const_var_name = "Variable name: "
+const_type_name = "Variable type: "
 
 const_AT_name = "Name:"
 
@@ -24,7 +27,7 @@ def parse_method_name(method_line):
 
 def parse_precondition(line_prec):
     # Let's use destructuring to make the code a little cleaner
-    predicate_name, predicate_type = line_prec.split(const_predicate_arg)[0].replace("\n", ""), line_prec.split(const_predicate_arg)[1].replace("\n", "")
+    predicate_name, predicate_type = line_prec.split(const_predicate_arg)[0].replace("\n", ""), line_prec.split(const_predicate_arg)[1].replace("\n", "").replace("?","")
     predicate_name, predicate_value = predicate_name.split("_")[0].replace("\n", ""), predicate_name.split("_")[1].replace("\n", "")
     # debug
     # print("precondition predicate name:", predicate_name)
@@ -36,7 +39,7 @@ def parse_precondition(line_prec):
 def parse_effect(line_prec):
     # Let's use destructuring to make the code a little cleaner
     predicate_name, predicate_value = line_prec.split("_")[0].replace("\n", ""), line_prec.split("_")[1].replace("\n", "")
-    predicate_type = line_prec.split(const_predicate_arg)[1].replace("\n", "")
+    predicate_type = line_prec.split(const_predicate_arg)[1].replace("\n", "").replace("?", "")
     # debug
     # print("effect predicate name:", predicate_name)
     # print("effect predicate value:", predicate_value)
@@ -45,7 +48,7 @@ def parse_effect(line_prec):
 
 def parse_capability(line_prec):
     # Let's use destructuring to make the code a little cleaner
-    capability_name = line_prec.split(const_predicate_arg)[0].replace("\n", "")
+    capability_name = line_prec.split(const_predicate_arg)[0].replace("\n", "").replace("?", "")
     # debug
     # print("effect predicate name:", predicate_name)
     # print("effect predicate value:", predicate_value)
@@ -138,8 +141,8 @@ def open_and_parse_method_file(filename) -> List[utils.MethodData]:
                             else: i_copy = i_copy + 1
                             i_method_count = i_method_count + 1
     # Debug
-    for obj in parsed_data:
-        print(obj)
+    # for obj in parsed_data:
+    #     print(obj)
     return parsed_data
 
 def open_and_parse_abstract_tasks_file(filename: str):
@@ -159,6 +162,17 @@ def open_and_parse_abstract_tasks_file(filename: str):
                 at_list.append(utils.AbstractTask(name=at_name, methods=at_methods))
     return at_list
 
+def open_and_parse_types_and_variables_file(filename:str):
+    variables_and_types: List[utils.Variable] = []
+    set_of_types = set()
+    with open(filename) as file:
+        lines = file.readlines()
+        for i in range(len(lines)):
+            variable_name, variable_type = lines[i].split(" ")[2].replace("?", ""), lines[i].split(" ")[5].replace("\n", "")
+            variables_and_types.append(utils.Variable(variable_name, variable_type))
+        for varia in variables_and_types:
+            set_of_types.add(varia.type)
+        return variables_and_types, set_of_types
 
 def extract_predicate_names_and_types(method_data):
     predicate_dict = dict()
@@ -177,23 +191,27 @@ def create_predicate_vars_for_uppaal(method_data):
 
 method_data: List[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
 abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
+var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
 
 predicates = create_predicate_vars_for_uppaal(method_data=method_data)
-# print(predicates)
+print(predicates)
 
-for data in method_data:
-    print(data)
-    print("Order:", data.order)
+# for data in method_data:
+#     print(data)
+#     print("Order:", data.order)
 # for data in abstract_task_data:
 #     print(data)
+
+
+# Clean file content before running the program again
+f = open('models\empty_model_new.xml', 'r+')
+f.truncate(0) # need '0' when using r+
+f.close()
 
 #UPPAAL Region
 # First step, create a NTA with template
 # context = uppaalpy.Context()
-nta = uppaalpy.NTA.from_xml(path="models\model_with_conn.xml")
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
-
-
 nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial)
 
 # Add template example below
@@ -203,6 +221,6 @@ nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta
 # for tp in nta_partial.templates:
 #     upu.print_nodes_from_template(tp)
 
-nta_partial.to_file(path='models\empty_model.xml')
+nta_partial.to_file(path='models\empty_model_new.xml')
 
 #End UPPAAL Region

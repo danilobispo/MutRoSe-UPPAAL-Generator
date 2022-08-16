@@ -55,4 +55,11 @@ class MethodData:
     def __repr__(self) -> str:
         return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}","{self.capabilities}")'
 
+class Variable:
+    def __init__(self, name, type) -> None:
+        self.name = name
+        self.type = type
+    def __repr__(self) -> str:
+        return f'MethodData: ("{self.name}","{self.type}")'
+
     
