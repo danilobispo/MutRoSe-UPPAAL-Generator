@@ -55,11 +55,21 @@ class MethodData:
     def __repr__(self) -> str:
         return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}","{self.capabilities}")'
 
-class Variable:
-    def __init__(self, name, type) -> None:
-        self.name = name
-        self.type = type
+class Variable(object):
+    def __init__(self, var_name, type_name, var_list = None) -> None:
+        self.var_name = var_name
+        self.type_name = type_name
+        self.predicates_name_list = None if var_list == None else var_list
+
+    def __hash__(self):
+        return hash((self.var_name, self.type_name, self.predicates_name_list))
+    def __eq__(self, other):
+        if not isinstance(other, type(self)): return NotImplemented
+        return self.var_name == other.var_name and self.type_name == other.type_name and self.predicates_name_list == other.predicates_name_list
+    
     def __repr__(self) -> str:
-        return f'MethodData: ("{self.name}","{self.type}")'
+        return f'MethodData: ("{self.var_name}","{self.type_name}")'
+
+
 
     

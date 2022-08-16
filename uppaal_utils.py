@@ -3,7 +3,7 @@ from typing import List, Tuple
 import uppaalpy
 import copy
 
-from utils import MethodData
+from utils import MethodData, Variable
 
 const_end_method_name = "end_method"
 
@@ -77,13 +77,42 @@ def add_template(
 
         nta.templates.append(tp_copy)
 
-def generate_declaration_for_nta(nta:uppaalpy.NTA, predicates) -> uppaalpy.NTA:
-    for prec in predicates:
-        print()
-    # Create a simple declaration
-    new_declaration = uppaalpy.Declaration(text="")
 
-    nta.declaration.text
+def generate_declaration_for_nta(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]) -> uppaalpy.NTA:
+    nta = generate_structs_for_types(nta, predicates, var_and_types_list, set_of_types)
+    return nta
+
+def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]) -> uppaalpy.NTA:
+    # For each of the types in the set we gotta create a struct, so the types can have specific predicates
+    nta.declaration.text += "\n"
+    flag = 0
+    for tp in set_of_types:
+        struct_start = "typedef struct {\n"
+        nta.declaration.text += struct_start
+        # print("partial text: ")
+        # print(nta.declaration.text)
+
+        for tvar in var_and_types_list:
+            # print(predicates.values)
+            if(tvar.type_name == tp):
+                # print("tvar.type", tvar.type_name, "equals to", "tp", tp)
+                for predicate_name in predicates.keys():
+                    predicate_type = predicates.get(predicate_name)
+                    if(predicate_type == tvar.var_name):
+                        # print("prec_value", predicate_type, "equals to",
+                        #         "tvar.name", tvar.var_name)
+                        nta.declaration.text += "bool " + predicate_name + " = false;"
+                        nta.declaration.text += "\n"
+                        flag = 1
+        # Delete the struct declaration, since no predicate was found for that struct
+        if flag != 1:
+            startIndex = nta.declaration.text.rindex(struct_start)
+            nta.declaration.text = nta.declaration.text[0: startIndex]
+        else:
+            struct_end = "} "+tp.title()+";\n"
+            nta.declaration.text += struct_end
+        flag = 0
+    return nta
 
 def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA) -> uppaalpy.NTA:
     for m in method_data:
@@ -94,8 +123,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
 
         # After the templates are added, let's create the variables for preconditions, effects and capabilities
         # this is done in declarations
-        # then set in parameters for each of the predicates and its respective types 
-
+        # then set in parameters for each of the predicates and its respective types
 
         for temp in nta.templates:
             posX = -572
@@ -130,9 +158,10 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                     if(i+1 <= len(m.order)):
                         source_id, target_id = "id"+str(i), "id"+str(i+1)
                         # debug
-                        print("Connecting", source_id, "to",
-                              target_id, "in template", temp.name.name)
-                        trans = uppaalpy.Transition(source=source_id, target=target_id)
+                        # print("Connecting", source_id, "to",
+                        #   target_id, "in template", temp.name.name)
+                        trans = uppaalpy.Transition(
+                            source=source_id, target=target_id)
                         temp.graph.add_transition(trans)
 
                         # Add precondition if existing, then create a location for precondition not being met
@@ -141,12 +170,11 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                         #     for prec in m.preconditions:
                         #         print(prec)
                         #         if prec.value == "true":
-                        #             exprstr = prec.type + "." + prec.name + "==" + prec.value  
-                        #         else: 
+                        #             exprstr = prec.type + "." + prec.name + "==" + prec.value
+                        #         else:
                         #             exprstr = prec.type + "." + prec.name + "!=" + prec.value
                         #         trans.create_constraint_label(uppaalpy.ConstraintExpression(exprstr=exprstr, ctx=nta.context))
 
-                        
     return nta
 
 

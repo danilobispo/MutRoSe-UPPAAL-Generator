@@ -1,5 +1,5 @@
 import re
-from typing import List, Set
+from typing import List
 import utils
 import uppaal_utils as upu
 import uppaalpy
@@ -163,15 +163,15 @@ def open_and_parse_abstract_tasks_file(filename: str):
     return at_list
 
 def open_and_parse_types_and_variables_file(filename:str):
-    variables_and_types: List[utils.Variable] = []
+    variables_and_types= set[utils.Variable]()
     set_of_types = set()
     with open(filename) as file:
         lines = file.readlines()
         for i in range(len(lines)):
             variable_name, variable_type = lines[i].split(" ")[2].replace("?", ""), lines[i].split(" ")[5].replace("\n", "")
-            variables_and_types.append(utils.Variable(variable_name, variable_type))
+            variables_and_types.add(utils.Variable(variable_name, variable_type))
         for varia in variables_and_types:
-            set_of_types.add(varia.type)
+            set_of_types.add(varia.type_name)
         return variables_and_types, set_of_types
 
 def extract_predicate_names_and_types(method_data):
@@ -192,10 +192,7 @@ def create_predicate_vars_for_uppaal(method_data):
 method_data: List[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
 abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
 var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
-
-predicates = create_predicate_vars_for_uppaal(method_data=method_data)
-print(predicates)
-
+predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
 # for data in method_data:
 #     print(data)
 #     print("Order:", data.order)
@@ -213,6 +210,7 @@ f.close()
 # context = uppaalpy.Context()
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
 nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial)
+nta_partial = upu.generate_declaration_for_nta(nta_partial, predicates=predicate_dict, var_and_types_list=var_and_types_list, set_of_types=types_set)
 
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
