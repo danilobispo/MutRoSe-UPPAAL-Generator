@@ -1,7 +1,9 @@
+from ast import parse
 import re
 from typing import List
 import utils
 import uppaal_utils as upu
+import copy
 import uppaalpy
 
 # Constants used throughout parsing
@@ -140,9 +142,20 @@ def open_and_parse_method_file(filename) -> List[utils.MethodData]:
                             if(i_copy + 1 == len(lines)): break
                             else: i_copy = i_copy + 1
                             i_method_count = i_method_count + 1
+        for obj in parsed_data:
+            print(obj)
+        # now we will extract the repeated methods
+        # let's make a shallow copy
+        parsed_data_cp = copy.copy(parsed_data)
+        for obj in parsed_data:
+            for ele in parsed_data_cp:
+                if obj.method_name == ele.method_name and obj.order == ele.order:
+                    if obj is not ele:
+                        index = parsed_data.index(ele)
+                        del parsed_data[index]
+
     # Debug
-    # for obj in parsed_data:
-    #     print(obj)
+    
     return parsed_data
 
 def open_and_parse_abstract_tasks_file(filename: str):
@@ -152,11 +165,11 @@ def open_and_parse_abstract_tasks_file(filename: str):
         for i in range(len(lines)):
             at_methods = []
             if lines[i].startswith(const_AT_name) :
-                at_name = lines[i].split(const_AT_name)[1].replace('\n', "")
+                at_name = lines[i].split(const_AT_name)[1].replace('\n', "").replace(" ", "")
                 i_copy = i+1
                 if(i_copy in range(len(lines))):
                     while(not lines[i_copy].startswith(const_AT_name) and i_copy < len(lines)):
-                        at_methods.append(lines[i_copy].replace("\n", ""))
+                        at_methods.append(lines[i_copy].replace("\n", "").replace(" ", ""))
                         if(i_copy + 1 == len(lines)): break
                         else: i_copy = i_copy + 1
                 at_list.append(utils.AbstractTask(name=at_name, methods=at_methods))
@@ -209,8 +222,8 @@ f.close()
 # First step, create a NTA with template
 # context = uppaalpy.Context()
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
-nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial)
 nta_partial = upu.generate_declaration_for_nta(nta_partial, predicates=predicate_dict, var_and_types_list=var_and_types_list, set_of_types=types_set)
+nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data)
 
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)

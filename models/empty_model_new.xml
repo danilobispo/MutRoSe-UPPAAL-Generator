@@ -3,13 +3,13 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool patientcanfetch = false;
-bool patientcanopen = false;
+bool patientcanfetch;
+bool patientcanopen;
 } Patient;
 typedef struct {
-bool pickeddishes = false;
-bool at = false;
-bool pickedmeal = false;
+bool pickeddishes;
+bool at;
+bool pickedmeal;
 } Robot;
 </declaration>
 	<template>
@@ -161,22 +161,6 @@ bool pickedmeal = false;
 			<source ref="id1"/>
 			<target ref="id2"/>
 		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_robot_0</name>
@@ -199,30 +183,6 @@ bool pickedmeal = false;
 			<name x="162" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id4"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
-		</transition>
-		<transition>
-			<source ref="id3"/>
-			<target ref="id4"/>
-		</transition>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
@@ -339,18 +299,6 @@ bool pickedmeal = false;
 			<source ref="id0"/>
 			<target ref="id1"/>
 		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_human_0</name>
@@ -367,70 +315,6 @@ bool pickedmeal = false;
 			<name x="-138" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
@@ -479,70 +363,6 @@ bool pickedmeal = false;
 			<source ref="id1"/>
 			<target ref="id2"/>
 		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_not_at_location_0</name>
@@ -562,86 +382,6 @@ bool pickedmeal = false;
 			<name x="12" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id3"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id3"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id3"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
-		</transition>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id3"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
-		</transition>
-		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
-		</transition>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
@@ -721,18 +461,6 @@ bool pickedmeal = false;
 			<name x="-288" y="-144">end_method</name>
 		</location>
 		<init ref="id0"/>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-		</transition>
-		<transition>
-			<source ref="id1"/>
-			<target ref="id999"/>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-		</transition>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>

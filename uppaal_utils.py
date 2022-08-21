@@ -1,12 +1,15 @@
 # Utilitary functions for UPPAAL template generation
+import re
 from typing import List, Tuple
 import uppaalpy
 import copy
 
-from utils import MethodData, Variable
+from utils import AbstractTask, MethodData, Variable
 
 const_end_method_name = "end_method"
 
+def check_camel_case_regex(string: str):
+    return re.match("(?:[A-Z])(?:\S?)+(?:[A-Z])(?:[a-z])+", string)
 
 def print_nodes_from_template(template: uppaalpy.Template):
     nodes = template.graph.get_nodes()
@@ -45,6 +48,59 @@ def add_transition(template: uppaalpy.Template, source: str, target: str):
     tc.source = source  # e.g idX(switch X for a)
     tc.target = target  # e.g idX(switch X for a)
     template.graph.add_transition(tc)
+
+def generate_transitions_at_template(template: uppaalpy.Template, order: list, node_data: List[AbstractTask]) -> uppaalpy.Template:
+    # Add the connections between methods
+    for i in range(len(order)):    
+        if(i+1 <= len(order)):
+            source_id, target_id = "id"+str(i), "id"+str(i+1)
+            # debug
+            # print("Connecting", source_id, "to",
+            #   target_id, "in template", temp.name.name)
+            trans = uppaalpy.Transition(
+                source=source_id, target=target_id)
+            template.graph.add_transition(trans)
+            # Check if any of the tasks is AT
+            source_is_AT = False
+            target_is_AT = False
+            if check_camel_case_regex(order[i]) is not None:
+            # Activate flag for further modifications in transition
+                source_is_AT = True
+            elif i+1 in range(len(order)) and check_camel_case_regex(order[i+1]) is not None:
+            # Activate flag for further modifications in transition
+                target_is_AT = True
+                
+            if source_is_AT:
+                for at in node_data:
+                    if at.name == order[i]:
+                        print(f"methods for {at.name}: ")
+                        if(len(at.methods) > 1):
+                            for method in at.methods:
+                                print(f"{method}")
+            elif target_is_AT:
+                # Find in Node_data.txt which methods are valid, then create a channel in declarations to accomodate
+                # the new channel which will be created in the transition
+                for at in node_data:
+                    if at.name == order[i+1]:
+                        # Debug
+                        print(f"methods for {at.name}: ")
+                        if(len(at.methods) > 1):
+                            for method in at.methods:
+                                print(f"{method}")
+
+
+
+            # Add precondition if existing, then create a location for precondition not being met
+            # same must be done to capabilities, but i gotta think how
+            # if i == 0 and len(m.preconditions): # i.e has preconditions and it is the first node
+            #     for prec in m.preconditions:
+            #         print(prec)
+            #         if prec.value == "true":
+            #             exprstr = prec.type + "." + prec.name + "==" + prec.value
+            #         else:
+            #             exprstr = prec.type + "." + prec.name + "!=" + prec.value
+            #         trans.create_constraint_label(uppaalpy.ConstraintExpression(exprstr=exprstr, ctx=nta.context))
+    return template
 
 
 def add_template(
@@ -114,16 +170,12 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
         flag = 0
     return nta
 
-def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA) -> uppaalpy.NTA:
+def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA, node_data: List[AbstractTask]) -> uppaalpy.NTA:
     for m in method_data:
         template_name = "temp_" + m.method_name
         add_template(nta=nta, template_name=template_name, template_to_copy=nta.templates[0],
                      parameters=None,
                      declaration=None)
-
-        # After the templates are added, let's create the variables for preconditions, effects and capabilities
-        # this is done in declarations
-        # then set in parameters for each of the predicates and its respective types
 
         for temp in nta.templates:
             posX = -572
@@ -131,7 +183,6 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
             if(temp.name.name == template_name):
                 id_count = 1
                 for i in range(len(m.order)):
-
                     id_str = "id"+str(id_count)
                     add_location(template=temp, id=id_str,
                                  pos=(posX, posY), name=m.order[i])
@@ -153,27 +204,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                         temp.graph.add_transition(
                             uppaalpy.Transition(source=id_str, target="id999"))
 
-                # Add the connections between methods
-                for i in range(len(m.order)):
-                    if(i+1 <= len(m.order)):
-                        source_id, target_id = "id"+str(i), "id"+str(i+1)
-                        # debug
-                        # print("Connecting", source_id, "to",
-                        #   target_id, "in template", temp.name.name)
-                        trans = uppaalpy.Transition(
-                            source=source_id, target=target_id)
-                        temp.graph.add_transition(trans)
-
-                        # Add precondition if existing, then create a location for precondition not being met
-                        # same must be done to capabilities, but i gotta think how
-                        # if i == 0 and len(m.preconditions): # i.e has preconditions and it is the first node
-                        #     for prec in m.preconditions:
-                        #         print(prec)
-                        #         if prec.value == "true":
-                        #             exprstr = prec.type + "." + prec.name + "==" + prec.value
-                        #         else:
-                        #             exprstr = prec.type + "." + prec.name + "!=" + prec.value
-                        #         trans.create_constraint_label(uppaalpy.ConstraintExpression(exprstr=exprstr, ctx=nta.context))
+                temp = generate_transitions_at_template(template=temp, order=m.order, node_data=node_data)
 
     return nta
 
