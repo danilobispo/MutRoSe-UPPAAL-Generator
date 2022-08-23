@@ -11,6 +11,27 @@ bool pickeddishes;
 bool at;
 bool pickedmeal;
 } Robot;
+
+broadcast chan start_fetch_meal_with_human;
+broadcast chan finish_fetch_meal_with_human;
+
+broadcast chan start_fetch_meal_with_robot;
+broadcast chan finish_fetch_meal_with_robot;
+
+broadcast chan start_pick_dishes_two_robots_at_location;
+broadcast chan finish_pick_dishes_two_robots_at_location;
+
+broadcast chan start_pick_dishes_with_human;
+broadcast chan finish_pick_dishes_with_human;
+
+broadcast chan start_pick_dishes_with_robot_at_location;
+broadcast chan finish_pick_dishes_with_robot_at_location;
+
+broadcast chan start_pick_dishes_with_robot_not_at_location;
+broadcast chan finish_pick_dishes_with_robot_not_at_location;
+
+broadcast chan start_pick_dishes_one_robot_at_location;
+broadcast chan finish_pick_dishes_one_robot_at_location;
 </declaration>
 	<template>
 		<name x="5" y="5">method_</name>

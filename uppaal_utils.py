@@ -17,6 +17,9 @@ def print_nodes_from_template(template: uppaalpy.Template):
     for i in range(len(nodes)):
         print(nodes[i].name.name)
 
+def print_nta_declaration(nta: uppaalpy.NTA):
+    print(nta.declaration.text)
+
 
 def get_nodes_from_template(template: uppaalpy.Template) -> List[uppaalpy.Node]:
     return template.graph.get_nodes()
@@ -50,7 +53,7 @@ def add_transition(template: uppaalpy.Template, source: str, target: str):
     tc.target = target  # e.g idX(switch X for a)
     template.graph.add_transition(tc)
 
-def generate_transitions_at_template(template: uppaalpy.Template, order: list, node_data: List[AbstractTask]) -> uppaalpy.Template:
+def generate_transitions_at_template(template: uppaalpy.Template, order: list, node_data: List[AbstractTask], nta: uppaalpy.NTA) -> uppaalpy.Template:
     # Add the connections between methods
     j = 0 # Counter for AT Methods
     add_transition_on_next_iteration = True
@@ -70,7 +73,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, n
             else:
                 add_transition_on_next_iteration = False
 
-    template = add_AT_transitions_in_template(template, node_data)
+    template = add_AT_transitions_in_template(template, node_data, nta)
 
             
             
@@ -89,7 +92,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, n
             #         trans.create_constraint_label(uppaalpy.ConstraintExpression(exprstr=exprstr, ctx=nta.context))
     return template
 
-def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask]):
+def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask], nta: uppaalpy.NTA):
     locations = template.graph.get_nodes()
     for i in range(len(locations)):
         if(check_camel_case_regex(locations[i].name.name)):
@@ -99,6 +102,8 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                     posX, posY = locations[i].pos
                     posY -= 100
                     for method in node.methods:
+                        add_declaration_for_channels_in_nta(channel_name=method, nta=nta)
+                        print_nta_declaration(nta)
                         location_method_name = "exec_" + method
                         location_method_id = "id"+str(800+j)
                         # Create location for each method and add a Transition to it from the AT Task
@@ -115,50 +120,7 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                         if i+1 in range(len(locations)):
                             target_id = locations[i+1].id
                             template.graph.add_transition(uppaalpy.Transition(source=location_method_id, target=target_id))
-
-
-                        
-    # Check if any of the tasks is AT
-    # source_is_AT = False
-    # target_is_AT = False
-    # if check_camel_case_regex(order[i]) is not None: # If it's in camel case, then it is AT
-    # # Activate flag for further modifications in transition
-    #     source_is_AT = True
-    # elif check_camel_case_regex(order[i+1]) is not None:
-    # # Activate flag for further modifications in transition
-    #     target_is_AT = True
-        
-    # if source_is_AT:
-    #     for at in node_data:
-    #         if at.name == order[i]:
-    #             if(len(at.methods) > 0):  # If we need to span multiple locations
-    #                 # print(f"methods for {at.name}: ")
-    #                 for method in at.methods:
-    #                         location_method_name = "exec_" + method
-    #                         location_method_id = "id"+str(800+j)
-    #                         posX, posY= template.graph._named_locations[order[i]].pos
-    #                         # Create location for each method and add a transition to it
-    #                         add_location(
-    #                             template=template, 
-    #                             id=location_method_id, 
-    #                             name=location_method_name, 
-    #                             pos=(posX, posY - ((j+1)*2+100)))
-    #                         template.graph.add_transition(uppaalpy.Transition(source=target_id, target=location_method_id))
-    #                         j += 1
-    # elif target_is_AT:
-            #     # Add precondition if existing, then create a location for precondition not being met
-            #     # same must be done to capabilities, but i gotta think how
-                
-
-            #     # Find in Node_data.txt which methods are valid, then create a channel in declarations to accomodate
-            #     # the new channel which will be created in the transition
-            #     for at in node_data:
-            #         if at.name == order[i+1]:
-            #             if(len(at.methods) > 1):
-            #                 # Debug
-            #                 print(f"methods for {at.name}: ")
-            #                 for method in at.methods:
-            #                     print(f"{method}")
+                            
     return template
 
 def add_template(
@@ -205,7 +167,6 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
         nta.declaration.text += struct_start
         # print("partial text: ")
         # print(nta.declaration.text)
-
         for tvar in var_and_types_list:
             # print(predicates.values)
             if(tvar.type_name == tp):
@@ -250,8 +211,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                     if i == len(m.order)-1:
                         # Add end location, end of method that goes back to initial node
                         temp.graph.add_location(uppaalpy.Location(id="id999",
-                                                                  pos=(
-                                                                      posX + 150, posY),
+                                                                  pos=(posX + 150, posY),
                                                                   name=uppaalpy.Name(
                                                                       name=const_end_method_name,
                                                                       pos=(posX+134, posY-31))))
@@ -262,9 +222,25 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                         temp.graph.add_transition(
                             uppaalpy.Transition(source=id_str, target="id999"))
 
-                temp = generate_transitions_at_template(template=temp, order=m.order, node_data=node_data)
+                temp = generate_transitions_at_template(template=temp, order=m.order, node_data=node_data, nta=nta)
 
     return nta
+
+def add_declaration_for_channels_in_nta(channel_name: str, nta: uppaalpy.NTA) -> uppaalpy.NTA:
+    # Always do a line skip before beginning to write in a file that already contains written lines
+    if(check_for_duplicate_channel(channel_name=channel_name, nta=nta)):
+        nta.declaration.text += "\n"
+        nta.declaration.text += f"broadcast chan start_{channel_name};\n"
+        nta.declaration.text += f"broadcast chan finish_{channel_name};\n"
+    return nta
+
+def check_for_duplicate_channel(channel_name: str, nta: uppaalpy.NTA) -> bool:
+    if(nta.declaration.text.find(f"broadcast chan start_{channel_name};") != -1 or
+    nta.declaration.text.find(f"broadcast chan start_{channel_name};") != -1):
+        return False
+    else:
+        return True
+
 
 
 # def generate_transition(method_data, temp: uppaalpy.Template):
