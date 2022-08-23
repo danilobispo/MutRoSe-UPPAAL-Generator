@@ -142,8 +142,6 @@ def open_and_parse_method_file(filename) -> List[utils.MethodData]:
                             if(i_copy + 1 == len(lines)): break
                             else: i_copy = i_copy + 1
                             i_method_count = i_method_count + 1
-        for obj in parsed_data:
-            print(obj)
         # now we will extract the repeated methods
         # let's make a shallow copy
         parsed_data_cp = copy.copy(parsed_data)
@@ -151,11 +149,11 @@ def open_and_parse_method_file(filename) -> List[utils.MethodData]:
             for ele in parsed_data_cp:
                 if obj.method_name == ele.method_name and obj.order == ele.order:
                     if obj is not ele:
-                        index = parsed_data.index(ele)
-                        del parsed_data[index]
+                        parsed_data.remove(ele)
 
     # Debug
-    
+    # for obj in parsed_data:
+    #     print(obj.method_name)
     return parsed_data
 
 def open_and_parse_abstract_tasks_file(filename: str):
@@ -169,10 +167,16 @@ def open_and_parse_abstract_tasks_file(filename: str):
                 i_copy = i+1
                 if(i_copy in range(len(lines))):
                     while(not lines[i_copy].startswith(const_AT_name) and i_copy < len(lines)):
-                        at_methods.append(lines[i_copy].replace("\n", "").replace(" ", ""))
+                        at_methods.append(lines[i_copy].replace("\n", "").replace(" ", "").replace("-","_"))
                         if(i_copy + 1 == len(lines)): break
                         else: i_copy = i_copy + 1
                 at_list.append(utils.AbstractTask(name=at_name, methods=at_methods))
+    at_list_cp = copy.copy(at_list)
+    for obj in at_list:
+        for ele in at_list_cp:
+            if obj.name == ele.name and obj.methods == ele.methods:
+                if obj is not ele:
+                    at_list.remove(ele)
     return at_list
 
 def open_and_parse_types_and_variables_file(filename:str):
@@ -209,9 +213,6 @@ predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
 # for data in method_data:
 #     print(data)
 #     print("Order:", data.order)
-# for data in abstract_task_data:
-#     print(data)
-
 
 # Clean file content before running the program again
 f = open('models\empty_model_new.xml', 'r+')

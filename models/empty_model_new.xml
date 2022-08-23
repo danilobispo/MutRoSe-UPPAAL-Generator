@@ -25,14 +25,14 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">wait_for_food</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">wait_for_food</name>
 		</location>
-		<location id="id999" x="-122" y="-113">
-			<name x="-138" y="-144">end_method</name>
+		<location id="id999" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -57,20 +57,20 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">approach_patient_table</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">approach_patient_table</name>
 		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">deliver_to_table</name>
+		<location id="id3" x="-252" y="-150">
+			<name x="-266" y="-181">deliver_to_table</name>
 		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">manipulation</name>
+		<location id="id4" x="-102" y="-150">
+			<name x="-116" y="-181">manipulation</name>
 		</location>
-		<location id="id999" x="178" y="-113">
-			<name x="162" y="-144">end_method</name>
+		<location id="id999" x="198" y="-150">
+			<name x="182" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -103,14 +103,20 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">FetchMeal</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">FetchMeal</name>
 		</location>
-		<location id="id999" x="-122" y="-113">
-			<name x="-138" y="-144">end_method</name>
+		<location id="id999" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="-402" y="-250">
+			<name x="-416" y="-281">exec_fetch_meal_with_human</name>
+		</location>
+		<location id="id801" x="-302" y="-350">
+			<name x="-316" y="-381">exec_fetch_meal_with_robot</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -129,20 +135,36 @@ bool pickedmeal;
 			<source ref="id1"/>
 			<target ref="id2"/>
 		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id800"/>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id801"/>
+		</transition>
+		<transition>
+			<source ref="id801"/>
+			<target ref="id999"/>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_human_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">approach_human</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">approach_human</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">wait_for_human_to_fetch</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">wait_for_human_to_fetch</name>
 		</location>
-		<location id="id999" x="-122" y="-113">
-			<name x="-138" y="-144">end_method</name>
+		<location id="id999" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -167,20 +189,20 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">approach_robot</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">approach_robot</name>
 		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">grasp_meal</name>
+		<location id="id3" x="-252" y="-150">
+			<name x="-266" y="-181">grasp_meal</name>
 		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">deliver_meal_to_patient</name>
+		<location id="id4" x="-102" y="-150">
+			<name x="-116" y="-181">deliver_meal_to_patient</name>
 		</location>
-		<location id="id999" x="178" y="-113">
-			<name x="162" y="-144">end_method</name>
+		<location id="id999" x="198" y="-150">
+			<name x="182" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -213,29 +235,32 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">navto</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">navto</name>
 		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">approach_door</name>
+		<location id="id3" x="-252" y="-150">
+			<name x="-266" y="-181">approach_door</name>
 		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">approach_door</name>
+		<location id="id4" x="-102" y="-150">
+			<name x="-116" y="-181">approach_door</name>
 		</location>
-		<location id="id5" x="28" y="-113">
-			<name x="14" y="-144">open_door</name>
+		<location id="id5" x="48" y="-150">
+			<name x="34" y="-181">open_door</name>
 		</location>
-		<location id="id6" x="178" y="-113">
-			<name x="164" y="-144">door_opening</name>
+		<location id="id6" x="198" y="-150">
+			<name x="184" y="-181">door_opening</name>
 		</location>
-		<location id="id7" x="328" y="-113">
-			<name x="314" y="-144">PickDishesTwoRobotsAtLocation</name>
+		<location id="id7" x="348" y="-150">
+			<name x="334" y="-181">PickDishesTwoRobotsAtLocation</name>
 		</location>
-		<location id="id999" x="628" y="-113">
-			<name x="612" y="-144">end_method</name>
+		<location id="id999" x="648" y="-150">
+			<name x="632" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="348" y="-250">
+			<name x="334" y="-281">exec_pick_dishes_two_robots_at_location</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -274,17 +299,34 @@ bool pickedmeal;
 			<source ref="id6"/>
 			<target ref="id7"/>
 		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id800"/>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_two_robots_at_location_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">PickDishes</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">PickDishes</name>
 		</location>
-		<location id="id999" x="-272" y="-113">
-			<name x="-288" y="-144">end_method</name>
+		<location id="id999" x="-252" y="-150">
+			<name x="-268" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="-552" y="-250">
+			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
+		</location>
+		<location id="id801" x="-452" y="-350">
+			<name x="-466" y="-381">exec_pick_dishes_with_robot_at_location</name>
+		</location>
+		<location id="id802" x="-352" y="-450">
+			<name x="-366" y="-481">exec_pick_dishes_with_robot_not_at_location</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -299,20 +341,44 @@ bool pickedmeal;
 			<source ref="id0"/>
 			<target ref="id1"/>
 		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id800"/>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id801"/>
+		</transition>
+		<transition>
+			<source ref="id801"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id802"/>
+		</transition>
+		<transition>
+			<source ref="id802"/>
+			<target ref="id999"/>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_human_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">approach_human</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">approach_human</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">wait_for_human_to_place_dish</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">wait_for_human_to_place_dish</name>
 		</location>
-		<location id="id999" x="-122" y="-113">
-			<name x="-138" y="-144">end_method</name>
+		<location id="id999" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -337,14 +403,14 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">pick_patient_dishes</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">pick_patient_dishes</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">load_dishes</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">load_dishes</name>
 		</location>
-		<location id="id999" x="-122" y="-113">
-			<name x="-138" y="-144">end_method</name>
+		<location id="id999" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -369,17 +435,17 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">pick_patient_dishes</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">pick_patient_dishes</name>
 		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">load_dishes</name>
+		<location id="id3" x="-252" y="-150">
+			<name x="-266" y="-181">load_dishes</name>
 		</location>
-		<location id="id999" x="28" y="-113">
-			<name x="12" y="-144">end_method</name>
+		<location id="id999" x="48" y="-150">
+			<name x="32" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -408,20 +474,23 @@ bool pickedmeal;
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">approach_door</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">approach_door</name>
 		</location>
-		<location id="id3" x="-272" y="-113">
-			<name x="-286" y="-144">wait_for_door_opening</name>
+		<location id="id3" x="-252" y="-150">
+			<name x="-266" y="-181">wait_for_door_opening</name>
 		</location>
-		<location id="id4" x="-122" y="-113">
-			<name x="-136" y="-144">PickDishesOneRobotAtLocation</name>
+		<location id="id4" x="-102" y="-150">
+			<name x="-116" y="-181">PickDishesOneRobotAtLocation</name>
 		</location>
-		<location id="id999" x="178" y="-113">
-			<name x="162" y="-144">end_method</name>
+		<location id="id999" x="198" y="-150">
+			<name x="182" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="-102" y="-250">
+			<name x="-116" y="-281">exec_pick_dishes_one_robot_at_location</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -448,17 +517,34 @@ bool pickedmeal;
 			<source ref="id3"/>
 			<target ref="id4"/>
 		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id800"/>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_one_robot_at_location_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">PickDishes</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">PickDishes</name>
 		</location>
-		<location id="id999" x="-272" y="-113">
-			<name x="-288" y="-144">end_method</name>
+		<location id="id999" x="-252" y="-150">
+			<name x="-268" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="-552" y="-250">
+			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
+		</location>
+		<location id="id801" x="-452" y="-350">
+			<name x="-466" y="-381">exec_pick_dishes_with_robot_at_location</name>
+		</location>
+		<location id="id802" x="-352" y="-450">
+			<name x="-366" y="-481">exec_pick_dishes_with_robot_not_at_location</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -473,20 +559,44 @@ bool pickedmeal;
 			<source ref="id0"/>
 			<target ref="id1"/>
 		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id800"/>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id801"/>
+		</transition>
+		<transition>
+			<source ref="id801"/>
+			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id802"/>
+		</transition>
+		<transition>
+			<source ref="id802"/>
+			<target ref="id999"/>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_dishes_retrieval_0</name>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-572" y="-113">
-			<name x="-586" y="-144">navto</name>
+		<location id="id1" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-422" y="-113">
-			<name x="-436" y="-144">retrieve_dishes</name>
+		<location id="id2" x="-402" y="-150">
+			<name x="-416" y="-181">retrieve_dishes</name>
 		</location>
-		<location id="id999" x="-122" y="-113">
-			<name x="-138" y="-144">end_method</name>
+		<location id="id999" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
