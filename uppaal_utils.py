@@ -68,6 +68,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, n
                     source=source_id, target=target_id)
                 template.graph.add_transition(trans)
 
+            # Check if it's AT, then estabilish channels
             if not check_camel_case_regex(order[i]):
                 add_transition_on_next_iteration = True
             else:
@@ -103,7 +104,7 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                     posY -= 100
                     for method in node.methods:
                         add_declaration_for_channels_in_nta(channel_name=method, nta=nta)
-                        print_nta_declaration(nta)
+                        # print_nta_declaration(nta)
                         location_method_name = "exec_" + method
                         location_method_id = "id"+str(800+j)
                         # Create location for each method and add a Transition to it from the AT Task
@@ -111,15 +112,23 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                         id=location_method_id, 
                         name=location_method_name, 
                         pos=(posX, posY))
+                        # Create channel message:
+                        method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method))
+                        synch_label = uppaalpy.Label(kind="synchronisation", value=method_channel_sync_str, pos=(posX-100, posY+55))
                         # Adding transition
-                        template.graph.add_transition(uppaalpy.Transition(source=locations[i].id, target=location_method_id))
-                        j+=1
-                        posX += 100
-                        posY -= 100
+                        trans = uppaalpy.Transition(source=locations[i].id, target=location_method_id, synchronisation=synch_label)
+                        template.graph.add_transition(trans)
                         # now locate the next node and a Transition to it
                         if i+1 in range(len(locations)):
                             target_id = locations[i+1].id
-                            template.graph.add_transition(uppaalpy.Transition(source=location_method_id, target=target_id))
+                            # Add channel to go back to this template when the execution of the subtask is
+                            method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method, finished=True), target=True)
+                            synch_label = uppaalpy.Label(kind="synchronisation", value=method_channel_sync_str, pos=(posX+100, posY+55))
+                            template.graph.add_transition(uppaalpy.Transition(source=location_method_id, target=target_id, synchronisation=synch_label))
+                        j+=1
+
+                        posX += 100
+                        posY -= 100
                             
     return template
 
@@ -241,7 +250,17 @@ def check_for_duplicate_channel(channel_name: str, nta: uppaalpy.NTA) -> bool:
     else:
         return True
 
+def get_channel_name(method_name: str, finished: bool = False) -> str:
+    if finished:
+        return f"finish_{method_name}"
+    else:
+        return f"start_{method_name}"
 
+def create_channel_synch_for_transition(channel_name: str, target: bool = False) -> str:
+    if target: #if the channel receives the synch or not
+        return f"{channel_name}?"
+    else:
+        return f"{channel_name}!"
 
 # def generate_transition(method_data, temp: uppaalpy.Template):
 #     for m in method_data:
