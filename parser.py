@@ -212,7 +212,7 @@ var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_an
 predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
 # for data in method_data:
 #     print(data)
-#     print("Order:", data.order)
+    # print("Order:", data.order)
 
 # Clean file content before running the program again
 f = open('models\empty_model_new.xml', 'r+')
