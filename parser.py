@@ -214,6 +214,10 @@ predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
 #     print(data)
     # print("Order:", data.order)
 
+# for var_and_type in var_and_types_list:
+#     print(f"var_and_type.var_name: {var_and_type.var_name}")
+#     print(f"var_and_type.type_name: {var_and_type.type_name}")
+
 # Clean file content before running the program again
 f = open('models\empty_model_new.xml', 'r+')
 f.truncate(0) # need '0' when using r+
@@ -223,8 +227,12 @@ f.close()
 # First step, create a NTA with template
 # context = uppaalpy.Context()
 nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
-nta_partial = upu.generate_declaration_for_nta(nta_partial, predicates=predicate_dict, var_and_types_list=var_and_types_list, set_of_types=types_set)
-nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data)
+nta_partial, var_and_types_with_predicates = upu.generate_declaration_for_nta(nta_partial, predicates=predicate_dict, var_and_types_list=var_and_types_list, set_of_types=types_set)
+# for var_and_type in var_and_types_with_predicates:
+#     print(f"var_and_type.var_name: {var_and_type.var_name}")
+#     print(f"var_/and_type.type_name: {var_and_type.type_name}")
+
+nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates)
 
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)

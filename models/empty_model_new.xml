@@ -7,10 +7,31 @@ bool patientcanfetch;
 bool patientcanopen;
 } Patient;
 typedef struct {
+bool pickedmeal;
 bool pickeddishes;
 bool at;
-bool pickedmeal;
 } Robot;
+
+broadcast chan start_fetch_meal_with_human;
+broadcast chan finish_fetch_meal_with_human;
+
+broadcast chan start_fetch_meal_with_robot;
+broadcast chan finish_fetch_meal_with_robot;
+
+broadcast chan start_pick_dishes_two_robots_at_location;
+broadcast chan finish_pick_dishes_two_robots_at_location;
+
+broadcast chan start_pick_dishes_with_human;
+broadcast chan finish_pick_dishes_with_human;
+
+broadcast chan start_pick_dishes_with_robot_at_location;
+broadcast chan finish_pick_dishes_with_robot_at_location;
+
+broadcast chan start_pick_dishes_with_robot_not_at_location;
+broadcast chan finish_pick_dishes_with_robot_not_at_location;
+
+broadcast chan start_pick_dishes_one_robot_at_location;
+broadcast chan finish_pick_dishes_one_robot_at_location;
 </declaration>
 	<template>
 		<name x="5" y="5">method_</name>
@@ -22,6 +43,7 @@ bool pickedmeal;
 	</template>
 	<template>
 		<name x="5" y="5">temp_food_pickup_0</name>
+		<parameter>Robot r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -50,11 +72,12 @@ bool pickedmeal;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id999"/>
-			<label kind="assignment" x="20" y="90">r.pickedmeal : = true</label>
+			<label kind="assignment" x="20" y="90">r.pickedmeal = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_table_deliver_0</name>
+		<parameter>Robot r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -102,6 +125,7 @@ bool pickedmeal;
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_deliver_0</name>
+		<parameter>Robot r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -113,6 +137,12 @@ bool pickedmeal;
 		</location>
 		<location id="id999" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="-402" y="-250">
+			<name x="-416" y="-281">exec_fetch_meal_with_human</name>
+		</location>
+		<location id="id801" x="-302" y="-350">
+			<name x="-316" y="-381">exec_fetch_meal_with_robot</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -132,9 +162,30 @@ bool pickedmeal;
 			<source ref="id2"/>
 			<target ref="id999"/>
 		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id800"/>
+			<label kind="synchronisation" x="-502" y="-195">start_fetch_meal_with_human!</label>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-302" y="-195">finish_fetch_meal_with_human?</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id801"/>
+			<label kind="synchronisation" x="-402" y="-295">start_fetch_meal_with_robot!</label>
+		</transition>
+		<transition>
+			<source ref="id801"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-202" y="-295">finish_fetch_meal_with_robot?</label>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_human_0</name>
+		<parameter>Patient p , Robot r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -164,11 +215,12 @@ bool pickedmeal;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id999"/>
-			<label kind="assignment" x="20" y="90">r.pickedmeal : = false</label>
+			<label kind="assignment" x="20" y="90">r.pickedmeal = false</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_robot_0</name>
+		<parameter>Robot r2 , Robot r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -207,16 +259,17 @@ bool pickedmeal;
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
-			<label kind="assignment" x="20" y="90">r1.pickedmeal : = true</label>
+			<label kind="assignment" x="20" y="90">r2.pickedmeal = false</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id999"/>
-			<label kind="assignment" x="20" y="90">r.pickedmeal : = false</label>
+			<label kind="assignment" x="20" y="90">r.pickedmeal = false</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pickup_with_door_opening_0</name>
+		<parameter>Robot r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -243,6 +296,9 @@ bool pickedmeal;
 		</location>
 		<location id="id999" x="648" y="-150">
 			<name x="632" y="-181">end_method</name>
+		</location>
+		<location id="id800" x="348" y="-250">
+			<name x="334" y="-281">exec_pick_dishes_two_robots_at_location</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -282,9 +338,20 @@ bool pickedmeal;
 			<source ref="id7"/>
 			<target ref="id999"/>
 		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id800"/>
+			<label kind="synchronisation" x="248" y="-195">start_pick_dishes_two_robots_at_location!</label>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="448" y="-195">finish_pick_dishes_two_robots_at_location?</label>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_two_robots_at_location_0</name>
+		<parameter>Robot r1 , Robot r2 , </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -294,6 +361,15 @@ bool pickedmeal;
 		<location id="id999" x="-252" y="-150">
 			<name x="-268" y="-181">end_method</name>
 		</location>
+		<location id="id800" x="-552" y="-250">
+			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
+		</location>
+		<location id="id801" x="-452" y="-350">
+			<name x="-466" y="-381">exec_pick_dishes_with_robot_at_location</name>
+		</location>
+		<location id="id802" x="-352" y="-450">
+			<name x="-366" y="-481">exec_pick_dishes_with_robot_not_at_location</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
@@ -302,15 +378,46 @@ bool pickedmeal;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">l.at == true</label>
+			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == true &amp;&amp; l.at == true</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id999"/>
 		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id800"/>
+			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_with_human!</label>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_with_human?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id801"/>
+			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_with_robot_at_location!</label>
+		</transition>
+		<transition>
+			<source ref="id801"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_with_robot_at_location?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id802"/>
+			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_with_robot_not_at_location!</label>
+		</transition>
+		<transition>
+			<source ref="id802"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_with_robot_not_at_location?</label>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_human_0</name>
+		<parameter>Robot r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -339,11 +446,12 @@ bool pickedmeal;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id999"/>
-			<label kind="assignment" x="20" y="90">r.pickeddishes : = true</label>
+			<label kind="assignment" x="20" y="90">r.pickeddishes = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_at_location_0</name>
+		<parameter>Robot r2 , Robot r , Robot r1 , </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -364,21 +472,22 @@ bool pickedmeal;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">l.at == true</label>
+			<label kind="guard" x="20" y="90">r2.at == true</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id2"/>
-			<label kind="assignment" x="20" y="90">r.pickeddishes : = true</label>
+			<label kind="assignment" x="20" y="90">r.pickeddishes = true</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id999"/>
-			<label kind="assignment" x="20" y="90">r2.pickeddishes : = true</label>
+			<label kind="assignment" x="20" y="90">r1.pickeddishes = false, r2.pickeddishes = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_not_at_location_0</name>
+		<parameter>Robot r2 , Robot r , Robot r1 , </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -402,7 +511,7 @@ bool pickedmeal;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">l.at == false</label>
+			<label kind="guard" x="20" y="90">r2.at == false</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -411,16 +520,17 @@ bool pickedmeal;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id3"/>
-			<label kind="assignment" x="20" y="90">r.pickeddishes : = true</label>
+			<label kind="assignment" x="20" y="90">r.pickeddishes = true</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
 			<target ref="id999"/>
-			<label kind="assignment" x="20" y="90">r2.pickeddishes : = true</label>
+			<label kind="assignment" x="20" y="90">r1.pickeddishes = false, r2.pickeddishes = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pickup_without_door_opening_0</name>
+		<parameter>Patient p , Robot r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -439,6 +549,9 @@ bool pickedmeal;
 		<location id="id999" x="198" y="-150">
 			<name x="182" y="-181">end_method</name>
 		</location>
+		<location id="id800" x="-102" y="-250">
+			<name x="-116" y="-281">exec_pick_dishes_one_robot_at_location</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
@@ -447,7 +560,7 @@ bool pickedmeal;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">r1.pickeddishes == false</label>
+			<label kind="guard" x="20" y="90">p.patientcanopen == true &amp;&amp; r1.pickeddishes == false</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -465,9 +578,20 @@ bool pickedmeal;
 			<source ref="id4"/>
 			<target ref="id999"/>
 		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id800"/>
+			<label kind="synchronisation" x="-202" y="-195">start_pick_dishes_one_robot_at_location!</label>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-2" y="-195">finish_pick_dishes_one_robot_at_location?</label>
+		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_one_robot_at_location_0</name>
+		<parameter>Robot r1 , Robot r2 , </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -477,6 +601,15 @@ bool pickedmeal;
 		<location id="id999" x="-252" y="-150">
 			<name x="-268" y="-181">end_method</name>
 		</location>
+		<location id="id800" x="-552" y="-250">
+			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
+		</location>
+		<location id="id801" x="-452" y="-350">
+			<name x="-466" y="-381">exec_pick_dishes_with_robot_at_location</name>
+		</location>
+		<location id="id802" x="-352" y="-450">
+			<name x="-366" y="-481">exec_pick_dishes_with_robot_not_at_location</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
@@ -485,11 +618,41 @@ bool pickedmeal;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">l.at == false</label>
+			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == false &amp;&amp; l.at == false</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id999"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id800"/>
+			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_with_human!</label>
+		</transition>
+		<transition>
+			<source ref="id800"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_with_human?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id801"/>
+			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_with_robot_at_location!</label>
+		</transition>
+		<transition>
+			<source ref="id801"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_with_robot_at_location?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id802"/>
+			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_with_robot_not_at_location!</label>
+		</transition>
+		<transition>
+			<source ref="id802"/>
+			<target ref="id999"/>
+			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_with_robot_not_at_location?</label>
 		</transition>
 	</template>
 	<template>

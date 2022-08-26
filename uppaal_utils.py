@@ -61,26 +61,25 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
     has_effects = False
     prec_label = None
     has_precs = False
-    print(f"len order: {len(order)}")
     for i in range(len(order)):
         id_count = i+1
         source_id, target_id = "id"+str(id_count), "id"+str(id_count+1)
         
         if(i == 0):
         # TODO: Deal with preconditions here
-            has_precs, prec_label =  search_and_generate_preconditions_in_node(order, preconditions_list, i, nta.context)
+            has_precs, prec_label =  search_and_generate_preconditions_in_node(order, preconditions_list, i)
             if has_precs:
-                insert_precondition_in_location(source_id="id0", target_id="id1", template=template, prec_label=prec_label)
+                insert_precondition_in_location(source_id="id0", target_id="id1", template=template, prec_label=prec_label, context_nta=nta)
             else:
                 template.graph.add_transition(uppaalpy.Transition(source="id0", target="id1"))
 
 
         if i == len(order) - 1: # add last method transition with end node
             # debug
-            has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i, context_nta=nta) 
+            has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
             if has_effects: # if there's an effect, add to transition
                 # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
-                insert_effect_in_location(source_id=source_id, target_id="id999", template=template, eff_label=eff_label)
+                insert_effect_in_location(source_id=source_id, target_id="id999", template=template, eff_label=eff_label, context_nta=nta)
             else: 
                 # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
                 template.graph.add_transition(
@@ -90,35 +89,18 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
             # print(f"i: {i}")
             # print("Current node:", order[i])
 
-            has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i, context_nta=nta) 
+            has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
             if has_effects: # if there's an effect, add to transition
-                insert_effect_in_location(source_id=source_id,target_id=target_id, template=template, eff_label=eff_label)
+                insert_effect_in_location(source_id=source_id,target_id=target_id, template=template, eff_label=eff_label, context_nta=nta)
 
             elif not check_camel_case_regex(order[i]):
                     # debug
-                    print("Connecting", source_id, "to",
-                      target_id, "in template", template.name.name)
+                    # print("Connecting", source_id, "to", target_id, "in template", template.name.name)
                     trans = uppaalpy.Transition(
                         source=source_id, 
                         target=target_id)
                     template.graph.add_transition(trans)
-            # Check for preconditions and effects on current node
-            # if it contains an effect, we must add a transition update on the transition made before
-            # if it contains a precondition, we must add a transition guard on the transition that 
-            # print(effects_list)
-            # print(preconditions_list)
-    
-            # Add precondition if existing, then create a location for precondition not being met
-            # same must be done to capabilities, but i gotta think how
-            # if i == 0 and len(m.preconditions): # i.e has preconditions and it is the first node
-            #     for prec in m.preconditions:
-            #         print(prec)
-            #         if prec.value == "true":
-            #             exprstr = prec.type + "." + prec.name + "==" + prec.value
-            #         else:
-            #             exprstr = prec.type + "." + prec.name + "!=" + prec.value
-            #         trans.create_constraint_label(uppaalpy.ConstraintExpression(exprstr=exprstr, ctx=nta.context))
-    # template = add_AT_transitions_in_template(template, node_data, nta)
+    template = add_AT_transitions_in_template(template, node_data, nta)
     return template
 
 def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask], nta: uppaalpy.NTA):
@@ -189,12 +171,14 @@ def add_template(
         nta.templates.append(tp_copy)
 
 
-def generate_declaration_for_nta(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]) -> uppaalpy.NTA:
-    nta = generate_structs_for_types(nta, predicates, var_and_types_list, set_of_types)
-    return nta
+def generate_declaration_for_nta(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]):
+    var_and_types_with_predicates: list[Variable] = []
+    nta, var_and_types_with_predicates = generate_structs_for_types(nta, predicates, var_and_types_list, set_of_types)
+    return nta, var_and_types_with_predicates
 
-def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]) -> uppaalpy.NTA:
+def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]):
     # For each of the types in the set we gotta create a struct, so the types can have specific predicates
+    var_and_types_with_predicates:list[Variable] = []
     nta.declaration.text += "\n"
     flag = 0
     for tp in set_of_types:
@@ -214,6 +198,7 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
                         nta.declaration.text += "bool " + predicate_name + ";"
                         nta.declaration.text += "\n"
                         flag = 1
+                        var_and_types_with_predicates.append(tvar)
         # Delete the struct declaration, since no predicate was found for that struct
         if flag != 1:
             startIndex = nta.declaration.text.rindex(struct_start)
@@ -222,9 +207,18 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
             struct_end = "} "+tp.title()+";\n"
             nta.declaration.text += struct_end
         flag = 0
-    return nta
+        
+    # add remaining variables with same type (e.g robot r1, r2, r3, etc or patient p1, p2, etc)
+    for tvar in var_and_types_list:
+        for tv in var_and_types_with_predicates:
+            if tvar.type_name == tv.type_name and tvar not in var_and_types_with_predicates:
+                var_and_types_with_predicates.append(tvar)
 
-def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA, node_data: List[AbstractTask]) -> uppaalpy.NTA:
+    return nta, var_and_types_with_predicates
+
+def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA, node_data: List[AbstractTask], var_and_types_list_in_predicates: list[Variable]) -> uppaalpy.NTA:
+    for m in method_data:
+        m = trim_method_predicates(method=m, var_and_types_list_in_predicates=var_and_types_list_in_predicates)
     for m in method_data:
         template_name = "temp_" + m.method_name
         add_template(nta=nta, template_name=template_name, template_to_copy=nta.templates[0],
@@ -256,7 +250,10 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                         
 
                 temp = generate_transitions_at_template(template=temp, order=m.order, current_method=m, node_data=node_data, nta=nta)
-
+                # TODO: Generate parameters for each of the templates
+                add_precondition_and_effects_parameter_types_in_template(
+                    effect_list=m.effects, precondition_list=m.preconditions, var_and_types_list=var_and_types_list_in_predicates, temp=temp)
+                
     return nta
 
 def add_declaration_for_channels_in_nta(channel_name: str, nta: uppaalpy.NTA) -> uppaalpy.NTA:
@@ -288,9 +285,9 @@ def create_channel_synch_for_transition(channel_name: str, target: bool = False)
 
 def generate_effect_for_transition_update(effect_name: str, effect_type:str, is_true: bool) -> str:
     if is_true:
-        return f"{effect_type}.{effect_name} := true" 
+        return f"{effect_type}.{effect_name} = true" 
     else:
-        return f"{effect_type}.{effect_name} := false"
+        return f"{effect_type}.{effect_name} = false"
 
 def generate_precondition_for_transition_guard(prec_name:str, prec_type: str, is_true: bool) -> str:
     if is_true:
@@ -298,65 +295,165 @@ def generate_precondition_for_transition_guard(prec_name:str, prec_type: str, is
     else:
         return f"{prec_type}.{prec_name} == false"
 
-def search_and_generate_effects_in_node(order: list, effects_list: list[Effect], i: int, context_nta:uppaalpy.NTA):
+def search_and_generate_effects_in_node(order: list, effects_list: list[Effect], i: int):
     has_effects = False
-    eff_label = None
+    eff_label: list[str] = []
     for effect in effects_list:
         if effect.tied_to == order[i]:
             # Debug
             # print(f"effect {effect.name} is tied to {order[i]}")
-            eff_value = generate_effect_for_transition_update(
+            eff_label.append(generate_effect_for_transition_update(
                     effect_name=effect.name, 
                     is_true=True if effect.value == "true" else False, 
-                    effect_type=effect.type)
+                    effect_type=effect.type))
             # Let's create the label and send it to the trans object with the transition
-            eff_label = uppaalpy.UpdateLabel(
-                kind="assignment", 
-                value=eff_value,
-                pos=(20, 90),
-                ctx=context_nta.context)
             has_effects = True
     return has_effects, eff_label
 
-def insert_effect_in_location(source_id: str, target_id:str, template: uppaalpy.Template, eff_label: uppaalpy.UpdateLabel):
+def insert_effect_in_location(source_id: str, target_id:str, template: uppaalpy.Template, eff_label: list[str], context_nta:uppaalpy.NTA):
+    update_value = ""
+    update_label = None
+    for i in range(len(eff_label)):
+        if i != len(eff_label)-1:
+            update_value += eff_label[i] + ", " 
+        else:
+            update_value += eff_label[i]
+    # print(f"update_value: {update_value}")
+    update_label = uppaalpy.UpdateLabel(
+                kind="assignment", 
+                value=update_value,
+                pos=(20, 90),
+                ctx=context_nta.context)
     # Debug effect
-    print("Connecting", source_id, "to", target_id, "in template", template.name.name, "with effect", eff_label.value)
+    # print("Connecting", source_id, "to", target_id, "in template", template.name.name, "with effect", eff_label.value)
     trans = uppaalpy.Transition(
         source=source_id, 
         target=target_id, 
-        assignment=eff_label)
+        assignment=update_label)
     template.graph.add_transition(trans)
 
-def search_and_generate_preconditions_in_node(order: list, preconditions_list: list[Precondition], i: int, context_nta:uppaalpy.NTA):
-    prec_label = None
+def search_and_generate_preconditions_in_node(order: list, preconditions_list: list[Precondition], i: int):
+    prec_label: list[str] = []
     has_precs = False
-    if len(preconditions_list) > 0:    
-        prec_label = None
+    if len(preconditions_list) > 0: 
         for prec in preconditions_list:
             # Debug
-            print(f"prec {prec.name} is tied to {order[i]}")
-            prec_value = generate_precondition_for_transition_guard(
+            # print(f"prec {prec.name} is tied to {order[i]}")
+            prec_label.append(generate_precondition_for_transition_guard(
                     prec_name=prec.name, 
                     is_true=True if prec.value == "true" else False, 
-                    prec_type=prec.type)
+                    prec_type=prec.type))
             # Let's create the label and send it to the trans object with the transition
-            prec_label = uppaalpy.ConstraintLabel(
-                kind="guard", 
-                value=prec_value,
-                pos=(20, 90),
-                ctx=context_nta)
             has_precs = True
     return has_precs, prec_label
             
-def insert_precondition_in_location(source_id: str, target_id:str, template: uppaalpy.Template, prec_label: uppaalpy.Label):
+def insert_precondition_in_location(source_id: str, target_id:str, template: uppaalpy.Template, prec_label: list[str], context_nta:uppaalpy.NTA):
+    guard_value = ""
+    constraint_label = None
     # Debug precondition
-    print("Connecting", source_id, "to", target_id, "in template", template.name.name, "with precondition", prec_label.value)
+    # print("Connecting", source_id, "to", target_id, "in template", template.name.name, "with precondition", prec_label.value)
+    for i in range(len(prec_label)):
+        if i != len(prec_label)-1:
+            guard_value += prec_label[i] + " && " 
+        else:
+            guard_value += prec_label[i]
+            
+    # print(f"guard_value: {guard_value}")
+    constraint_label = uppaalpy.ConstraintLabel(kind="guard", value=guard_value, pos=(20, 90), ctx=context_nta.context)
+
+    
     trans = uppaalpy.Transition(
         source=source_id, 
         target=target_id, 
-        guard=prec_label)
+        guard=constraint_label)
     template.graph.add_transition(trans)
 
+def insert_parameter_in_template(template: uppaalpy.Template, parameter_name: str, parameter_type: str):
+    
+    added = False
+    if template.parameter == None:
+        # print("if template.parameter == None:")
+        # print(f"Added {parameter_type.title()} {parameter_name}")
+        template.parameter = uppaalpy.Parameter(text=f"{parameter_type.title()} {parameter_name} ") 
+        added = True
+    else:
+        search_str = f"{parameter_type.title()} {parameter_name}"
+        search_str = r"\b" + search_str + r"\b"
+        # print(f"search_str: {search_str}")
+        if(re.search(search_str, template.parameter.text) is None):
+            # print("else:")
+            # print(f"Added {parameter_type.title()} {parameter_name}")
+            template.parameter.text += f"{parameter_type.title()} {parameter_name} "
+            added = True
+        else:
+            # print(f"not adding {parameter_type.title()} {parameter_name} due to repetition")
+            added = False
+    return added
 
-# def generate_transition(method_data, temp: uppaalpy.Template):
-#     for m in method_data:
+def add_precondition_and_effects_parameter_types_in_template(precondition_list, effect_list, var_and_types_list, temp: uppaalpy.Template):
+    # if(temp.name.name == "temp_fetch_meal_with_robot_0"):
+    print(f"in template {temp.name.name}")
+    print(precondition_list)
+    print(effect_list)
+    if temp.name.name == "template temp_pick_dishes_two_robots_at_location_0":
+        print(precondition_list,"\n",effect_list)
+
+    if len(precondition_list) > 0:
+        for i in range(len(precondition_list)):
+            for j in range(len(var_and_types_list)):
+                if var_and_types_list[j].var_name == precondition_list[i].type:
+                    is_param_added = insert_parameter_in_template(
+                        template=temp, 
+                        parameter_name=var_and_types_list[j].
+                        var_name, parameter_type=var_and_types_list[j].type_name)
+                    if i != len(precondition_list) - 1 and is_param_added:
+                        temp.parameter.text += ", "
+    if len(effect_list) > 0:
+        if(len(precondition_list) == 1):
+            temp.parameter.text += ", "  
+        for i in range(len(effect_list)):
+            for j in range(len(var_and_types_list)):
+                if var_and_types_list[j].var_name == effect_list[i].type:
+                    # print(f"var_name: {var_and_types_list[i].var_name} is equal to type {eff.type}")
+                    is_param_added = insert_parameter_in_template(
+                        template=temp, 
+                        parameter_name=var_and_types_list[j].var_name, parameter_type=var_and_types_list[j].type_name)
+                    if i != len(effect_list) - 1 and is_param_added:
+                        temp.parameter.text += ", "
+
+    if temp.parameter is not None:
+        print(f"temp.parameter.text: {temp.parameter.text}")
+        print("\n")
+
+def trim_method_predicates(method: MethodData, var_and_types_list_in_predicates:list[Variable]) -> list[MethodData]:
+    effs: list[Effect] = method.effects
+    precs: list[Precondition] = method.preconditions
+    effect_to_remove = -1
+    precondition_to_remove = -1
+
+    j = 0
+    # Loop for effects
+    for i in range(len(effs)):
+        while j < len(var_and_types_list_in_predicates):
+            if(var_and_types_list_in_predicates[j].var_name == effs[i].type):
+                print(f"Found {effs[i].type}")
+                break                
+            #Last index and still not found? then it is not in the list
+            elif var_and_types_list_in_predicates[j].var_name != effs[i].type and j == len(var_and_types_list_in_predicates)-1: 
+                effs.pop(i)
+            j += 1
+
+    j=0
+    # Loop for preconditions
+    for i in range(len(precs)):
+        while j < len(var_and_types_list_in_predicates):
+            if(var_and_types_list_in_predicates[j].var_name == precs[i].type):
+                print(f"Found {precs[i].type}")
+                break                
+            #Last index and still not found? then it is not in the list
+            elif var_and_types_list_in_predicates[j].var_name != precs[i].type and j == len(var_and_types_list_in_predicates)-1: 
+                precs.pop(i)
+            j += 1
+
+    return method
+
