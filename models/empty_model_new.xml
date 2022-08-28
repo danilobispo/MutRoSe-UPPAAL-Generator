@@ -64,6 +64,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
+			<label kind="synchronisation" x="250" y="250">start_food_pickup_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -105,6 +106,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r.pickedmeal == true</label>
+			<label kind="synchronisation" x="250" y="250">start_table_deliver_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -153,6 +155,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r1.pickedmeal == true</label>
+			<label kind="synchronisation" x="250" y="250">start_fetch_deliver_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -207,6 +210,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">p.patientcanfetch == true</label>
+			<label kind="synchronisation" x="250" y="250">start_fetch_meal_with_human_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -247,6 +251,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
+			<label kind="synchronisation" x="250" y="250">start_fetch_meal_with_robot_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -309,6 +314,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r1.pickeddishes == false</label>
+			<label kind="synchronisation" x="250" y="250">start_pickup_with_door_opening_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -379,6 +385,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == true</label>
+			<label kind="synchronisation" x="250" y="250">start_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -438,6 +445,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
+			<label kind="synchronisation" x="250" y="250">start_pick_dishes_with_human_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -473,6 +481,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r2.at == true</label>
+			<label kind="synchronisation" x="250" y="250">start_pick_dishes_with_robot_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -512,6 +521,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r2.at == false</label>
+			<label kind="synchronisation" x="250" y="250">start_pick_dishes_with_robot_not_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -561,6 +571,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">p.patientcanopen == true &amp;&amp; r1.pickeddishes == false</label>
+			<label kind="synchronisation" x="250" y="250">start_pickup_without_door_opening_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -619,6 +630,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == false</label>
+			<label kind="synchronisation" x="250" y="250">start_pick_dishes_one_robot_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -677,6 +689,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
+			<label kind="synchronisation" x="250" y="250">start_dishes_retrieval_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>

@@ -65,24 +65,32 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
         source_id, target_id = "id"+str(id_count), "id"+str(id_count+1)
         
         if(i == 0):
-        # TODO: Deal with preconditions here
+            sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=current_method.method_name, finished=False),target=True)
+            synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
+            # TODO: Deal with preconditions here
             has_precs, prec_label =  search_and_generate_preconditions_in_node(order, preconditions_list, i)
             if has_precs:
-                insert_precondition_in_location(source_id="id0", target_id="id1", template=template, prec_label=prec_label, context_nta=nta)
+                constraint_label = create_precondition_label_for_transition(prec_label=prec_label, context_nta=nta)
+                trans = uppaalpy.Transition(source="id0", target="id1", guard=constraint_label, synchronisation=synch_label)
             else:
-                template.graph.add_transition(uppaalpy.Transition(source="id0", target="id1"))
+                trans =uppaalpy.Transition(source="id0", target="id1", synchronisation=synch_label)
+            template.graph.add_transition(trans)
 
 
         if i == len(order) - 1: # add last method transition with end node
-            # debug
+            # Channel for end method
+            sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=current_method.method_name, finished=True),target=False)
+            synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
+            # Special case where effect is in the very last node
             has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
             if has_effects: # if there's an effect, add to transition
                 # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
-                insert_effect_in_location(source_id=source_id, target_id="id999", template=template, eff_label=eff_label, context_nta=nta)
+                update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
+                trans = uppaalpy.Transition(source=source_id, target="id999", assignment=update_label)
             else: 
                 # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
-                template.graph.add_transition(
-                    uppaalpy.Transition(source=source_id, target="id999"))
+                trans = uppaalpy.Transition(source=source_id, target="id999")
+            template.graph.add_transition(trans)
 
         elif id_count < len(order):
             # print(f"i: {i}")
@@ -90,15 +98,15 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
 
             has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
             if has_effects: # if there's an effect, add to transition
-                insert_effect_in_location(source_id=source_id,target_id=target_id, template=template, eff_label=eff_label, context_nta=nta)
+                update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
+                trans = uppaalpy.Transition(source=source_id, target=target_id, assignment=update_label)
 
+            # Normal transition without preconditions nor effects
             elif not check_camel_case_regex(order[i]):
                     # debug
                     # print("Connecting", source_id, "to", target_id, "in template", template.name.name)
-                    trans = uppaalpy.Transition(
-                        source=source_id, 
-                        target=target_id)
-                    template.graph.add_transition(trans)
+                    trans = uppaalpy.Transition(source=source_id, target=target_id)
+            template.graph.add_transition(trans)
     template = add_AT_transitions_in_template(template, node_data, nta)
     return template
 
@@ -295,7 +303,7 @@ def search_and_generate_effects_in_node(order: list, effects_list: list[Effect],
             has_effects = True
     return has_effects, eff_label
 
-def insert_effect_in_location(source_id: str, target_id:str, template: uppaalpy.Template, eff_label: list[str], context_nta:uppaalpy.NTA):
+def create_effect_label_for_transition(eff_label: list[str], context_nta:uppaalpy.NTA):
     update_value = ""
     update_label = None
     for i in range(len(eff_label)):
@@ -309,13 +317,7 @@ def insert_effect_in_location(source_id: str, target_id:str, template: uppaalpy.
                 value=update_value,
                 pos=(20, 90),
                 ctx=context_nta.context)
-    # Debug effect
-    # print("Connecting", source_id, "to", target_id, "in template", template.name.name, "with effect", eff_label.value)
-    trans = uppaalpy.Transition(
-        source=source_id, 
-        target=target_id, 
-        assignment=update_label)
-    template.graph.add_transition(trans)
+    return update_label
 
 def search_and_generate_preconditions_in_node(order: list, preconditions_list: list[Precondition], i: int):
     prec_label: list[str] = []
@@ -332,7 +334,7 @@ def search_and_generate_preconditions_in_node(order: list, preconditions_list: l
             has_precs = True
     return has_precs, prec_label
             
-def insert_precondition_in_location(source_id: str, target_id:str, template: uppaalpy.Template, prec_label: list[str], context_nta:uppaalpy.NTA):
+def create_precondition_label_for_transition(prec_label: list[str], context_nta:uppaalpy.NTA):
     guard_value = ""
     constraint_label = None
     # Debug precondition
@@ -345,13 +347,7 @@ def insert_precondition_in_location(source_id: str, target_id:str, template: upp
             
     # print(f"guard_value: {guard_value}")
     constraint_label = uppaalpy.ConstraintLabel(kind="guard", value=guard_value, pos=(20, 90), ctx=context_nta.context)
-
-    
-    trans = uppaalpy.Transition(
-        source=source_id, 
-        target=target_id, 
-        guard=constraint_label)
-    template.graph.add_transition(trans)
+    return constraint_label
 
 def insert_parameter_in_template(template: uppaalpy.Template, parameter_name: str, parameter_type: str):
     
