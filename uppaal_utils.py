@@ -52,7 +52,7 @@ def add_transition(template: uppaalpy.Template, source: str, target: str):
     tc.target = target  # e.g idX(switch X for a)
     template.graph.add_transition(tc)
 
-def generate_transitions_at_template(template: uppaalpy.Template, order: list, current_method: MethodData, node_data: List[AbstractTask], nta: uppaalpy.NTA) -> uppaalpy.Template:
+def generate_transitions_at_template(template: uppaalpy.Template, order: list, current_method: MethodData, node_data: List[AbstractTask], nta: uppaalpy.NTA, method_name:str) -> uppaalpy.Template:
     preconditions_list: list[Precondition] = current_method.preconditions
     effects_list: list[Effect] = current_method.effects
     # Add the connections between methods
@@ -65,7 +65,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
         source_id, target_id = "id"+str(id_count), "id"+str(id_count+1)
         
         if(i == 0):
-            sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=current_method.method_name, finished=False),target=True)
+            sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=False),target=True)
             synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
             # TODO: Deal with preconditions here
             has_precs, prec_label =  search_and_generate_preconditions_in_node(order, preconditions_list, i)
@@ -78,9 +78,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
 
 
         if i == len(order) - 1: # add last method transition with end node
-            # Channel for end method
-            sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=current_method.method_name, finished=True),target=False)
-            synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
+            
             # Special case where effect is in the very last node
             has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
             if has_effects: # if there's an effect, add to transition
@@ -107,10 +105,10 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
                     # print("Connecting", source_id, "to", target_id, "in template", template.name.name)
                     trans = uppaalpy.Transition(source=source_id, target=target_id)
             template.graph.add_transition(trans)
-    template = add_AT_transitions_in_template(template, node_data, nta)
+    template = add_AT_transitions_in_template(template, node_data, method_name)
     return template
 
-def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask], nta: uppaalpy.NTA):
+def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask], method_name: str):
     locations = template.graph.get_nodes()
     for i in range(len(locations)):
         if(check_camel_case_regex(locations[i].name.name)):
@@ -120,7 +118,6 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                     posX, posY = locations[i].pos
                     posY -= 100
                     for method in node.methods:
-                        add_declaration_for_channels_in_nta(channel_name=method, nta=nta)
                         # Create location for each method and add a Transition to it from the AT Task
                         location_method_name = "exec_" + method
                         location_method_id = "id"+str(800+j)
@@ -129,7 +126,7 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                         name=location_method_name, 
                         pos=(posX, posY))
                         # Create channel message:
-                        method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method))
+                        method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name))
                         synch_label = uppaalpy.Label(kind="synchronisation", value=method_channel_sync_str, pos=(posX-100, posY+55))
                         # Adding transition
                         trans = uppaalpy.Transition(source=locations[i].id, target=location_method_id, synchronisation=synch_label)
@@ -138,7 +135,7 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                         if i+1 in range(len(locations)):
                             target_id = locations[i+1].id
                             # Add channel to go back to this template when the execution of the subtask is
-                            method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method, finished=True), target=True)
+                            method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=True), target=True)
                             synch_label = uppaalpy.Label(kind="synchronisation", value=method_channel_sync_str, pos=(posX+100, posY+55))
                             template.graph.add_transition(uppaalpy.Transition(source=location_method_id, target=target_id, synchronisation=synch_label))
                         j+=1
@@ -218,6 +215,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
         m = trim_method_predicates(method=m, var_and_types_list_in_predicates=var_and_types_list_in_predicates)
     for m in method_data:
         template_name = create_template(method=m, nta=nta)
+        add_declaration_for_channels_in_nta(channel_name=m.method_name, nta=nta)
         for temp in nta.templates:
             posX = -552
             posY = -150
@@ -237,12 +235,12 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                                                                   name=uppaalpy.Name(
                                                                       name=const_end_method_name,
                                                                       pos=(posX+134, posY-31))))
+                        # Channel for end method
+                        sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=m.method_name, finished=True),target=False)
+                        synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(190, 250))
                         # Create connection of endtask to beginning
-                        temp.graph.add_transition(
-                            uppaalpy.Transition(source="id999", target="id0"))
-                        
-
-                temp = generate_transitions_at_template(template=temp, order=m.order, current_method=m, node_data=node_data, nta=nta)
+                        temp.graph.add_transition(uppaalpy.Transition(source="id999", target="id0", synchronisation=synch_label))
+                temp = generate_transitions_at_template(template=temp, order=m.order, current_method=m, node_data=node_data, nta=nta, method_name=m.method_name)
                 # TODO: Generate parameters for each of the templates
                 add_precondition_and_effects_parameter_types_in_template(
                     effect_list=m.effects, precondition_list=m.preconditions, var_and_types_list=var_and_types_list_in_predicates, temp=temp)

@@ -7,31 +7,49 @@ bool patientcanfetch;
 bool patientcanopen;
 } Patient;
 typedef struct {
+bool pickedmeal;
 bool pickeddishes;
 bool at;
-bool pickedmeal;
 } Robot;
 
-broadcast chan start_fetch_meal_with_human;
-broadcast chan finish_fetch_meal_with_human;
+broadcast chan start_food_pickup_0;
+broadcast chan finish_food_pickup_0;
 
-broadcast chan start_fetch_meal_with_robot;
-broadcast chan finish_fetch_meal_with_robot;
+broadcast chan start_table_deliver_0;
+broadcast chan finish_table_deliver_0;
 
-broadcast chan start_pick_dishes_two_robots_at_location;
-broadcast chan finish_pick_dishes_two_robots_at_location;
+broadcast chan start_fetch_deliver_0;
+broadcast chan finish_fetch_deliver_0;
 
-broadcast chan start_pick_dishes_with_human;
-broadcast chan finish_pick_dishes_with_human;
+broadcast chan start_fetch_meal_with_human_0;
+broadcast chan finish_fetch_meal_with_human_0;
 
-broadcast chan start_pick_dishes_with_robot_at_location;
-broadcast chan finish_pick_dishes_with_robot_at_location;
+broadcast chan start_fetch_meal_with_robot_0;
+broadcast chan finish_fetch_meal_with_robot_0;
 
-broadcast chan start_pick_dishes_with_robot_not_at_location;
-broadcast chan finish_pick_dishes_with_robot_not_at_location;
+broadcast chan start_pickup_with_door_opening_0;
+broadcast chan finish_pickup_with_door_opening_0;
 
-broadcast chan start_pick_dishes_one_robot_at_location;
-broadcast chan finish_pick_dishes_one_robot_at_location;
+broadcast chan start_pick_dishes_two_robots_at_location_0;
+broadcast chan finish_pick_dishes_two_robots_at_location_0;
+
+broadcast chan start_pick_dishes_with_human_0;
+broadcast chan finish_pick_dishes_with_human_0;
+
+broadcast chan start_pick_dishes_with_robot_at_location_0;
+broadcast chan finish_pick_dishes_with_robot_at_location_0;
+
+broadcast chan start_pick_dishes_with_robot_not_at_location_0;
+broadcast chan finish_pick_dishes_with_robot_not_at_location_0;
+
+broadcast chan start_pickup_without_door_opening_0;
+broadcast chan finish_pickup_without_door_opening_0;
+
+broadcast chan start_pick_dishes_one_robot_at_location_0;
+broadcast chan finish_pick_dishes_one_robot_at_location_0;
+
+broadcast chan start_dishes_retrieval_0;
+broadcast chan finish_dishes_retrieval_0;
 </declaration>
 	<template>
 		<name x="5" y="5">method_</name>
@@ -60,6 +78,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_food_pickup_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -101,6 +120,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_table_deliver_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -150,6 +170,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_fetch_deliver_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -168,22 +189,22 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id800"/>
-			<label kind="synchronisation" x="-502" y="-195">start_fetch_meal_with_human!</label>
+			<label kind="synchronisation" x="-502" y="-195">start_fetch_deliver_0!</label>
 		</transition>
 		<transition>
 			<source ref="id800"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-302" y="-195">finish_fetch_meal_with_human?</label>
+			<label kind="synchronisation" x="-302" y="-195">finish_fetch_deliver_0?</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id801"/>
-			<label kind="synchronisation" x="-402" y="-295">start_fetch_meal_with_robot!</label>
+			<label kind="synchronisation" x="-402" y="-295">start_fetch_deliver_0!</label>
 		</transition>
 		<transition>
 			<source ref="id801"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-202" y="-295">finish_fetch_meal_with_robot?</label>
+			<label kind="synchronisation" x="-202" y="-295">finish_fetch_deliver_0?</label>
 		</transition>
 	</template>
 	<template>
@@ -205,6 +226,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_fetch_meal_with_human_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -247,6 +269,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_fetch_meal_with_robot_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -309,6 +332,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pickup_with_door_opening_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -347,12 +371,12 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id7"/>
 			<target ref="id800"/>
-			<label kind="synchronisation" x="248" y="-195">start_pick_dishes_two_robots_at_location!</label>
+			<label kind="synchronisation" x="248" y="-195">start_pickup_with_door_opening_0!</label>
 		</transition>
 		<transition>
 			<source ref="id800"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="448" y="-195">finish_pick_dishes_two_robots_at_location?</label>
+			<label kind="synchronisation" x="448" y="-195">finish_pickup_with_door_opening_0?</label>
 		</transition>
 	</template>
 	<template>
@@ -380,6 +404,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -394,32 +419,32 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id1"/>
 			<target ref="id800"/>
-			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_with_human!</label>
+			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id800"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_with_human?</label>
+			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id801"/>
-			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_with_robot_at_location!</label>
+			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id801"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_with_robot_at_location?</label>
+			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id802"/>
-			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_with_robot_not_at_location!</label>
+			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id802"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_with_robot_not_at_location?</label>
+			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
@@ -441,6 +466,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_human_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -476,6 +502,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_robot_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -516,6 +543,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_robot_not_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -566,6 +594,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pickup_without_door_opening_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -592,12 +621,12 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id4"/>
 			<target ref="id800"/>
-			<label kind="synchronisation" x="-202" y="-195">start_pick_dishes_one_robot_at_location!</label>
+			<label kind="synchronisation" x="-202" y="-195">start_pickup_without_door_opening_0!</label>
 		</transition>
 		<transition>
 			<source ref="id800"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-2" y="-195">finish_pick_dishes_one_robot_at_location?</label>
+			<label kind="synchronisation" x="-2" y="-195">finish_pickup_without_door_opening_0?</label>
 		</transition>
 	</template>
 	<template>
@@ -625,6 +654,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_one_robot_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -639,32 +669,32 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id1"/>
 			<target ref="id800"/>
-			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_with_human!</label>
+			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_one_robot_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id800"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_with_human?</label>
+			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_one_robot_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id801"/>
-			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_with_robot_at_location!</label>
+			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_one_robot_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id801"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_with_robot_at_location?</label>
+			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_one_robot_at_location_0?</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id802"/>
-			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_with_robot_not_at_location!</label>
+			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_one_robot_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id802"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_with_robot_not_at_location?</label>
+			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_one_robot_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
@@ -685,6 +715,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
+			<label kind="synchronisation" x="190" y="250">finish_dishes_retrieval_0!</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
