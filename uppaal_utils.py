@@ -392,11 +392,11 @@ def insert_parameter_in_template(template: uppaalpy.Template, parameter_name: st
 
 def add_precondition_and_effects_parameter_types_in_template(precondition_list, effect_list, var_and_types_list, temp: uppaalpy.Template):
     # if(temp.name.name == "temp_fetch_meal_with_robot_0"):
-    print(f"in template {temp.name.name}")
-    print(precondition_list)
-    print(effect_list)
-    if temp.name.name == "template temp_pick_dishes_two_robots_at_location_0":
-        print(precondition_list,"\n",effect_list)
+    # print(f"in template {temp.name.name}")
+    # print(precondition_list)
+    # print(effect_list)
+    # if temp.name.name == "template temp_pick_dishes_two_robots_at_location_0":
+    #     print(precondition_list,"\n",effect_list)
 
     if len(precondition_list) > 0:
         for i in range(len(precondition_list)):
@@ -422,38 +422,48 @@ def add_precondition_and_effects_parameter_types_in_template(precondition_list, 
                         temp.parameter.text += ", "
 
     if temp.parameter is not None:
-        print(f"temp.parameter.text: {temp.parameter.text}")
-        print("\n")
+        if temp.parameter.text[-2:] == ", ":
+            temp.parameter.text = temp.parameter.text[:-2]
+            # print(f"temp.parameter.text: {temp.parameter.text}")
+            # print("\n")
 
 def trim_method_predicates(method: MethodData, var_and_types_list_in_predicates:list[Variable]) -> list[MethodData]:
     effs: list[Effect] = method.effects
     precs: list[Precondition] = method.preconditions
-    effect_to_remove = -1
-    precondition_to_remove = -1
 
-    j = 0
     # Loop for effects
-    for i in range(len(effs)):
+    len_effs = range(len(effs))
+    i = 0
+    while i in len_effs:
+        j = 0
         while j < len(var_and_types_list_in_predicates):
             if(var_and_types_list_in_predicates[j].var_name == effs[i].type):
-                print(f"Found {effs[i].type}")
+                # print(f"Found {effs[i].type}")
                 break                
             #Last index and still not found? then it is not in the list
-            elif var_and_types_list_in_predicates[j].var_name != effs[i].type and j == len(var_and_types_list_in_predicates)-1: 
+            elif var_and_types_list_in_predicates[j].var_name != effs[i].type and j == len(var_and_types_list_in_predicates)-1:
+                # print(f"Removing {effs[i].type}")
                 effs.pop(i)
             j += 1
+        i += 1
+        len_effs = range(len(effs))
 
-    j=0
     # Loop for preconditions
-    for i in range(len(precs)):
+    i = 0
+    len_precs = range(len(precs))
+    while i in len_precs:
+        j = 0
         while j < len(var_and_types_list_in_predicates):
             if(var_and_types_list_in_predicates[j].var_name == precs[i].type):
-                print(f"Found {precs[i].type}")
+                # print(f"Found {precs[i].type}")
                 break                
             #Last index and still not found? then it is not in the list
             elif var_and_types_list_in_predicates[j].var_name != precs[i].type and j == len(var_and_types_list_in_predicates)-1: 
+                # print(f"Removing {precs[i].type}")
                 precs.pop(i)
             j += 1
+        i += 1
+        len_precs = range(len(precs))
 
     return method
 

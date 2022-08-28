@@ -220,7 +220,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_robot_0</name>
-		<parameter>Robot r2 , Robot r </parameter>
+		<parameter>Robot r2 , Robot r1 , Robot r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -259,7 +259,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
-			<label kind="assignment" x="20" y="90">r2.pickedmeal = false</label>
+			<label kind="assignment" x="20" y="90">r2.pickedmeal = false, r1.pickedmeal = true</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
@@ -351,7 +351,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_two_robots_at_location_0</name>
-		<parameter>Robot r1 , Robot r2 , </parameter>
+		<parameter>Robot r1 , Robot r2 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -378,7 +378,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == true &amp;&amp; l.at == true</label>
+			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == true</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
@@ -451,7 +451,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_at_location_0</name>
-		<parameter>Robot r2 , Robot r , Robot r1 , </parameter>
+		<parameter>Robot r2 , Robot r , Robot r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -487,7 +487,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_not_at_location_0</name>
-		<parameter>Robot r2 , Robot r , Robot r1 , </parameter>
+		<parameter>Robot r2 , Robot r , Robot r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -591,7 +591,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_one_robot_at_location_0</name>
-		<parameter>Robot r1 , Robot r2 , </parameter>
+		<parameter>Robot r1 , Robot r2 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -618,7 +618,7 @@ broadcast chan finish_pick_dishes_one_robot_at_location;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == false &amp;&amp; l.at == false</label>
+			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == false</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>
