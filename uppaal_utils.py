@@ -219,11 +219,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
     for m in method_data:
         m = trim_method_predicates(method=m, var_and_types_list_in_predicates=var_and_types_list_in_predicates)
     for m in method_data:
-        template_name = "temp_" + m.method_name
-        add_template(nta=nta, template_name=template_name, template_to_copy=nta.templates[0],
-                     parameters=None,
-                     declaration=None)
-
+        template_name = create_template(method=m, nta=nta)
         for temp in nta.templates:
             posX = -552
             posY = -150
@@ -465,4 +461,10 @@ def trim_method_predicates(method: MethodData, var_and_types_list_in_predicates:
         len_precs = range(len(precs))
 
     return method
+
+
+def create_template(method: MethodData, nta: uppaalpy.NTA) -> str:
+    template_name = "temp_" + method.method_name
+    add_template(nta=nta, template_name=template_name, template_to_copy=nta.templates[0], parameters=None, declaration=None)
+    return template_name
 

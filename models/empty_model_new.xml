@@ -7,9 +7,9 @@ bool patientcanfetch;
 bool patientcanopen;
 } Patient;
 typedef struct {
-bool pickedmeal;
 bool pickeddishes;
 bool at;
+bool pickedmeal;
 } Robot;
 
 broadcast chan start_fetch_meal_with_human;
