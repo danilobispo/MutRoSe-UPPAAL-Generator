@@ -1,5 +1,4 @@
 # Utilitary functions for UPPAAL template generation
-import graphlib
 import re
 from typing import List, Tuple
 import uppaalpy
