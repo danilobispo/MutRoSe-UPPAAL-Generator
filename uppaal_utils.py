@@ -145,16 +145,6 @@ def add_template(
         template_name: str,
         parameters: uppaalpy.Parameter | None,
         declaration: uppaalpy.Declaration | None):
-    """_summary_
-
-    Args:
-        nta (uppaalpy.NTA): _description_
-        template_to_copy (uppaalpy.Template): _description_
-        template_name (str): _description_
-        parameters (uppaalpy.Parameter | None): _description_
-        declaration (uppaalpy.Declaration | None): _description_
-    """
-
     flag_repeated_template = False
     for temp in nta.templates:
         if template_name == temp.name.name:
