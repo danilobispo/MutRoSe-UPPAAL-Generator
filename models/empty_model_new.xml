@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
-typedef struct {
 bool pickedmeal;
 bool pickeddishes;
 bool at;
 } Robot;
+typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -740,6 +740,10 @@ system Process;
 		<query>
 			<formula/>
 			<comment/>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment>Basic formula query to verify absence of deadlocks</comment>
 		</query>
 	</queries>
 </nta>

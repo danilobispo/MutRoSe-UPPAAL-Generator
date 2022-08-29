@@ -233,7 +233,7 @@ nta_partial, var_and_types_with_predicates = upu.generate_declaration_for_nta(nt
 #     print(f"var_/and_type.type_name: {var_and_type.type_name}")
 
 nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates)
-
+nta_partial = upu.generate_default_verifiable_queries(nta=nta_partial)
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
 

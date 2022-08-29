@@ -452,3 +452,7 @@ def create_template(method: MethodData, nta: uppaalpy.NTA) -> str:
     add_template(nta=nta, template_name=template_name, template_to_copy=nta.templates[0], parameters=None, declaration=None)
     return template_name
 
+def generate_default_verifiable_queries(nta: uppaalpy.NTA) -> uppaalpy.NTA:
+    query = uppaalpy.Query("A[] not deadlock", comment="Basic formula query to verify absence of deadlocks")
+    nta.queries.append(query)
+    return nta
