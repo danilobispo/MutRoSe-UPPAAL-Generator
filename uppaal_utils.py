@@ -221,6 +221,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
             posY = -150
             if(temp.name.name == template_name):
                 id_count = 1
+                m.order = rename_tasks_with_same_name(m.order)
                 for i in range(len(m.order)):
                     id_str = "id"+str(id_count)
                     add_location(template=temp, id=id_str,
@@ -456,3 +457,29 @@ def generate_default_verifiable_queries(nta: uppaalpy.NTA) -> uppaalpy.NTA:
     query = uppaalpy.Query("A[] not deadlock", comment="Basic formula query to verify absence of deadlocks")
     nta.queries.append(query)
     return nta
+
+def rename_tasks_with_same_name(nodes_names: list[str]):
+    names_list: list[str] = []
+    names_list = nodes_names[:]
+    for i, name in enumerate(names_list):
+        if names_list.count(name) > 1:
+            j=0
+            while j in range(names_list.count(name)):
+                name = name + "_" + str(j)
+                names_list[i] = name
+                j+=1
+    # In theory, lists should be about the same size, so...
+    for i in range(len(nodes_names)):
+        nodes_names[i]= names_list[i]
+
+    return nodes_names
+
+
+
+        # for i in range(len(duplicates_list)):
+        #     node.name.name = duplicates_list[i] + "_"+ str("i") 
+        #     print(node.name.name)
+        
+
+        
+    

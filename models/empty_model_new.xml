@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool pickedmeal;
-bool pickeddishes;
-bool at;
-} Robot;
-typedef struct {
 bool patientcanfetch;
 bool patientcanopen;
 } Patient;
+typedef struct {
+bool pickeddishes;
+bool at;
+bool pickedmeal;
+} Robot;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -302,13 +302,13 @@ broadcast chan finish_dishes_retrieval_0;
 			<name x="-594" y="-127">init_node</name>
 		</location>
 		<location id="id1" x="-552" y="-150">
-			<name x="-566" y="-181">navto</name>
+			<name x="-566" y="-181">navto_0</name>
 		</location>
 		<location id="id2" x="-402" y="-150">
 			<name x="-416" y="-181">navto</name>
 		</location>
 		<location id="id3" x="-252" y="-150">
-			<name x="-266" y="-181">approach_door</name>
+			<name x="-266" y="-181">approach_door_0</name>
 		</location>
 		<location id="id4" x="-102" y="-150">
 			<name x="-116" y="-181">approach_door</name>
