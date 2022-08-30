@@ -39,19 +39,6 @@ def add_location(template: uppaalpy.Template, id: str, pos: Tuple[int, int], nam
     nc.name.pos = (pos[0]-14, pos[1] - 31)
     template.graph.add_location(nc)
 
-
-def retrieve_transition_copy(template: uppaalpy.Template) -> uppaalpy.Transition:
-    transitions = template.graph._transitions
-    trans_copy = copy.deepcopy(transitions[0])
-    return trans_copy
-
-
-def add_transition(template: uppaalpy.Template, source: str, target: str):
-    tc = retrieve_transition_copy(template)
-    tc.source = source  # e.g idX(switch X for a)
-    tc.target = target  # e.g idX(switch X for a)
-    template.graph.add_transition(tc)
-
 def generate_transitions_at_template(template: uppaalpy.Template, order: list, current_method: MethodData, node_data: List[AbstractTask], nta: uppaalpy.NTA, method_name:str) -> uppaalpy.Template:
     preconditions_list: list[Precondition] = current_method.preconditions
     effects_list: list[Effect] = current_method.effects
@@ -211,12 +198,14 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
     return nta, var_and_types_with_predicates
 
 def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA, node_data: List[AbstractTask], var_and_types_list_in_predicates: list[Variable]) -> uppaalpy.NTA:
+    
     for m in method_data:
         m = trim_method_predicates(method=m, var_and_types_list_in_predicates=var_and_types_list_in_predicates)
     for m in method_data:
         template_name = create_template(method=m, nta=nta)
         add_declaration_for_channels_in_nta(channel_name=m.method_name, nta=nta)
         for temp in nta.templates:
+
             posX = -552
             posY = -150
             if(temp.name.name == template_name):
@@ -243,8 +232,9 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                         temp.graph.add_transition(uppaalpy.Transition(source="id999", target="id0", synchronisation=synch_label))
                 temp = generate_transitions_at_template(template=temp, order=m.order, current_method=m, node_data=node_data, nta=nta, method_name=m.method_name)
                 # TODO: Generate parameters for each of the templates
-                add_precondition_and_effects_parameter_types_in_template(
-                    effect_list=m.effects, precondition_list=m.preconditions, var_and_types_list=var_and_types_list_in_predicates, temp=temp)
+                # add_precondition_and_effects_parameter_types_in_template(
+                #     effect_list=m.effects, precondition_list=m.preconditions, var_and_types_list=var_and_types_list_in_predicates, temp=temp)
+    nta.templates.remove(nta.templates[0]) # Remove method_ template, as it is no longer necessary
                 
     return nta
 
@@ -474,11 +464,43 @@ def rename_tasks_with_same_name(nodes_names: list[str]):
 
     return nodes_names
 
+def generate_system_declarations(nta: uppaalpy.NTA, variables_set: set[Variable], method_data: list[MethodData]):
+    # Later on, when i parsed GM annotations, I will only instantiate the methods that are actually used,
+    # but first, we cannot know for sure which ones are going to be used, so we call them all
+    # Empty default system declaration text
+    nta.system.text = ""
+    # for temp in nta.templates:
+    #     for m in method_data:
+    #         if temp.name.name.find(m.method_name) > 0:
+    #             predicates: set[Precondition] = m.effects + m.preconditions
+    #             nta.system.text+=f"var_{temp.name.name} = {temp.name.name}("
+    #             added_types = []
+    #             for i, prec in enumerate(predicates):
+    #                 if temp.parameter.text.find(prec.type) > 0 and prec.type not in added_types:
+    #                     nta.system.text += f"{prec.type}"
+    #                     added_types.append(prec.type)
+    #                     if i != len(predicates)-1:
+    #                         nta.system.text += ","
 
+    #             if(nta.system.text[-1:] == ","):
+    #                 nta.system.text = nta.system.text[:-1]
+    #             nta.system.text+=");\n"
+        
+    nta.system.text += "system "
+    for i, temp in enumerate(nta.templates):
+        nta.system.text += f"{temp.name.name}"
+        if i != len(nta.templates)-1:
+            nta.system.text += ","
+    nta.system.text += ";"
+    return nta
 
-        # for i in range(len(duplicates_list)):
-        #     node.name.name = duplicates_list[i] + "_"+ str("i") 
-        #     print(node.name.name)
+def generate_declarations_of_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
+    for var in variables_set:
+        nta.declaration.text += f"{var.type_name.title()} {var.var_name};"
+        nta.declaration.text += "\n"
+    
+    return nta
+
 
 
         
