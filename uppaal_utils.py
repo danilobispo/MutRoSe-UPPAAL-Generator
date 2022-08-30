@@ -64,7 +64,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
         id_count = i+1
         source_id, target_id = "id"+str(id_count), "id"+str(id_count+1)
         
-        if(i == 0):
+        if(i == 0): # init method node
             sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=False),target=True)
             synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
             # TODO: Deal with preconditions here
@@ -78,24 +78,24 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
 
 
         if i == len(order) - 1: # add last method transition with end node
-            
-            # Special case where effect is in the very last node
-            has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
-            if has_effects: # if there's an effect, add to transition
-                # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
-                update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
-                trans = uppaalpy.Transition(source=source_id, target="id999", assignment=update_label)
-            else: 
-                # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
-                trans = uppaalpy.Transition(source=source_id, target="id999")
-            template.graph.add_transition(trans)
+            if(not check_camel_case_regex(order[i])):
+                # Special case where effect is in the very last node
+                has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
+                if has_effects: # if there's an effect, add to transition
+                    # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
+                    update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
+                    trans = uppaalpy.Transition(source=source_id, target="id999", assignment=update_label)
+                else: 
+                    # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
+                    trans = uppaalpy.Transition(source=source_id, target="id999")
+                template.graph.add_transition(trans)
 
         elif id_count < len(order):
             # print(f"i: {i}")
             # print("Current node:", order[i])
 
             has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
-            if has_effects: # if there's an effect, add to transition
+            if has_effects and not check_camel_case_regex(order[i]): # if there's an effect, add to transition
                 update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
                 trans = uppaalpy.Transition(source=source_id, target=target_id, assignment=update_label)
 
@@ -105,10 +105,10 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
                     # print("Connecting", source_id, "to", target_id, "in template", template.name.name)
                     trans = uppaalpy.Transition(source=source_id, target=target_id)
             template.graph.add_transition(trans)
-    template = add_AT_transitions_in_template(template, node_data, method_name)
+    template = add_AT_transitions_in_template(template, node_data)
     return template
 
-def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask], method_name: str):
+def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask]):
     locations = template.graph.get_nodes()
     for i in range(len(locations)):
         if(check_camel_case_regex(locations[i].name.name)):
@@ -121,11 +121,11 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                         # Create location for each method and add a Transition to it from the AT Task
                         location_method_name = "exec_" + method
                         location_method_id = "id"+str(800+j)
-                        add_location(template=template,
-                        id=location_method_id, 
-                        name=location_method_name, 
-                        pos=(posX, posY))
+                        add_location(template=template, id=location_method_id, name=location_method_name, pos=(posX, posY))
                         # Create channel message:
+                            # Since the template can only be one, we'll call the first instance, if there's more than one, that will not be executed
+                            # because we do not know which instance of the task must be executed, but we know there's at least one of it
+                        method_name = method+str("_0")
                         method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name))
                         synch_label = uppaalpy.Label(kind="synchronisation", value=method_channel_sync_str, pos=(posX-100, posY+55))
                         # Adding transition
@@ -479,7 +479,7 @@ def rename_tasks_with_same_name(nodes_names: list[str]):
         # for i in range(len(duplicates_list)):
         #     node.name.name = duplicates_list[i] + "_"+ str("i") 
         #     print(node.name.name)
-        
+
 
         
     
