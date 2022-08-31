@@ -56,19 +56,19 @@ class MethodData:
         return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}","{self.capabilities}")'
 
 class Variable(object):
-    def __init__(self, var_name, type_name, var_list = None) -> None:
-        self.var_name = var_name
-        self.type_name = type_name
-        self.predicates_name_list = None if var_list == None else var_list
+    def __init__(self, var_name, type_name) -> None:
+        self.var_name: str = var_name
+        self.type_name: str = type_name
+        self.predicates_name_list: list[str] = []
 
     def __hash__(self):
-        return hash((self.var_name, self.type_name, self.predicates_name_list))
+        return hash((self.var_name, self.type_name))
     def __eq__(self, other):
         if not isinstance(other, type(self)): return NotImplemented
-        return self.var_name == other.var_name and self.type_name == other.type_name and self.predicates_name_list == other.predicates_name_list
+        return self.var_name == other.var_name and self.type_name == other.type_name
     
     def __repr__(self) -> str:
-        return f'MethodData: ("{self.var_name}","{self.type_name}")'
+        return f'MethodData: ("{self.var_name}","{self.type_name}, {self.predicates_name_list}")'
 
 
 

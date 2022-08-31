@@ -183,15 +183,14 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
         for tvar in var_and_types_list:
             # print(predicates.values)
             if(tvar.type_name == tp):
-                # print("tvar.type", tvar.type_name, "equals to", "tp", tp)
                 for predicate_name in predicates.keys():
                     predicate_type = predicates.get(predicate_name)
                     if(predicate_type == tvar.var_name):
-                        # print("prec_value", predicate_type, "equals to",
-                        #         "tvar.name", tvar.var_name)
+                        # print(f"{predicate_name} found for {tvar.var_name} with type {predicate_type}")
                         nta.declaration.text += "bool " + predicate_name + ";"
                         nta.declaration.text += "\n"
                         flag = 1
+                        tvar.predicates_name_list.append(predicate_name)
                         var_and_types_with_predicates.append(tvar)
         # Delete the struct declaration, since no predicate was found for that struct
         if flag != 1:
@@ -245,7 +244,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                 # TODO: Generate parameters for each of the templates
                 add_precondition_and_effects_parameter_types_in_template(
                     effect_list=m.effects, precondition_list=m.preconditions, var_and_types_list=var_and_types_list_in_predicates, temp=temp)
-                
+    nta.templates.remove(nta.templates[0]) # Remove _method template, since it was just a placeholder           
     return nta
 
 def add_declaration_for_channels_in_nta(channel_name: str, nta: uppaalpy.NTA) -> uppaalpy.NTA:
@@ -474,12 +473,54 @@ def rename_tasks_with_same_name(nodes_names: list[str]):
 
     return nodes_names
 
+def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData]):
+    # Later on, when i parsed GM annotations, I will only instantiate the methods that are actually used,
+    # but first, we cannot know for sure which ones are going to be used, so we call them all
+    # Empty default system declaration text
+    nta.system.text = ""
+    for temp in nta.templates:
+        for m in method_data:
+            if temp.name.name.find(m.method_name) > 0:
+                predicates: set[Precondition] = m.effects + m.preconditions
+                nta.system.text+=f"var_{temp.name.name} = {temp.name.name}("
+                added_types = []
+                for i, prec in enumerate(predicates):
+                    if temp.parameter.text.find(prec.type) > 0 and prec.type not in added_types:
+                        nta.system.text += f"{prec.type}"
+                        added_types.append(prec.type)
+                        if i != len(predicates)-1:
+                            nta.system.text += ","
 
+                if(nta.system.text[-1:] == ","):
+                    nta.system.text = nta.system.text[:-1]
+                nta.system.text+=");\n"
+        
+    nta.system.text += "system "
+    for i, temp in enumerate(nta.templates):
+        nta.system.text += f"var_{temp.name.name}"
+        if i != len(nta.templates)-1:
+            nta.system.text += ","
+    nta.system.text += ";"
+    return nta
 
-        # for i in range(len(duplicates_list)):
-        #     node.name.name = duplicates_list[i] + "_"+ str("i") 
-        #     print(node.name.name)
-
+def generate_declarations_of_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
+    for var in variables_set:
+        nta.declaration.text += f"const {var.type_name.title()} {var.var_name};"
+        nta.declaration.text += "\n"
+    
+    return nta
 
         
+def link_variables_with_predicates_and_types(var_and_types_list_with_predicates: List[Variable]):
+    # Adds remaining predicates to variables still without them
+    aux_var_and_types_list_with_predicates = copy.deepcopy(var_and_types_list_with_predicates)
+    
+    for tvar in var_and_types_list_with_predicates:
+        for aux in aux_var_and_types_list_with_predicates:
+            if aux.type_name == tvar.type_name:
+                for in_list in aux.predicates_name_list:
+                    if in_list not in tvar.predicates_name_list:
+                        tvar.predicates_name_list.append(in_list)
+
+    return var_and_types_list_with_predicates
     

@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
+bool pickedmeal;
+bool pickeddishes;
+bool at;
+} Robot;
+typedef struct {
 bool patientcanfetch;
 bool patientcanopen;
 } Patient;
-typedef struct {
-bool pickeddishes;
-bool at;
-bool pickedmeal;
-} Robot;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -50,15 +50,11 @@ broadcast chan finish_pick_dishes_one_robot_at_location_0;
 
 broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
+const Robot r;
+const Robot r2;
+const Robot r1;
+const Patient p;
 </declaration>
-	<template>
-		<name x="5" y="5">method_</name>
-		<declaration>// Place local declarations here.</declaration>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
-		</location>
-		<init ref="id0"/>
-	</template>
 	<template>
 		<name x="5" y="5">temp_food_pickup_0</name>
 		<parameter>Robot r </parameter>
@@ -711,11 +707,20 @@ broadcast chan finish_dishes_retrieval_0;
 			<target ref="id999"/>
 		</transition>
 	</template>
-	<system>// Place template instantiations here.
-Process = Template();
-// List one or more processes to be composed into a system.
-system Process;
-    </system>
+	<system>var_temp_food_pickup_0 = temp_food_pickup_0(r);
+var_temp_table_deliver_0 = temp_table_deliver_0(r);
+var_temp_fetch_deliver_0 = temp_fetch_deliver_0(r1);
+var_temp_fetch_meal_with_human_0 = temp_fetch_meal_with_human_0(r,p);
+var_temp_fetch_meal_with_robot_0 = temp_fetch_meal_with_robot_0(r2,r1,r);
+var_temp_pickup_with_door_opening_0 = temp_pickup_with_door_opening_0(r1);
+var_temp_pick_dishes_two_robots_at_location_0 = temp_pick_dishes_two_robots_at_location_0(r1,r2);
+var_temp_pick_dishes_with_human_0 = temp_pick_dishes_with_human_0(r);
+var_temp_pick_dishes_with_robot_at_location_0 = temp_pick_dishes_with_robot_at_location_0(r,r1,r2);
+var_temp_pick_dishes_with_robot_not_at_location_0 = temp_pick_dishes_with_robot_not_at_location_0(r,r1,r2);
+var_temp_pickup_without_door_opening_0 = temp_pickup_without_door_opening_0(p,r1);
+var_temp_pick_dishes_one_robot_at_location_0 = temp_pick_dishes_one_robot_at_location_0(r1,r2);
+var_temp_dishes_retrieval_0 = temp_dishes_retrieval_0();
+system var_temp_food_pickup_0,var_temp_table_deliver_0,var_temp_fetch_deliver_0,var_temp_fetch_meal_with_human_0,var_temp_fetch_meal_with_robot_0,var_temp_pickup_with_door_opening_0,var_temp_pick_dishes_two_robots_at_location_0,var_temp_pick_dishes_with_human_0,var_temp_pick_dishes_with_robot_at_location_0,var_temp_pick_dishes_with_robot_not_at_location_0,var_temp_pickup_without_door_opening_0,var_temp_pick_dishes_one_robot_at_location_0,var_temp_dishes_retrieval_0;</system>
 	<queries>
 		<query>
 			<formula/>
