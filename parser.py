@@ -18,9 +18,6 @@ const_type_name = "Variable type: "
 
 const_AT_name = "Name:"
 
-const_bool_uppaal = "bool "
-const_semicolon_uppaal = ";"
-
 def parse_method_name(method_line):
     name = method_line.split(const_method_name)[1].replace("\n", "").replace(" ","").replace("-","_")
     # Debug
@@ -238,6 +235,7 @@ var_and_types_with_predicates =  upu.link_variables_with_predicates_and_types(va
 nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates)
 nta_partial = upu.generate_default_verifiable_queries(nta=nta_partial)
 nta_partial = upu.generate_declarations_of_variables_in_nta(nta=nta_partial, variables_set=set(var_and_types_with_predicates))
+nta_partial = upu.generate_boolean_declarations_for_capabilities(method_data=method_data, nta=nta_partial)
 nta_partial = upu.generate_system_declarations(nta=nta_partial, method_data=method_data)
 # Add template example below
 # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)

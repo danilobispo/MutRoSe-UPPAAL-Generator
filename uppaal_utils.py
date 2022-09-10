@@ -524,8 +524,16 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
     return nta
 
 def generate_declarations_of_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
+    nta.declaration.text += "\n"
     for var in variables_set:
-        nta.declaration.text += f"const {var.type_name.title()} {var.var_name};"
+        nta.declaration.text += f"const {var.type_name.title()} {var.var_name}"
+        nta.declaration.text += " = {"
+        for i in range(len(var.predicates_name_list)):
+            if i == len(var.predicates_name_list) - 1: #Last element
+                nta.declaration.text += "false};"
+            else:
+                nta.declaration.text += "false,"
+
         nta.declaration.text += "\n"
     
     return nta
@@ -544,3 +552,18 @@ def link_variables_with_predicates_and_types(var_and_types_list_with_predicates:
 
     return var_and_types_list_with_predicates
     
+def generate_boolean_declarations_for_capabilities(method_data: list[MethodData], nta: uppaalpy.NTA):
+    cap_list = []
+    for m in method_data:
+        if len(m.capabilities) > 0:
+            for cap in m.capabilities:
+                cap_list.append(cap)
+    # After obtaining all capabilities, let's create a set to store all the different ones
+    cap_set: set[Capability] = set(cap_list)
+    # and write then on a file as boolean variables
+    nta.declaration.text += "\n"
+    for cap in cap_set:
+        value = "true" if str(cap.value) == "True" else "false"
+        nta.declaration.text += f"bool {cap.name} = {value};\n"
+
+    return nta
