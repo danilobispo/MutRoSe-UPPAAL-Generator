@@ -8,3 +8,4 @@ __pycache__/uppaal_utils.cpython-310.pyc
 MutRoSe-UPPAAL-Generator.code-workspace
 models/test.xml
 models/empty_model_with_goal_model.xml
+models/empty_model_new_goal_model.xml
