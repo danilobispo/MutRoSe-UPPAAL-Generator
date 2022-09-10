@@ -10,7 +10,7 @@ import uppaalpy
 const_possible_precs = "Possible orderings for method"
 const_method_name = "Method name:"
 const_precondition = "__method_precondition_"
-const_predicate_arg = "_argument_"
+const_argument = "_argument_"
 const_task_effect = "__task_effect"
 const_capability_req = "__method_capability"
 const_var_name = "Variable name: "
@@ -29,7 +29,7 @@ def parse_method_name(method_line):
 
 def parse_precondition(line_prec):
     # Let's use destructuring to make the code a little cleaner
-    predicate_name, predicate_type = line_prec.split(const_predicate_arg)[0].replace("\n", ""), line_prec.split(const_predicate_arg)[1].replace("\n", "").replace("?","")
+    predicate_name, predicate_type = line_prec.split(const_argument)[0].replace("\n", ""), line_prec.split(const_argument)[1].replace("\n", "").replace("?","")
     predicate_name, predicate_value = predicate_name.split("_")[0].replace("\n", ""), predicate_name.split("_")[1].replace("\n", "")
     # debug
     # print("precondition predicate name:", predicate_name)
@@ -41,7 +41,7 @@ def parse_precondition(line_prec):
 def parse_effect(line_prec):
     # Let's use destructuring to make the code a little cleaner
     predicate_name, predicate_value = line_prec.split("_")[0].replace("\n", ""), line_prec.split("_")[1].replace("\n", "")
-    predicate_type = line_prec.split(const_predicate_arg)[1].replace("\n", "").replace("?", "")
+    predicate_type = line_prec.split(const_argument)[1].replace("\n", "").replace("?", "")
     # debug
     # print("effect predicate name:", predicate_name)
     # print("effect predicate value:", predicate_value)
@@ -50,7 +50,7 @@ def parse_effect(line_prec):
 
 def parse_capability(line_prec):
     # Let's use destructuring to make the code a little cleaner
-    capability_name = line_prec.split(const_predicate_arg)[0].replace("\n", "").replace("?", "")
+    capability_name = line_prec.split(const_argument)[1].replace("\n", "").replace("-", "_")
     # debug
     # print("effect predicate name:", predicate_name)
     # print("effect predicate value:", predicate_value)
@@ -68,7 +68,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
     for i in range(len(words)):
         # precondition region
         # Skip this line because we have already parsed the precondition
-        if(words[i].find(const_predicate_arg) >= 0 or words[i] == "\n" ): 
+        if(words[i].find(const_argument) >= 0 or words[i] == "\n" ): 
             # print("Ignored line:", words[i])
             continue
         # An ordering always starts with a precondition method, so we check if
@@ -78,7 +78,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
             i_copy = i
             # Debug 
             # print("Prec print:", words[i+1])
-            while(words[i_copy+1].find(const_predicate_arg) >= 0):
+            while(words[i_copy+1].find(const_argument) >= 0):
                 prec = parse_precondition(words[i_copy+1])
                 prec.tied_to = method_name
                 prec_list.append(prec)
@@ -89,7 +89,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
         # effect region
         elif(words[i].startswith(const_task_effect)):
             i_copy = i
-            while(words[i_copy+1].find(const_predicate_arg) >= 0):
+            while(words[i_copy+1].find(const_argument) >= 0):
                 effect = parse_effect(words[i_copy+1])
                 effect.tied_to = task_method_list[-1]
                 effect_list.append(effect)
@@ -100,9 +100,11 @@ def parse_method_ordering(method_name:str, ordering_line: str):
         #Capabilities region: #
         elif(words[i].startswith(const_capability_req)):
             i_copy = i
-            while(words[i_copy+1].find(const_predicate_arg) >= 0):
+            while(words[i_copy+1].find(const_argument) >= 0):
                 capability = parse_capability(words[i_copy+1])
                 capability.tied_to = task_method_list[-1]
+                # Debug
+                # print(f"capability {capability} found!")
                 capabilities_list.append(capability)
                 i_copy = i_copy + 1
         #End capabilities region#

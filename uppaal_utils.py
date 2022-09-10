@@ -4,7 +4,7 @@ from typing import List, Tuple
 import uppaalpy
 import copy
 
-from utils import AbstractTask, Effect, MethodData, Precondition, Variable
+from utils import AbstractTask, Capability, Effect, MethodData, Precondition, Variable
 
 const_end_method_name = "end_method"
 
@@ -55,11 +55,14 @@ def add_transition(template: uppaalpy.Template, source: str, target: str):
 def generate_transitions_at_template(template: uppaalpy.Template, order: list, current_method: MethodData, node_data: List[AbstractTask], nta: uppaalpy.NTA, method_name:str) -> uppaalpy.Template:
     preconditions_list: list[Precondition] = current_method.preconditions
     effects_list: list[Effect] = current_method.effects
+    capabilities_list: list[Capability] = current_method.capabilities
     # Add the connections between methods
     eff_label = None
     has_effects = False
     prec_label = None
     has_precs = False
+    has_capab = False
+    capab_label = None
     for i in range(len(order)):
         id_count = i+1
         source_id, target_id = "id"+str(id_count), "id"+str(id_count+1)
@@ -67,8 +70,8 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
         if(i == 0): # init method node
             sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=False),target=True)
             synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
-            # TODO: Deal with preconditions here
-            has_precs, prec_label =  search_and_generate_preconditions_in_node(order, preconditions_list, i)
+            # Deal with preconditions here
+            has_precs, prec_label =  search_and_generate_preconditions_in_node(preconditions_list)
             if has_precs:
                 constraint_label = create_precondition_label_for_transition(prec_label=prec_label, context_nta=nta)
                 trans = uppaalpy.Transition(source="id0", target="id1", guard=constraint_label, synchronisation=synch_label)
@@ -90,10 +93,16 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
                     trans = uppaalpy.Transition(source=source_id, target="id999")
                 template.graph.add_transition(trans)
 
+        # Default case
         elif id_count < len(order):
             # print(f"i: {i}")
             # print("Current node:", order[i])
-
+            has_capab, capab_label = search_and_generate_capabilities_in_node(order=order, capabilities_list=capabilities_list, i=id_count)
+            if has_capab and not check_camel_case_regex(order[id_count]):
+                guard_label = create_precondition_label_for_transition(capab_label, nta)
+                trans = uppaalpy.Transition(source=source_id, target=target_id, guard=guard_label)
+                template.graph.add_transition(trans)
+                continue
             has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
             if has_effects and not check_camel_case_regex(order[i]): # if there's an effect, add to transition
                 update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
@@ -286,6 +295,9 @@ def generate_precondition_for_transition_guard(prec_name:str, prec_type: str, is
     else:
         return f"{prec_type}.{prec_name} == false"
 
+def generate_capability_for_transition_guard(prec_name:str) -> str:
+    return f"{prec_name} == true"
+
 def search_and_generate_effects_in_node(order: list, effects_list: list[Effect], i: int):
     has_effects = False
     eff_label: list[str] = []
@@ -317,13 +329,11 @@ def create_effect_label_for_transition(eff_label: list[str], context_nta:uppaalp
                 ctx=context_nta.context)
     return update_label
 
-def search_and_generate_preconditions_in_node(order: list, preconditions_list: list[Precondition], i: int):
+def search_and_generate_preconditions_in_node(preconditions_list: list[Precondition]):
     prec_label: list[str] = []
     has_precs = False
     if len(preconditions_list) > 0: 
         for prec in preconditions_list:
-            # Debug
-            # print(f"prec {prec.name} is tied to {order[i]}")
             prec_label.append(generate_precondition_for_transition_guard(
                     prec_name=prec.name, 
                     is_true=True if prec.value == "true" else False, 
@@ -346,6 +356,16 @@ def create_precondition_label_for_transition(prec_label: list[str], context_nta:
     # print(f"guard_value: {guard_value}")
     constraint_label = uppaalpy.ConstraintLabel(kind="guard", value=guard_value, pos=(20, 90), ctx=context_nta.context)
     return constraint_label
+
+def search_and_generate_capabilities_in_node(order, capabilities_list: list[Capability], i: int):
+    capab_label: list[str] = []
+    has_capab = False
+    for capab in capabilities_list:
+        if capab.tied_to == order[i]:
+            capab_label.append(generate_capability_for_transition_guard(prec_name=capab.name))
+            # Let's create the label and send it to the trans object with the transition
+            has_capab = True
+    return has_capab, capab_label
 
 def insert_parameter_in_template(template: uppaalpy.Template, parameter_name: str, parameter_type: str):
     
@@ -490,7 +510,7 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
                         added_types.append(prec.type)
                         if i != len(predicates)-1:
                             nta.system.text += ","
-
+                            
                 if(nta.system.text[-1:] == ","):
                     nta.system.text = nta.system.text[:-1]
                 nta.system.text+=");\n"

@@ -51,9 +51,9 @@ broadcast chan finish_pick_dishes_one_robot_at_location_0;
 broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 const Robot r;
-const Robot r2;
-const Robot r1;
 const Patient p;
+const Robot r1;
+const Robot r2;
 </declaration>
 	<template>
 		<name x="5" y="5">temp_food_pickup_0</name>
@@ -106,11 +106,8 @@ const Patient p;
 		<location id="id3" x="-252" y="-150">
 			<name x="-266" y="-181">deliver_to_table</name>
 		</location>
-		<location id="id4" x="-102" y="-150">
-			<name x="-116" y="-181">manipulation</name>
-		</location>
-		<location id="id999" x="198" y="-150">
-			<name x="182" y="-181">end_method</name>
+		<location id="id999" x="48" y="-150">
+			<name x="32" y="-181">end_method</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -131,13 +128,10 @@ const Patient p;
 		<transition>
 			<source ref="id2"/>
 			<target ref="id3"/>
+			<label kind="guard" x="20" y="90">manipulation == true</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
-			<target ref="id4"/>
-		</transition>
-		<transition>
-			<source ref="id4"/>
 			<target ref="id999"/>
 		</transition>
 	</template>
@@ -309,16 +303,13 @@ const Patient p;
 			<name x="34" y="-181">open_door</name>
 		</location>
 		<location id="id6" x="198" y="-150">
-			<name x="184" y="-181">door_opening</name>
+			<name x="184" y="-181">PickDishesTwoRobotsAtLocation</name>
 		</location>
-		<location id="id7" x="348" y="-150">
-			<name x="334" y="-181">PickDishesTwoRobotsAtLocation</name>
+		<location id="id999" x="498" y="-150">
+			<name x="482" y="-181">end_method</name>
 		</location>
-		<location id="id999" x="648" y="-150">
-			<name x="632" y="-181">end_method</name>
-		</location>
-		<location id="id800" x="348" y="-250">
-			<name x="334" y="-281">exec_pick_dishes_two_robots_at_location</name>
+		<location id="id800" x="198" y="-250">
+			<name x="184" y="-281">exec_pick_dishes_two_robots_at_location</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -347,6 +338,7 @@ const Patient p;
 		<transition>
 			<source ref="id4"/>
 			<target ref="id5"/>
+			<label kind="guard" x="20" y="90">door_opening == true</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
@@ -354,17 +346,13 @@ const Patient p;
 		</transition>
 		<transition>
 			<source ref="id6"/>
-			<target ref="id7"/>
-		</transition>
-		<transition>
-			<source ref="id7"/>
 			<target ref="id800"/>
-			<label kind="synchronisation" x="248" y="-195">start_pick_dishes_two_robots_at_location_0!</label>
+			<label kind="synchronisation" x="98" y="-195">start_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
 			<source ref="id800"/>
 			<target ref="id999"/>
-			<label kind="synchronisation" x="448" y="-195">finish_pick_dishes_two_robots_at_location_0?</label>
+			<label kind="synchronisation" x="298" y="-195">finish_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
