@@ -509,13 +509,13 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
 
                     for j, com in enumerate(comma_positions):
                         for i, prec in enumerate(predicates):
-                            print(temp.name.name)
+                            # print(temp.name.name)
                             # print(com.split(" ")[0])
                             com = com.strip(' ') # Trim whitespaces
                             type = com.split(" ")[1].replace("&","")
-                            print(prec.type)
-                            print(str(type))
-                            print(prec.type == str(type))
+                            # print(prec.type)
+                            # print(str(type))
+                            # print(prec.type == str(type))
                             if prec.type == str(type) and prec.type not in added_types:
                                 nta.system.text += f"{prec.type}"
                                 added_types.append(prec.type)
