@@ -373,16 +373,16 @@ def insert_parameter_in_template(template: uppaalpy.Template, parameter_name: st
     if template.parameter == None:
         # print("if template.parameter == None:")
         # print(f"Added {parameter_type.title()} {parameter_name}")
-        template.parameter = uppaalpy.Parameter(text=f"{parameter_type.title()} {parameter_name} ") 
+        template.parameter = uppaalpy.Parameter(text=f"{parameter_type.title()} &{parameter_name} ") 
         added = True
     else:
-        search_str = f"{parameter_type.title()} {parameter_name}"
+        search_str = f"{parameter_type.title()} &{parameter_name}"
         search_str = r"\b" + search_str + r"\b"
         # print(f"search_str: {search_str}")
         if(re.search(search_str, template.parameter.text) is None):
             # print("else:")
             # print(f"Added {parameter_type.title()} {parameter_name}")
-            template.parameter.text += f"{parameter_type.title()} {parameter_name} "
+            template.parameter.text += f"{parameter_type.title()} &{parameter_name} "
             added = True
         else:
             # print(f"not adding {parameter_type.title()} {parameter_name} due to repetition")
@@ -504,17 +504,29 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
                 predicates: set[Precondition] = m.effects + m.preconditions
                 nta.system.text+=f"var_{temp.name.name} = {temp.name.name}("
                 added_types = []
-                for i, prec in enumerate(predicates):
-                    if temp.parameter.text.find(prec.type) > 0 and prec.type not in added_types:
-                        nta.system.text += f"{prec.type}"
-                        added_types.append(prec.type)
-                        if i != len(predicates)-1:
-                            nta.system.text += ","
-                            
-                if(nta.system.text[-1:] == ","):
-                    nta.system.text = nta.system.text[:-1]
-                nta.system.text+=");\n"
-        
+                if temp.parameter is not None:
+                    comma_positions = temp.parameter.text.split(",")
+
+                    for j, com in enumerate(comma_positions):
+                        for i, prec in enumerate(predicates):
+                            print(temp.name.name)
+                            # print(com.split(" ")[0])
+                            com = com.strip(' ') # Trim whitespaces
+                            type = com.split(" ")[1].replace("&","")
+                            print(prec.type)
+                            print(str(type))
+                            print(prec.type == str(type))
+                            if prec.type == str(type) and prec.type not in added_types:
+                                nta.system.text += f"{prec.type}"
+                                added_types.append(prec.type)
+                                if j != len(comma_positions)-1:
+                                    nta.system.text += ","
+                    # Remove an unnecessary comma at the end of the string                            
+                    if(nta.system.text[-1:] == ","):
+                        nta.system.text = nta.system.text[:-1]
+                    nta.system.text+=");\n"
+                else:
+                    nta.system.text+=");\n"
     nta.system.text += "system "
     for i, temp in enumerate(nta.templates):
         nta.system.text += f"var_{temp.name.name}"
@@ -526,7 +538,7 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
 def generate_declarations_of_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
     nta.declaration.text += "\n"
     for var in variables_set:
-        nta.declaration.text += f"const {var.type_name.title()} {var.var_name}"
+        nta.declaration.text += f"{var.type_name.title()} {var.var_name}"
         nta.declaration.text += " = {"
         for i in range(len(var.predicates_name_list)):
             if i == len(var.predicates_name_list) - 1: #Last element

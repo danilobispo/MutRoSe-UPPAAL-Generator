@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
+bool pickeddishes;
+bool at;
+bool pickedmeal;
+} Robot;
+typedef struct {
 bool patientcanfetch;
 bool patientcanopen;
 } Patient;
-typedef struct {
-bool pickedmeal;
-bool pickeddishes;
-bool at;
-} Robot;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -51,17 +51,17 @@ broadcast chan finish_pick_dishes_one_robot_at_location_0;
 broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 
-const Robot r = {false,false,false};
-const Robot r2 = {false,false,false};
-const Patient p = {false,false};
-const Robot r1 = {false,false,false};
+Robot r2 = {false,false,false};
+Robot r = {false,false,false};
+Robot r1 = {false,false,false};
+Patient p = {false,false};
 
 bool manipulation = true;
 bool door_opening = true;
 </declaration>
 	<template>
 		<name x="5" y="5">temp_food_pickup_0</name>
-		<parameter>Robot r </parameter>
+		<parameter>Robot &amp;r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -97,7 +97,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_table_deliver_0</name>
-		<parameter>Robot r </parameter>
+		<parameter>Robot &amp;r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -141,7 +141,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_deliver_0</name>
-		<parameter>Robot r1 </parameter>
+		<parameter>Robot &amp;r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -199,7 +199,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_human_0</name>
-		<parameter>Patient p , Robot r </parameter>
+		<parameter>Patient &amp;p , Robot &amp;r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -236,7 +236,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_robot_0</name>
-		<parameter>Robot r2 , Robot r1 , Robot r </parameter>
+		<parameter>Robot &amp;r2 , Robot &amp;r1 , Robot &amp;r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -287,7 +287,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pickup_with_door_opening_0</name>
-		<parameter>Robot r1 </parameter>
+		<parameter>Robot &amp;r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -361,7 +361,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_two_robots_at_location_0</name>
-		<parameter>Robot r1 , Robot r2 </parameter>
+		<parameter>Robot &amp;r1 , Robot &amp;r2 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -425,7 +425,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_human_0</name>
-		<parameter>Robot r </parameter>
+		<parameter>Robot &amp;r </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -461,7 +461,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_at_location_0</name>
-		<parameter>Robot r2 , Robot r , Robot r1 </parameter>
+		<parameter>Robot &amp;r2 , Robot &amp;r , Robot &amp;r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -499,7 +499,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_not_at_location_0</name>
-		<parameter>Robot r2 , Robot r , Robot r1 </parameter>
+		<parameter>Robot &amp;r2 , Robot &amp;r , Robot &amp;r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -544,7 +544,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pickup_without_door_opening_0</name>
-		<parameter>Patient p , Robot r1 </parameter>
+		<parameter>Patient &amp;p , Robot &amp;r1 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -603,7 +603,7 @@ bool door_opening = true;
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_one_robot_at_location_0</name>
-		<parameter>Robot r1 , Robot r2 </parameter>
+		<parameter>Robot &amp;r1 , Robot &amp;r2 </parameter>
 		<location id="id0" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
@@ -702,13 +702,13 @@ bool door_opening = true;
 	<system>var_temp_food_pickup_0 = temp_food_pickup_0(r);
 var_temp_table_deliver_0 = temp_table_deliver_0(r);
 var_temp_fetch_deliver_0 = temp_fetch_deliver_0(r1);
-var_temp_fetch_meal_with_human_0 = temp_fetch_meal_with_human_0(r,p);
+var_temp_fetch_meal_with_human_0 = temp_fetch_meal_with_human_0(p,r);
 var_temp_fetch_meal_with_robot_0 = temp_fetch_meal_with_robot_0(r2,r1,r);
 var_temp_pickup_with_door_opening_0 = temp_pickup_with_door_opening_0(r1);
 var_temp_pick_dishes_two_robots_at_location_0 = temp_pick_dishes_two_robots_at_location_0(r1,r2);
 var_temp_pick_dishes_with_human_0 = temp_pick_dishes_with_human_0(r);
-var_temp_pick_dishes_with_robot_at_location_0 = temp_pick_dishes_with_robot_at_location_0(r,r1,r2);
-var_temp_pick_dishes_with_robot_not_at_location_0 = temp_pick_dishes_with_robot_not_at_location_0(r,r1,r2);
+var_temp_pick_dishes_with_robot_at_location_0 = temp_pick_dishes_with_robot_at_location_0(r2,r,r1);
+var_temp_pick_dishes_with_robot_not_at_location_0 = temp_pick_dishes_with_robot_not_at_location_0(r2,r,r1);
 var_temp_pickup_without_door_opening_0 = temp_pickup_without_door_opening_0(p,r1);
 var_temp_pick_dishes_one_robot_at_location_0 = temp_pick_dishes_one_robot_at_location_0(r1,r2);
 var_temp_dishes_retrieval_0 = temp_dishes_retrieval_0();
