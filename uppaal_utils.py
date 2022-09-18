@@ -1,5 +1,6 @@
 # Utilitary functions for UPPAAL template generation
 import re
+from turtle import update
 from typing import List, Tuple
 import uppaalpy
 import copy
@@ -71,13 +72,37 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
             sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=False),target=True)
             synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
             # Deal with preconditions here
-            has_precs, prec_label =  search_and_generate_preconditions_in_node(preconditions_list)
+            has_precs, prec_label, prec_neg_label =  search_and_generate_preconditions_in_node(preconditions_list)
             if has_precs:
                 constraint_label = create_precondition_label_for_transition(prec_label=prec_label, context_nta=nta)
                 trans = uppaalpy.Transition(source="id0", target="id1", guard=constraint_label, synchronisation=synch_label)
+                # Generate precondition location transition to where it would fail and another transition back to the initial node:
+                # First we create a location
+                # number 700+ ids are restricted to locations like these
+                failed_location_id = "id70"+str(id_count)
+                add_location(template=template, id=failed_location_id, name="failed_precondition", pos=(80, 169))
+                # Then a negation condition for the precondition, along with the transition
+                constraint_neg_label = create_precondition_label_for_transition(prec_label=prec_neg_label, context_nta=nta)
+                additional_trans_list = []
+                additional_trans_nail = uppaalpy.Nail(x=-552, y=8)
+                additional_trans_list.append(additional_trans_nail)
+                additional_trans = uppaalpy.Transition(source="id0", target=failed_location_id, guard=constraint_neg_label, nails=additional_trans_list)
+                # #finally, we create a synch channel, showing that 
+                end_synch = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=True),target=False)
+                end_synch_label = uppaalpy.Label(kind="synchronisation", value=end_synch, pos=(300, 250))
+                # Also we're adding a boolean variable that is triggered by mission failure
+                method_fail_update_str = f"{method_name}_failed = true"
+                update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(320, 250), ctx=template.context)
+                trans_to_init_node = uppaalpy.Transition(source=failed_location_id, target="id0", synchronisation=end_synch_label, assignment=update_label_for_failed_trans)
+                template.graph.add_transition(additional_trans)
+
+                
+                template.graph.add_transition(trans_to_init_node)
             else:
-                trans =uppaalpy.Transition(source="id0", target="id1", synchronisation=synch_label)
+                trans=uppaalpy.Transition(source="id0", target="id1", synchronisation=synch_label)
+
             template.graph.add_transition(trans)
+            
 
 
         if i == len(order) - 1: # add last method transition with end node
@@ -146,6 +171,7 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[
                             # Add channel to go back to this template when the execution of the subtask is
                             method_channel_sync_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=True), target=True)
                             synch_label = uppaalpy.Label(kind="synchronisation", value=method_channel_sync_str, pos=(posX+100, posY+55))
+                            
                             template.graph.add_transition(uppaalpy.Transition(source=location_method_id, target=target_id, synchronisation=synch_label))
                         j+=1
                         posX += 100
@@ -224,6 +250,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
     for m in method_data:
         template_name = create_template(method=m, nta=nta)
         add_declaration_for_channels_in_nta(channel_name=m.method_name, nta=nta)
+        add_failed_channels_booleans_in_nta(method_name=m.method_name, nta=nta)
         for temp in nta.templates:
             posX = -552
             posY = -150
@@ -331,6 +358,7 @@ def create_effect_label_for_transition(eff_label: list[str], context_nta:uppaalp
 
 def search_and_generate_preconditions_in_node(preconditions_list: list[Precondition]):
     prec_label: list[str] = []
+    prec_neg_label: list[str] = []
     has_precs = False
     if len(preconditions_list) > 0: 
         for prec in preconditions_list:
@@ -338,9 +366,14 @@ def search_and_generate_preconditions_in_node(preconditions_list: list[Precondit
                     prec_name=prec.name, 
                     is_true=True if prec.value == "true" else False, 
                     prec_type=prec.type))
+            prec_neg_label.append(generate_precondition_for_transition_guard(
+                prec_name=prec.name,
+                is_true=False if prec.value == "true" else True,
+                prec_type=prec.type
+            ))
             # Let's create the label and send it to the trans object with the transition
             has_precs = True
-    return has_precs, prec_label
+    return has_precs, prec_label, prec_neg_label
             
 def create_precondition_label_for_transition(prec_label: list[str], context_nta:uppaalpy.NTA):
     guard_value = ""
@@ -535,7 +568,7 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
     nta.system.text += ";"
     return nta
 
-def generate_declarations_of_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
+def generate_declarations_of_struct_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
     nta.declaration.text += "\n"
     for var in variables_set:
         nta.declaration.text += f"{var.type_name.title()} {var.var_name}"
@@ -579,3 +612,6 @@ def generate_boolean_declarations_for_capabilities(method_data: list[MethodData]
         nta.declaration.text += f"bool {cap.name} = {value};\n"
 
     return nta
+
+def add_failed_channels_booleans_in_nta(method_name: str, nta: uppaalpy.NTA):
+    nta.declaration.text += f"bool {method_name}_failed = false;\n"

@@ -3,9 +3,9 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
+bool pickedmeal;
 bool pickeddishes;
 bool at;
-bool pickedmeal;
 } Robot;
 typedef struct {
 bool patientcanfetch;
@@ -14,47 +14,60 @@ bool patientcanopen;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
+bool food_pickup_0_failed = false;
 
 broadcast chan start_table_deliver_0;
 broadcast chan finish_table_deliver_0;
+bool table_deliver_0_failed = false;
 
 broadcast chan start_fetch_deliver_0;
 broadcast chan finish_fetch_deliver_0;
+bool fetch_deliver_0_failed = false;
 
 broadcast chan start_fetch_meal_with_human_0;
 broadcast chan finish_fetch_meal_with_human_0;
+bool fetch_meal_with_human_0_failed = false;
 
 broadcast chan start_fetch_meal_with_robot_0;
 broadcast chan finish_fetch_meal_with_robot_0;
+bool fetch_meal_with_robot_0_failed = false;
 
 broadcast chan start_pickup_with_door_opening_0;
 broadcast chan finish_pickup_with_door_opening_0;
+bool pickup_with_door_opening_0_failed = false;
 
 broadcast chan start_pick_dishes_two_robots_at_location_0;
 broadcast chan finish_pick_dishes_two_robots_at_location_0;
+bool pick_dishes_two_robots_at_location_0_failed = false;
 
 broadcast chan start_pick_dishes_with_human_0;
 broadcast chan finish_pick_dishes_with_human_0;
+bool pick_dishes_with_human_0_failed = false;
 
 broadcast chan start_pick_dishes_with_robot_at_location_0;
 broadcast chan finish_pick_dishes_with_robot_at_location_0;
+bool pick_dishes_with_robot_at_location_0_failed = false;
 
 broadcast chan start_pick_dishes_with_robot_not_at_location_0;
 broadcast chan finish_pick_dishes_with_robot_not_at_location_0;
+bool pick_dishes_with_robot_not_at_location_0_failed = false;
 
 broadcast chan start_pickup_without_door_opening_0;
 broadcast chan finish_pickup_without_door_opening_0;
+bool pickup_without_door_opening_0_failed = false;
 
 broadcast chan start_pick_dishes_one_robot_at_location_0;
 broadcast chan finish_pick_dishes_one_robot_at_location_0;
+bool pick_dishes_one_robot_at_location_0_failed = false;
 
 broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
+bool dishes_retrieval_0_failed = false;
 
-Robot r2 = {false,false,false};
+Patient p = {false,false};
 Robot r = {false,false,false};
 Robot r1 = {false,false,false};
-Patient p = {false,false};
+Robot r2 = {false,false,false};
 
 bool manipulation = true;
 bool door_opening = true;
@@ -113,11 +126,26 @@ bool door_opening = true;
 		<location id="id999" x="48" y="-150">
 			<name x="32" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_table_deliver_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r.pickedmeal == false</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_table_deliver_0!</label>
+			<label kind="assignment" x="320" y="250">table_deliver_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -154,6 +182,9 @@ bool door_opening = true;
 		<location id="id999" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<location id="id800" x="-402" y="-250">
 			<name x="-416" y="-281">exec_fetch_meal_with_human</name>
 		</location>
@@ -165,6 +196,18 @@ bool door_opening = true;
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_fetch_deliver_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r1.pickedmeal == false</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_fetch_deliver_0!</label>
+			<label kind="assignment" x="320" y="250">fetch_deliver_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -212,11 +255,26 @@ bool door_opening = true;
 		<location id="id999" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_fetch_meal_with_human_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">p.patientcanfetch == false</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_fetch_meal_with_human_0!</label>
+			<label kind="assignment" x="320" y="250">fetch_meal_with_human_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -312,6 +370,9 @@ bool door_opening = true;
 		<location id="id999" x="498" y="-150">
 			<name x="482" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<location id="id800" x="198" y="-250">
 			<name x="184" y="-281">exec_pick_dishes_two_robots_at_location</name>
 		</location>
@@ -320,6 +381,18 @@ bool door_opening = true;
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_pickup_with_door_opening_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r1.pickeddishes == true</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_pickup_with_door_opening_0!</label>
+			<label kind="assignment" x="320" y="250">pickup_with_door_opening_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -371,6 +444,9 @@ bool door_opening = true;
 		<location id="id999" x="-252" y="-150">
 			<name x="-268" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<location id="id800" x="-552" y="-250">
 			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
 		</location>
@@ -385,6 +461,18 @@ bool door_opening = true;
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_two_robots_at_location_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r1.at == false &amp;&amp; r2.at == false</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_two_robots_at_location_0!</label>
+			<label kind="assignment" x="320" y="250">pick_dishes_two_robots_at_location_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -474,11 +562,26 @@ bool door_opening = true;
 		<location id="id999" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_robot_at_location_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r2.at == false</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_with_robot_at_location_0!</label>
+			<label kind="assignment" x="320" y="250">pick_dishes_with_robot_at_location_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -515,11 +618,26 @@ bool door_opening = true;
 		<location id="id999" x="48" y="-150">
 			<name x="32" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_robot_not_at_location_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r2.at == true</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_with_robot_not_at_location_0!</label>
+			<label kind="assignment" x="320" y="250">pick_dishes_with_robot_not_at_location_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -563,6 +681,9 @@ bool door_opening = true;
 		<location id="id999" x="198" y="-150">
 			<name x="182" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<location id="id800" x="-102" y="-250">
 			<name x="-116" y="-281">exec_pick_dishes_one_robot_at_location</name>
 		</location>
@@ -571,6 +692,18 @@ bool door_opening = true;
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_pickup_without_door_opening_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">p.patientcanopen == false &amp;&amp; r1.pickeddishes == true</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_pickup_without_door_opening_0!</label>
+			<label kind="assignment" x="320" y="250">pickup_without_door_opening_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -613,6 +746,9 @@ bool door_opening = true;
 		<location id="id999" x="-252" y="-150">
 			<name x="-268" y="-181">end_method</name>
 		</location>
+		<location id="id701" x="80" y="169">
+			<name x="66" y="138">failed_precondition</name>
+		</location>
 		<location id="id800" x="-552" y="-250">
 			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
 		</location>
@@ -627,6 +763,18 @@ bool door_opening = true;
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_one_robot_at_location_0!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id701"/>
+			<label kind="guard" x="20" y="90">r1.at == false &amp;&amp; r2.at == true</label>
+			<nail x="-552" y="8"/>
+		</transition>
+		<transition>
+			<source ref="id701"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_one_robot_at_location_0!</label>
+			<label kind="assignment" x="320" y="250">pick_dishes_one_robot_at_location_0_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id0"/>
