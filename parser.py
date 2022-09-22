@@ -18,6 +18,8 @@ const_type_name = "Variable type: "
 
 const_AT_name = "Name:"
 
+const_dash_sep = "-->"
+
 def parse_method_name(method_line):
     name = method_line.split(const_method_name)[1].replace("\n", "").replace(" ","").replace("-","_")
     # Debug
@@ -205,10 +207,40 @@ def create_predicate_vars_for_uppaal(method_data):
     predicate_name_list = extract_predicate_names_and_types(method_data)
     return predicate_name_list
 
+def open_and_parse_goal_orderings(filename: str):
+    tree_node_list = []
+    with open(filename) as file:
+        lines = file.readlines()
+        for line in lines:
+            # Debug
+            # print(line)
+            if(len(line.rstrip()) > 0):
+                source, targets = line.split(sep=const_dash_sep)[0], line.split(sep=const_dash_sep)[1]
+                targets = targets.split(sep=" ")[1:]
+                for target in targets:
+                    if(target == "\n"):
+                        targets.remove(target)
+                tree_node = utils.GoalTreeNode(source, targets, isTask=check_if_node_is_task(source))
+                tree_node_list.append(tree_node)
+                # Debug
+                # print(f"Source: {source}")
+                # print(f"Targets: {targets}")
+    return tree_node_list
+
+def check_if_node_is_task(node: str): 
+    if(node[:1] == "G"):
+        return False
+    elif(node[:2] == "AT"):
+        return True
+
+
 method_data: List[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
 abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
 var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
 predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
+
+goal_node_info = open_and_parse_goal_orderings("goal_ordering.txt")
+# print(goal_node_info)
 # for data in method_data:
 #     print(data)
     # print("Order:", data.order)

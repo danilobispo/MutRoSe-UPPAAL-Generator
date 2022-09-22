@@ -1,16 +1,16 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<declaration>// Place global declarations here.
+typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
 typedef struct {
 bool pickeddishes;
 bool at;
 bool pickedmeal;
 } Robot;
-typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -65,795 +65,876 @@ broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
 Patient p = {false,false};
+Robot r = {false,false,false};
 Robot r1 = {false,false,false};
 Robot r2 = {false,false,false};
-Robot r = {false,false,false};
 
-bool door_opening = true;
 bool manipulation = true;
+bool door_opening = true;
 </declaration>
 	<template>
-		<name x="5" y="5">temp_food_pickup_0</name>
-		<parameter>Robot &amp;r </parameter>
-		<location id="id0" x="-552" y="-93">
-			<name x="-594" y="-127">init_node</name>
+		<name>goalModel</name>
+		<location id="id0" x="909" y="-51">
 		</location>
-		<location id="id1" x="-552" y="-150">
-			<name x="-566" y="-181">navto</name>
+		<location id="id1" x="680" y="-119">
+			<name x="569" y="-153">finished_table_deliver_0</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
-			<name x="-416" y="-181">wait_for_food</name>
+		<location id="id2" x="586" y="-51">
+			<name x="510" y="-85">finished_fetch_deliver_0</name>
 		</location>
-		<location id="id999" x="-102" y="-150">
-			<name x="-118" y="-181">end_method</name>
+		<location id="id3" x="306" y="-51">
+			<name x="272" y="-85">exec_fetch_deliver_0</name>
 		</location>
-		<init ref="id0"/>
-		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
-			<label kind="synchronisation" x="190" y="250">finish_food_pickup_0!</label>
-		</transition>
-		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
-			<label kind="synchronisation" x="250" y="250">start_food_pickup_0?</label>
-		</transition>
+		<location id="id4" x="-255" y="178">
+		</location>
+		<location id="id5" x="306" y="-119">
+			<name x="204" y="-161">exec_table_deliver_0</name>
+		</location>
+		<location id="id6" x="-255" y="-42">
+			<name x="-246" y="-68">exec_food_pickup_0</name>
+		</location>
+		<location id="id7" x="-510" y="-42">
+		</location>
+		<location id="id8" x="0" y="-119">
+			<name x="-68" y="-161">finished_food_pickup_0</name>
+		</location>
+		<init ref="id7"/>
 		<transition>
 			<source ref="id1"/>
-			<target ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="748" y="-119">table_deliver_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
-			<target ref="id999"/>
+			<target ref="id0"/>
+			<label kind="guard" x="697" y="-51">fetch_deliver_0_failed == false</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="guard" x="408" y="144">table_deliver_0_failed == true</label>
+			<nail x="680" y="170"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id4"/>
+			<label kind="guard" x="195" y="51">fetch_deliver_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="340" y="-144">finish_table_deliver_0?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="365" y="-51">start_fetch_deliver_0?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-102" y="0">food_pickup_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="51" y="-76">start_fetch_deliver_0!</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="59" y="-144">start_table_deliver_0!</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-408" y="51">finish_food_pickup_0?</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-204" y="-144">finish_food_pickup_0?</label>
+			<nail x="-255" y="-119"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-459" y="-68">start_food_pickup_0!</label>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_food_pickup_0</name>
+		<parameter>Robot &amp;r </parameter>
+		<location id="id9" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id10" x="-552" y="-150">
+			<name x="-566" y="-181">navto</name>
+		</location>
+		<location id="id11" x="-402" y="-150">
+			<name x="-416" y="-181">wait_for_food</name>
+		</location>
+		<location id="id12" x="-102" y="-150">
+			<name x="-118" y="-181">end_method</name>
+		</location>
+		<init ref="id9"/>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="190" y="250">finish_food_pickup_0!</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="250" y="250">start_food_pickup_0?</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
 			<label kind="assignment" x="20" y="90">r.pickedmeal = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_table_deliver_0</name>
 		<parameter>Robot &amp;r </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id13" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id14" x="-552" y="-150">
 			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id15" x="-402" y="-150">
 			<name x="-416" y="-181">approach_patient_table</name>
 		</location>
-		<location id="id3" x="-252" y="-150">
+		<location id="id16" x="-252" y="-150">
 			<name x="-266" y="-181">deliver_to_table</name>
 		</location>
-		<location id="id999" x="48" y="-150">
+		<location id="id17" x="48" y="-150">
 			<name x="32" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id18" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id13"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id17"/>
+			<target ref="id13"/>
 			<label kind="synchronisation" x="190" y="250">finish_table_deliver_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id13"/>
+			<target ref="id18"/>
 			<label kind="guard" x="20" y="90">r.pickedmeal == false</label>
-			<label kind="synchronisation" x="300" y="250">start_table_deliver_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id18"/>
+			<target ref="id13"/>
 			<label kind="synchronisation" x="300" y="250">finish_table_deliver_0!</label>
 			<label kind="assignment" x="320" y="250">table_deliver_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id13"/>
+			<target ref="id14"/>
 			<label kind="guard" x="20" y="90">r.pickedmeal == true</label>
 			<label kind="synchronisation" x="250" y="250">start_table_deliver_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id14"/>
+			<target ref="id15"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
+			<source ref="id15"/>
+			<target ref="id16"/>
 			<label kind="guard" x="20" y="90">manipulation == true</label>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id999"/>
+			<source ref="id16"/>
+			<target ref="id17"/>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_deliver_0</name>
 		<parameter>Robot &amp;r1 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id19" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id20" x="-552" y="-150">
 			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id21" x="-402" y="-150">
 			<name x="-416" y="-181">FetchMeal</name>
 		</location>
-		<location id="id999" x="-102" y="-150">
+		<location id="id22" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id23" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<location id="id800" x="-402" y="-250">
+		<location id="id24" x="-402" y="-250">
 			<name x="-416" y="-281">exec_fetch_meal_with_human</name>
 		</location>
-		<location id="id801" x="-302" y="-350">
+		<location id="id25" x="-302" y="-350">
 			<name x="-316" y="-381">exec_fetch_meal_with_robot</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id19"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id22"/>
+			<target ref="id19"/>
 			<label kind="synchronisation" x="190" y="250">finish_fetch_deliver_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id19"/>
+			<target ref="id23"/>
 			<label kind="guard" x="20" y="90">r1.pickedmeal == false</label>
-			<label kind="synchronisation" x="300" y="250">start_fetch_deliver_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id23"/>
+			<target ref="id19"/>
 			<label kind="synchronisation" x="300" y="250">finish_fetch_deliver_0!</label>
 			<label kind="assignment" x="320" y="250">fetch_deliver_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id19"/>
+			<target ref="id20"/>
 			<label kind="guard" x="20" y="90">r1.pickedmeal == true</label>
 			<label kind="synchronisation" x="250" y="250">start_fetch_deliver_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id20"/>
+			<target ref="id21"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id800"/>
+			<source ref="id21"/>
+			<target ref="id24"/>
 			<label kind="synchronisation" x="-502" y="-195">start_fetch_meal_with_human_0!</label>
 		</transition>
 		<transition>
-			<source ref="id800"/>
-			<target ref="id999"/>
+			<source ref="id24"/>
+			<target ref="id22"/>
 			<label kind="synchronisation" x="-302" y="-195">finish_fetch_meal_with_human_0?</label>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id801"/>
+			<source ref="id21"/>
+			<target ref="id25"/>
 			<label kind="synchronisation" x="-402" y="-295">start_fetch_meal_with_robot_0!</label>
 		</transition>
 		<transition>
-			<source ref="id801"/>
-			<target ref="id999"/>
+			<source ref="id25"/>
+			<target ref="id22"/>
 			<label kind="synchronisation" x="-202" y="-295">finish_fetch_meal_with_robot_0?</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_human_0</name>
 		<parameter>Patient &amp;p , Robot &amp;r </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id26" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id27" x="-552" y="-150">
 			<name x="-566" y="-181">approach_human</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id28" x="-402" y="-150">
 			<name x="-416" y="-181">wait_for_human_to_fetch</name>
 		</location>
-		<location id="id999" x="-102" y="-150">
+		<location id="id29" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id30" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id26"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id29"/>
+			<target ref="id26"/>
 			<label kind="synchronisation" x="190" y="250">finish_fetch_meal_with_human_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id26"/>
+			<target ref="id30"/>
 			<label kind="guard" x="20" y="90">p.patientcanfetch == false</label>
-			<label kind="synchronisation" x="300" y="250">start_fetch_meal_with_human_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id30"/>
+			<target ref="id26"/>
 			<label kind="synchronisation" x="300" y="250">finish_fetch_meal_with_human_0!</label>
 			<label kind="assignment" x="320" y="250">fetch_meal_with_human_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id26"/>
+			<target ref="id27"/>
 			<label kind="guard" x="20" y="90">p.patientcanfetch == true</label>
 			<label kind="synchronisation" x="250" y="250">start_fetch_meal_with_human_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id27"/>
+			<target ref="id28"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
+			<source ref="id28"/>
+			<target ref="id29"/>
 			<label kind="assignment" x="20" y="90">r.pickedmeal = false</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_fetch_meal_with_robot_0</name>
 		<parameter>Robot &amp;r2 , Robot &amp;r1 , Robot &amp;r </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id31" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id32" x="-552" y="-150">
 			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id33" x="-402" y="-150">
 			<name x="-416" y="-181">approach_robot</name>
 		</location>
-		<location id="id3" x="-252" y="-150">
+		<location id="id34" x="-252" y="-150">
 			<name x="-266" y="-181">grasp_meal</name>
 		</location>
-		<location id="id4" x="-102" y="-150">
+		<location id="id35" x="-102" y="-150">
 			<name x="-116" y="-181">deliver_meal_to_patient</name>
 		</location>
-		<location id="id999" x="198" y="-150">
+		<location id="id36" x="198" y="-150">
 			<name x="182" y="-181">end_method</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id31"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id36"/>
+			<target ref="id31"/>
 			<label kind="synchronisation" x="190" y="250">finish_fetch_meal_with_robot_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id31"/>
+			<target ref="id32"/>
 			<label kind="synchronisation" x="250" y="250">start_fetch_meal_with_robot_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id32"/>
+			<target ref="id33"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
+			<source ref="id33"/>
+			<target ref="id34"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id4"/>
+			<source ref="id34"/>
+			<target ref="id35"/>
 			<label kind="assignment" x="20" y="90">r2.pickedmeal = false, r1.pickedmeal = true</label>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id999"/>
+			<source ref="id35"/>
+			<target ref="id36"/>
 			<label kind="assignment" x="20" y="90">r.pickedmeal = false</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pickup_with_door_opening_0</name>
 		<parameter>Robot &amp;r1 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id37" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id38" x="-552" y="-150">
 			<name x="-566" y="-181">navto_0</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id39" x="-402" y="-150">
 			<name x="-416" y="-181">navto</name>
 		</location>
-		<location id="id3" x="-252" y="-150">
+		<location id="id40" x="-252" y="-150">
 			<name x="-266" y="-181">approach_door_0</name>
 		</location>
-		<location id="id4" x="-102" y="-150">
+		<location id="id41" x="-102" y="-150">
 			<name x="-116" y="-181">approach_door</name>
 		</location>
-		<location id="id5" x="48" y="-150">
+		<location id="id42" x="48" y="-150">
 			<name x="34" y="-181">open_door</name>
 		</location>
-		<location id="id6" x="198" y="-150">
+		<location id="id43" x="198" y="-150">
 			<name x="184" y="-181">PickDishesTwoRobotsAtLocation</name>
 		</location>
-		<location id="id999" x="498" y="-150">
+		<location id="id44" x="498" y="-150">
 			<name x="482" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id45" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<location id="id800" x="198" y="-250">
+		<location id="id46" x="198" y="-250">
 			<name x="184" y="-281">exec_pick_dishes_two_robots_at_location</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id37"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id44"/>
+			<target ref="id37"/>
 			<label kind="synchronisation" x="190" y="250">finish_pickup_with_door_opening_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id37"/>
+			<target ref="id45"/>
 			<label kind="guard" x="20" y="90">r1.pickeddishes == true</label>
-			<label kind="synchronisation" x="300" y="250">start_pickup_with_door_opening_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id45"/>
+			<target ref="id37"/>
 			<label kind="synchronisation" x="300" y="250">finish_pickup_with_door_opening_0!</label>
 			<label kind="assignment" x="320" y="250">pickup_with_door_opening_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id37"/>
+			<target ref="id38"/>
 			<label kind="guard" x="20" y="90">r1.pickeddishes == false</label>
 			<label kind="synchronisation" x="250" y="250">start_pickup_with_door_opening_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id38"/>
+			<target ref="id39"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
+			<source ref="id39"/>
+			<target ref="id40"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id4"/>
+			<source ref="id40"/>
+			<target ref="id41"/>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id5"/>
+			<source ref="id41"/>
+			<target ref="id42"/>
 			<label kind="guard" x="20" y="90">door_opening == true</label>
 		</transition>
 		<transition>
-			<source ref="id5"/>
-			<target ref="id6"/>
+			<source ref="id42"/>
+			<target ref="id43"/>
 		</transition>
 		<transition>
-			<source ref="id6"/>
-			<target ref="id800"/>
+			<source ref="id43"/>
+			<target ref="id46"/>
 			<label kind="synchronisation" x="98" y="-195">start_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id800"/>
-			<target ref="id999"/>
+			<source ref="id46"/>
+			<target ref="id44"/>
 			<label kind="synchronisation" x="298" y="-195">finish_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_two_robots_at_location_0</name>
 		<parameter>Robot &amp;r1 , Robot &amp;r2 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id47" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id48" x="-552" y="-150">
 			<name x="-566" y="-181">PickDishes</name>
 		</location>
-		<location id="id999" x="-252" y="-150">
+		<location id="id49" x="-252" y="-150">
 			<name x="-268" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id50" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<location id="id800" x="-552" y="-250">
+		<location id="id51" x="-552" y="-250">
 			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
 		</location>
-		<location id="id801" x="-452" y="-350">
+		<location id="id52" x="-452" y="-350">
 			<name x="-466" y="-381">exec_pick_dishes_with_robot_at_location</name>
 		</location>
-		<location id="id802" x="-352" y="-450">
+		<location id="id53" x="-352" y="-450">
 			<name x="-366" y="-481">exec_pick_dishes_with_robot_not_at_location</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id47"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id49"/>
+			<target ref="id47"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_two_robots_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id47"/>
+			<target ref="id50"/>
 			<label kind="guard" x="20" y="90">r1.at == false &amp;&amp; r2.at == false</label>
-			<label kind="synchronisation" x="300" y="250">start_pick_dishes_two_robots_at_location_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id50"/>
+			<target ref="id47"/>
 			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_two_robots_at_location_0!</label>
 			<label kind="assignment" x="320" y="250">pick_dishes_two_robots_at_location_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id47"/>
+			<target ref="id48"/>
 			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == true</label>
 			<label kind="synchronisation" x="250" y="250">start_pick_dishes_two_robots_at_location_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id800"/>
+			<source ref="id48"/>
+			<target ref="id51"/>
 			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_with_human_0!</label>
 		</transition>
 		<transition>
-			<source ref="id800"/>
-			<target ref="id999"/>
+			<source ref="id51"/>
+			<target ref="id49"/>
 			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_with_human_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id801"/>
+			<source ref="id48"/>
+			<target ref="id52"/>
 			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_with_robot_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id801"/>
-			<target ref="id999"/>
+			<source ref="id52"/>
+			<target ref="id49"/>
 			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_with_robot_at_location_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id802"/>
+			<source ref="id48"/>
+			<target ref="id53"/>
 			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_with_robot_not_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id802"/>
-			<target ref="id999"/>
+			<source ref="id53"/>
+			<target ref="id49"/>
 			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_with_robot_not_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_human_0</name>
 		<parameter>Robot &amp;r </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id54" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id55" x="-552" y="-150">
 			<name x="-566" y="-181">approach_human</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id56" x="-402" y="-150">
 			<name x="-416" y="-181">wait_for_human_to_place_dish</name>
 		</location>
-		<location id="id999" x="-102" y="-150">
+		<location id="id57" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id54"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id57"/>
+			<target ref="id54"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_human_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id54"/>
+			<target ref="id55"/>
 			<label kind="synchronisation" x="250" y="250">start_pick_dishes_with_human_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id55"/>
+			<target ref="id56"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
+			<source ref="id56"/>
+			<target ref="id57"/>
 			<label kind="assignment" x="20" y="90">r.pickeddishes = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_at_location_0</name>
 		<parameter>Robot &amp;r2 , Robot &amp;r , Robot &amp;r1 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id58" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id59" x="-552" y="-150">
 			<name x="-566" y="-181">pick_patient_dishes</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id60" x="-402" y="-150">
 			<name x="-416" y="-181">load_dishes</name>
 		</location>
-		<location id="id999" x="-102" y="-150">
+		<location id="id61" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id62" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id58"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id61"/>
+			<target ref="id58"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_robot_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id58"/>
+			<target ref="id62"/>
 			<label kind="guard" x="20" y="90">r2.at == false</label>
-			<label kind="synchronisation" x="300" y="250">start_pick_dishes_with_robot_at_location_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id62"/>
+			<target ref="id58"/>
 			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_with_robot_at_location_0!</label>
 			<label kind="assignment" x="320" y="250">pick_dishes_with_robot_at_location_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id58"/>
+			<target ref="id59"/>
 			<label kind="guard" x="20" y="90">r2.at == true</label>
 			<label kind="synchronisation" x="250" y="250">start_pick_dishes_with_robot_at_location_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id59"/>
+			<target ref="id60"/>
 			<label kind="assignment" x="20" y="90">r.pickeddishes = true</label>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
+			<source ref="id60"/>
+			<target ref="id61"/>
 			<label kind="assignment" x="20" y="90">r1.pickeddishes = false, r2.pickeddishes = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_with_robot_not_at_location_0</name>
 		<parameter>Robot &amp;r2 , Robot &amp;r , Robot &amp;r1 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id63" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id64" x="-552" y="-150">
 			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id65" x="-402" y="-150">
 			<name x="-416" y="-181">pick_patient_dishes</name>
 		</location>
-		<location id="id3" x="-252" y="-150">
+		<location id="id66" x="-252" y="-150">
 			<name x="-266" y="-181">load_dishes</name>
 		</location>
-		<location id="id999" x="48" y="-150">
+		<location id="id67" x="48" y="-150">
 			<name x="32" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id68" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id63"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id67"/>
+			<target ref="id63"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_with_robot_not_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id63"/>
+			<target ref="id68"/>
 			<label kind="guard" x="20" y="90">r2.at == true</label>
-			<label kind="synchronisation" x="300" y="250">start_pick_dishes_with_robot_not_at_location_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id68"/>
+			<target ref="id63"/>
 			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_with_robot_not_at_location_0!</label>
 			<label kind="assignment" x="320" y="250">pick_dishes_with_robot_not_at_location_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id63"/>
+			<target ref="id64"/>
 			<label kind="guard" x="20" y="90">r2.at == false</label>
 			<label kind="synchronisation" x="250" y="250">start_pick_dishes_with_robot_not_at_location_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id64"/>
+			<target ref="id65"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
+			<source ref="id65"/>
+			<target ref="id66"/>
 			<label kind="assignment" x="20" y="90">r.pickeddishes = true</label>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id999"/>
+			<source ref="id66"/>
+			<target ref="id67"/>
 			<label kind="assignment" x="20" y="90">r1.pickeddishes = false, r2.pickeddishes = true</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pickup_without_door_opening_0</name>
 		<parameter>Patient &amp;p , Robot &amp;r1 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id69" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id70" x="-552" y="-150">
 			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id71" x="-402" y="-150">
 			<name x="-416" y="-181">approach_door</name>
 		</location>
-		<location id="id3" x="-252" y="-150">
+		<location id="id72" x="-252" y="-150">
 			<name x="-266" y="-181">wait_for_door_opening</name>
 		</location>
-		<location id="id4" x="-102" y="-150">
+		<location id="id73" x="-102" y="-150">
 			<name x="-116" y="-181">PickDishesOneRobotAtLocation</name>
 		</location>
-		<location id="id999" x="198" y="-150">
+		<location id="id74" x="198" y="-150">
 			<name x="182" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id75" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<location id="id800" x="-102" y="-250">
+		<location id="id76" x="-102" y="-250">
 			<name x="-116" y="-281">exec_pick_dishes_one_robot_at_location</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id69"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id74"/>
+			<target ref="id69"/>
 			<label kind="synchronisation" x="190" y="250">finish_pickup_without_door_opening_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id69"/>
+			<target ref="id75"/>
 			<label kind="guard" x="20" y="90">p.patientcanopen == false &amp;&amp; r1.pickeddishes == true</label>
-			<label kind="synchronisation" x="300" y="250">start_pickup_without_door_opening_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id75"/>
+			<target ref="id69"/>
 			<label kind="synchronisation" x="300" y="250">finish_pickup_without_door_opening_0!</label>
 			<label kind="assignment" x="320" y="250">pickup_without_door_opening_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id69"/>
+			<target ref="id70"/>
 			<label kind="guard" x="20" y="90">p.patientcanopen == true &amp;&amp; r1.pickeddishes == false</label>
 			<label kind="synchronisation" x="250" y="250">start_pickup_without_door_opening_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id70"/>
+			<target ref="id71"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id3"/>
+			<source ref="id71"/>
+			<target ref="id72"/>
 		</transition>
 		<transition>
-			<source ref="id3"/>
-			<target ref="id4"/>
+			<source ref="id72"/>
+			<target ref="id73"/>
 		</transition>
 		<transition>
-			<source ref="id4"/>
-			<target ref="id800"/>
+			<source ref="id73"/>
+			<target ref="id76"/>
 			<label kind="synchronisation" x="-202" y="-195">start_pick_dishes_one_robot_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id800"/>
-			<target ref="id999"/>
+			<source ref="id76"/>
+			<target ref="id74"/>
 			<label kind="synchronisation" x="-2" y="-195">finish_pick_dishes_one_robot_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_pick_dishes_one_robot_at_location_0</name>
 		<parameter>Robot &amp;r1 , Robot &amp;r2 </parameter>
-		<location id="id0" x="-552" y="-93">
+		<location id="id77" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id78" x="-552" y="-150">
 			<name x="-566" y="-181">PickDishes</name>
 		</location>
-		<location id="id999" x="-252" y="-150">
+		<location id="id79" x="-252" y="-150">
 			<name x="-268" y="-181">end_method</name>
 		</location>
-		<location id="id701" x="80" y="169">
+		<location id="id80" x="80" y="169">
 			<name x="66" y="138">failed_precondition</name>
 		</location>
-		<location id="id800" x="-552" y="-250">
+		<location id="id81" x="-552" y="-250">
 			<name x="-566" y="-281">exec_pick_dishes_with_human</name>
 		</location>
-		<location id="id801" x="-452" y="-350">
+		<location id="id82" x="-452" y="-350">
 			<name x="-466" y="-381">exec_pick_dishes_with_robot_at_location</name>
 		</location>
-		<location id="id802" x="-352" y="-450">
+		<location id="id83" x="-352" y="-450">
 			<name x="-366" y="-481">exec_pick_dishes_with_robot_not_at_location</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id77"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id79"/>
+			<target ref="id77"/>
 			<label kind="synchronisation" x="190" y="250">finish_pick_dishes_one_robot_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id701"/>
+			<source ref="id77"/>
+			<target ref="id80"/>
 			<label kind="guard" x="20" y="90">r1.at == false &amp;&amp; r2.at == true</label>
-			<label kind="synchronisation" x="300" y="250">start_pick_dishes_one_robot_at_location_0?</label>
 			<nail x="-552" y="8"/>
 		</transition>
 		<transition>
-			<source ref="id701"/>
-			<target ref="id0"/>
+			<source ref="id80"/>
+			<target ref="id77"/>
 			<label kind="synchronisation" x="300" y="250">finish_pick_dishes_one_robot_at_location_0!</label>
 			<label kind="assignment" x="320" y="250">pick_dishes_one_robot_at_location_0_failed = true</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id77"/>
+			<target ref="id78"/>
 			<label kind="guard" x="20" y="90">r1.at == true &amp;&amp; r2.at == false</label>
 			<label kind="synchronisation" x="250" y="250">start_pick_dishes_one_robot_at_location_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id800"/>
+			<source ref="id78"/>
+			<target ref="id81"/>
 			<label kind="synchronisation" x="-652" y="-195">start_pick_dishes_with_human_0!</label>
 		</transition>
 		<transition>
-			<source ref="id800"/>
-			<target ref="id999"/>
+			<source ref="id81"/>
+			<target ref="id79"/>
 			<label kind="synchronisation" x="-452" y="-195">finish_pick_dishes_with_human_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id801"/>
+			<source ref="id78"/>
+			<target ref="id82"/>
 			<label kind="synchronisation" x="-552" y="-295">start_pick_dishes_with_robot_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id801"/>
-			<target ref="id999"/>
+			<source ref="id82"/>
+			<target ref="id79"/>
 			<label kind="synchronisation" x="-352" y="-295">finish_pick_dishes_with_robot_at_location_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id802"/>
+			<source ref="id78"/>
+			<target ref="id83"/>
 			<label kind="synchronisation" x="-452" y="-395">start_pick_dishes_with_robot_not_at_location_0!</label>
 		</transition>
 		<transition>
-			<source ref="id802"/>
-			<target ref="id999"/>
+			<source ref="id83"/>
+			<target ref="id79"/>
 			<label kind="synchronisation" x="-252" y="-395">finish_pick_dishes_with_robot_not_at_location_0?</label>
 		</transition>
 	</template>
 	<template>
 		<name x="5" y="5">temp_dishes_retrieval_0</name>
-		<location id="id0" x="-552" y="-93">
+		<location id="id84" x="-552" y="-93">
 			<name x="-594" y="-127">init_node</name>
 		</location>
-		<location id="id1" x="-552" y="-150">
+		<location id="id85" x="-552" y="-150">
 			<name x="-566" y="-181">navto</name>
 		</location>
-		<location id="id2" x="-402" y="-150">
+		<location id="id86" x="-402" y="-150">
 			<name x="-416" y="-181">retrieve_dishes</name>
 		</location>
-		<location id="id999" x="-102" y="-150">
+		<location id="id87" x="-102" y="-150">
 			<name x="-118" y="-181">end_method</name>
 		</location>
-		<init ref="id0"/>
+		<init ref="id84"/>
 		<transition>
-			<source ref="id999"/>
-			<target ref="id0"/>
+			<source ref="id87"/>
+			<target ref="id84"/>
 			<label kind="synchronisation" x="190" y="250">finish_dishes_retrieval_0!</label>
 		</transition>
 		<transition>
-			<source ref="id0"/>
-			<target ref="id1"/>
+			<source ref="id84"/>
+			<target ref="id85"/>
 			<label kind="synchronisation" x="250" y="250">start_dishes_retrieval_0?</label>
 		</transition>
 		<transition>
-			<source ref="id1"/>
-			<target ref="id2"/>
+			<source ref="id85"/>
+			<target ref="id86"/>
 		</transition>
 		<transition>
-			<source ref="id2"/>
-			<target ref="id999"/>
+			<source ref="id86"/>
+			<target ref="id87"/>
 		</transition>
 	</template>
 	<system>var_temp_food_pickup_0 = temp_food_pickup_0(r);
@@ -872,8 +953,8 @@ var_temp_dishes_retrieval_0 = temp_dishes_retrieval_0();
 system var_temp_food_pickup_0,var_temp_table_deliver_0,var_temp_fetch_deliver_0,var_temp_fetch_meal_with_human_0,var_temp_fetch_meal_with_robot_0,var_temp_pickup_with_door_opening_0,var_temp_pick_dishes_two_robots_at_location_0,var_temp_pick_dishes_with_human_0,var_temp_pick_dishes_with_robot_at_location_0,var_temp_pick_dishes_with_robot_not_at_location_0,var_temp_pickup_without_door_opening_0,var_temp_pick_dishes_one_robot_at_location_0,var_temp_dishes_retrieval_0;</system>
 	<queries>
 		<query>
-			<formula/>
-			<comment/>
+			<formula></formula>
+			<comment></comment>
 		</query>
 		<query>
 			<formula>A[] not deadlock</formula>

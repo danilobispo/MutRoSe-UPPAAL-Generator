@@ -70,6 +70,13 @@ class Variable(object):
     def __repr__(self) -> str:
         return f'MethodData: ("{self.var_name}","{self.type_name}, {self.predicates_name_list}")'
 
+class GoalTreeNode:
+    def __init__(self, name: str, children: list, isTask: bool) -> None:
+        self.name : str = name
+        self.children : List[self] = children,
+        self.isTask: bool =  isTask
+
+    def __repr__(self) -> str:
+        return f'GoalTreeNode: ("{self.name}","{self.children}, {self.isTask}")'
 
 
-    

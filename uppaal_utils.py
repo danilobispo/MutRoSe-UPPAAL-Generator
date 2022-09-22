@@ -76,28 +76,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
             if has_precs:
                 constraint_label = create_precondition_label_for_transition(prec_label=prec_label, context_nta=nta)
                 trans = uppaalpy.Transition(source="id0", target="id1", guard=constraint_label, synchronisation=synch_label)
-                # Generate precondition location transition to where it would fail and another transition back to the initial node:
-                # First we create a location
-                # number 700+ ids are restricted to locations like these
-                failed_location_id = "id70"+str(id_count)
-                add_location(template=template, id=failed_location_id, name="failed_precondition", pos=(80, 169))
-                # Then a negation condition for the precondition, along with the transition
-                constraint_neg_label = create_precondition_label_for_transition(prec_label=prec_neg_label, context_nta=nta)
-                additional_trans_list = []
-                additional_trans_nail = uppaalpy.Nail(x=-552, y=8)
-                additional_trans_list.append(additional_trans_nail)
-                additional_trans = uppaalpy.Transition(source="id0", target=failed_location_id, guard=constraint_neg_label, nails=additional_trans_list)
-                # #finally, we create a synch channel, showing that 
-                end_synch = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=True),target=False)
-                end_synch_label = uppaalpy.Label(kind="synchronisation", value=end_synch, pos=(300, 250))
-                # Also we're adding a boolean variable that is triggered by mission failure
-                method_fail_update_str = f"{method_name}_failed = true"
-                update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(320, 250), ctx=template.context)
-                trans_to_init_node = uppaalpy.Transition(source=failed_location_id, target="id0", synchronisation=end_synch_label, assignment=update_label_for_failed_trans)
-                template.graph.add_transition(additional_trans)
-
-                
-                template.graph.add_transition(trans_to_init_node)
+                create_precondition_fail_transition(template, nta, method_name, id_count, prec_neg_label)
             else:
                 trans=uppaalpy.Transition(source="id0", target="id1", synchronisation=synch_label)
 
@@ -141,6 +120,34 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
             template.graph.add_transition(trans)
     template = add_AT_transitions_in_template(template, node_data)
     return template
+
+def create_precondition_fail_transition(template, nta, method_name, id_count, prec_neg_label):
+    # Generate precondition location transition to where it would fail and another transition back to the initial node:
+    # First we create a location
+    # number 700+ ids are restricted to locations like these
+    failed_location_id = "id70"+str(id_count)
+    add_location(template=template, id=failed_location_id, name="failed_precondition", pos=(80, 169))
+                # Then a negation condition for the precondition, along with the transition
+    constraint_neg_label = create_precondition_label_for_transition(prec_label=prec_neg_label, context_nta=nta)
+                # Adding a nail so it is easily identifiable in the graph
+    additional_trans_list = []
+    additional_trans_nail = uppaalpy.Nail(x=-552, y=8)
+    additional_trans_list.append(additional_trans_nail)
+                # Add a transition channel since we do not want it to execute when it is not the correct time yet
+    additional_trans_channel_name = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=False),target=True)
+    additional_trans_channel_label = uppaalpy.Label(kind="synchronisation", value=additional_trans_channel_name, pos=(300, 250))
+                # Create the first transition, that begins from the first node to the last             
+    additional_trans = uppaalpy.Transition(source="id0", target=failed_location_id, guard=constraint_neg_label, nails=additional_trans_list, 
+                synchronisation=additional_trans_channel_label)
+                # #finally, we create a synch channel, showing that 
+    end_synch = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=True),target=False)
+    end_synch_label = uppaalpy.Label(kind="synchronisation", value=end_synch, pos=(300, 250))
+                # Also we're adding a boolean variable that is triggered by mission failure
+    method_fail_update_str = f"{method_name}_failed = true"
+    update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(320, 250), ctx=template.context)
+    trans_to_init_node = uppaalpy.Transition(source=failed_location_id, target="id0", synchronisation=end_synch_label, assignment=update_label_for_failed_trans)
+    template.graph.add_transition(additional_trans)
+    template.graph.add_transition(trans_to_init_node)
 
 def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask]):
     locations = template.graph.get_nodes()
