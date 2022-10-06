@@ -10,3 +10,4 @@ models/test.xml
 models/empty_model_with_goal_model.xml
 models/empty_model_new_goal_model.xml
 models/pretty_precondition_trans.xml
+.VSCodeCounter/
