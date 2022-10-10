@@ -70,11 +70,11 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
         
         if(i == 0): # init method node
             sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=method_name, finished=False),target=True)
-            synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(250, 250))
+            synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(-705, -144))
             # Deal with preconditions here
             has_precs, prec_label, prec_neg_label =  search_and_generate_preconditions_in_node(preconditions_list)
             if has_precs:
-                constraint_label = create_precondition_label_for_transition(prec_label=prec_label, context_nta=nta)
+                constraint_label = create_precondition_label_for_transition(prec_label=prec_label, context_nta=nta, pos=(-705, -158))
                 trans = uppaalpy.Transition(source="id0", target="id1", guard=constraint_label, synchronisation=synch_label)
                 create_precondition_fail_transition(template, nta, method_name, id_count, prec_neg_label)
             else:
@@ -90,7 +90,11 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
                 has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
                 if has_effects: # if there's an effect, add to transition
                     # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
-                    update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
+                    # Get location so we can use its position to place the label next to it             
+                    for node in template.graph.get_nodes():
+                        if(node.name.name == order[i]):
+                            nodePosX, nodePosY = node.pos
+                    update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta, pos=(nodePosX+30, nodePosY-20))
                     trans = uppaalpy.Transition(source=source_id, target="id999", assignment=update_label)
                 else: 
                     # print("Connecting", source_id, "to", "id999", "in template", template.name.name)
@@ -103,14 +107,21 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
             # print("Current node:", order[i])
             has_capab, capab_label, capab_neg_label = search_and_generate_capabilities_in_node(order=order, capabilities_list=capabilities_list, i=id_count)
             if has_capab and not check_camel_case_regex(order[id_count]):
-                guard_label = create_precondition_label_for_transition(capab_label, nta)
+                # Get location so we can use its position to place the label next to it
+                for node in template.graph.get_nodes():
+                        if(node.name.name == order[i]):
+                            nodePosX, nodePosY = node.pos
+                guard_label = create_precondition_label_for_transition(capab_label, nta, pos=(nodePosX+30, nodePosY-20))
                 trans = uppaalpy.Transition(source=source_id, target=target_id, guard=guard_label)
                 template.graph.add_transition(trans)
-                create_capability_fail_transition(template, nta, method_name, id_count, capab_neg_label)
+                create_capability_fail_transition(template, nta, method_name, id_count, capab_neg_label, pos=(nodePosX, nodePosY-120))
                 continue
             has_effects, eff_label = search_and_generate_effects_in_node(order=order, effects_list=effects_list, i=i) 
+            for node in template.graph.get_nodes():
+                        if(node.name.name == order[i]):
+                            nodePosX, nodePosY = node.pos
             if has_effects and not check_camel_case_regex(order[i]): # if there's an effect, add to transition
-                update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta)
+                update_label = create_effect_label_for_transition(eff_label=eff_label, context_nta=nta, pos=(nodePosX+30, nodePosY-20))
                 trans = uppaalpy.Transition(source=source_id, target=target_id, assignment=update_label)
 
             # Normal transition without preconditions nor effects
@@ -145,14 +156,17 @@ def create_precondition_fail_transition(template, nta, method_name, id_count, pr
     end_synch_label = uppaalpy.Label(kind="synchronisation", value=end_synch, pos=(-306, -67))
     # Also we're adding a boolean variable that is triggered by mission failure
     method_fail_update_str = f"{method_name}_failed = true"
-    update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(320, 250), ctx=template.context)
+    update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(-306, -52), ctx=template.context)
     trans_to_init_node = uppaalpy.Transition(source=failed_location_id, target="id0", synchronisation=end_synch_label, assignment=update_label_for_failed_trans)
     template.graph.add_transition(additional_trans)
     template.graph.add_transition(trans_to_init_node)
 
-def create_capability_fail_transition(template, nta, method_name, id_count, capab_neg_label):
+def create_capability_fail_transition(template, nta, method_name, id_count, capab_neg_label, pos=None):
     failed_location_id = "id70"+str(id_count)
-    add_location(template=template, id=failed_location_id, name="failed_capability", pos=(-246, -331))
+    if pos != None:
+        add_location(template=template, id=failed_location_id, name="failed_capability", pos=pos)
+    else:
+        add_location(template=template, id=failed_location_id, name="failed_capability", pos=(-246, -331))
     # Then a negation condition for the precondition, along with the transition
     constraint_neg_label = create_precondition_label_for_transition(prec_label=capab_neg_label, context_nta=nta, pos=(-442, -280))
     
@@ -166,9 +180,7 @@ def create_capability_fail_transition(template, nta, method_name, id_count, capa
     method_fail_update_str = f"{method_name}_failed = true"
     update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(-629, -365), ctx=template.context)
     # Adding a nail so it is easily identifiable in the graph
-    additional_trans_list = []
-    additional_trans_nail = uppaalpy.Nail(x=-824, y=-340)
-    additional_trans_list.append(additional_trans_nail)
+    additional_trans_list = [uppaalpy.Nail(x=-824, y=-340), uppaalpy.Nail(-824, -93)]
     trans_to_init_node = uppaalpy.Transition(source=failed_location_id, target="id0", synchronisation=end_synch_label, assignment=update_label_for_failed_trans, nails=additional_trans_list)
     template.graph.add_transition(additional_trans)
     template.graph.add_transition(trans_to_init_node)
@@ -284,7 +296,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
         add_failed_channels_booleans_in_nta(method_name=m.method_name, nta=nta)
         for temp in nta.templates:
             posX = -552
-            posY = -150
+            posY = -220
             if(temp.name.name == template_name):
                 id_count = 1
                 m.order = rename_tasks_with_same_name(m.order)
@@ -293,7 +305,7 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                     add_location(template=temp, id=id_str,
                                  pos=(posX, posY), name=m.order[i])
                     id_count = id_count + 1
-                    posX = posX + 150
+                    posX = posX + 225
                     # posY = posY + 100
                     if i == len(m.order)-1:
                         # Add end location, end of method that goes back to initial node
@@ -304,9 +316,13 @@ def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaal
                                                                       pos=(posX+134, posY-31))))
                         # Channel for end method
                         sync_channel_str = create_channel_synch_for_transition(get_channel_name(method_name=m.method_name, finished=True),target=False)
-                        synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(190, 250))
+                        synch_label = uppaalpy.Label(kind="synchronisation", value=sync_channel_str, pos=(posX-100, -115))
                         # Create connection of endtask to beginning
-                        temp.graph.add_transition(uppaalpy.Transition(source="id999", target="id0", synchronisation=synch_label))
+                        # Add an additional nail here so the transition looks better on the template
+                        nail = uppaalpy.Nail(posX+150, -93)
+                        nail_list: list[uppaalpy.Nail] = []
+                        nail_list.append(nail)
+                        temp.graph.add_transition(uppaalpy.Transition(source="id999", target="id0", synchronisation=synch_label, nails=nail_list))
                 temp = generate_transitions_at_template(template=temp, order=m.order, current_method=m, node_data=node_data, nta=nta, method_name=m.method_name)
                 # TODO: Generate parameters for each of the templates
                 add_precondition_and_effects_parameter_types_in_template(
@@ -374,7 +390,7 @@ def search_and_generate_effects_in_node(order: list, effects_list: list[Effect],
             has_effects = True
     return has_effects, eff_label
 
-def create_effect_label_for_transition(eff_label: list[str], context_nta:uppaalpy.NTA):
+def create_effect_label_for_transition(eff_label: list[str], context_nta:uppaalpy.NTA, pos=None):
     update_value = ""
     update_label = None
     for i in range(len(eff_label)):
@@ -383,11 +399,11 @@ def create_effect_label_for_transition(eff_label: list[str], context_nta:uppaalp
         else:
             update_value += eff_label[i]
     # print(f"update_value: {update_value}")
-    update_label = uppaalpy.UpdateLabel(
-                kind="assignment", 
-                value=update_value,
-                pos=(20, 90),
-                ctx=context_nta.context)
+    
+    if(pos == None):
+        update_label = uppaalpy.UpdateLabel(kind="assignment", value=update_value,pos=(20, 90), ctx=context_nta.context)
+    else:
+        update_label = uppaalpy.UpdateLabel(kind="assignment", value=update_value,pos=pos, ctx=context_nta.context)
     return update_label
 
 def search_and_generate_preconditions_in_node(preconditions_list: list[Precondition]):
