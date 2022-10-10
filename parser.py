@@ -1,10 +1,6 @@
-from ast import parse
-import re
-from typing import List
 import utils
-import uppaal_utils as upu
 import copy
-import uppaalpy
+
 
 # Constants used throughout parsing
 const_possible_precs = "Possible orderings for method"
@@ -120,7 +116,7 @@ def parse_method_ordering(method_name:str, ordering_line: str):
 
 
 
-def open_and_parse_method_file(filename) -> List[utils.MethodData]:
+def open_and_parse_method_file(filename) -> list[utils.MethodData]:
     with open(filename) as file:
         lines = list(file.readlines())
         parsed_data  = []
@@ -234,48 +230,24 @@ def check_if_node_is_task(node: str):
         return True
 
 
-method_data: List[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
-abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
-var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
-predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
+def execute_parser():
+    method_data: list[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
+    abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
+    var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
+    predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
+    goal_node_info = open_and_parse_goal_orderings("goal_ordering.txt")
+    # print(goal_node_info)
+    # for data in method_data:
+    #     print(data)
+        # print("Order:", data.order)
 
-goal_node_info = open_and_parse_goal_orderings("goal_ordering.txt")
-# print(goal_node_info)
-# for data in method_data:
-#     print(data)
-    # print("Order:", data.order)
+    # for var_and_type in var_and_types_list:
+    #     print(f"var_and_type.var_name: {var_and_type.var_name}")
+    #     print(f"var_and_type.type_name: {var_and_type.type_name}")
 
-# for var_and_type in var_and_types_list:
-#     print(f"var_and_type.var_name: {var_and_type.var_name}")
-#     print(f"var_and_type.type_name: {var_and_type.type_name}")
+    # Clean file content before running the program again
+    f = open('models\empty_model_new.xml', 'r+')
+    f.truncate(0) # need '0' when using r+
+    f.close()
 
-# Clean file content before running the program again
-f = open('models\empty_model_new.xml', 'r+')
-f.truncate(0) # need '0' when using r+
-f.close()
-
-#UPPAAL Region
-# First step, create a NTA with template
-# context = uppaalpy.Context()
-nta_partial = uppaalpy.NTA.from_xml(path="models\empty_model.xml")
-nta_partial, var_and_types_with_predicates = upu.generate_declaration_for_nta(nta_partial, predicates=predicate_dict, var_and_types_list=var_and_types_list, set_of_types=types_set)
-var_and_types_with_predicates =  upu.link_variables_with_predicates_and_types(var_and_types_list_with_predicates=var_and_types_with_predicates)
-# for var_and_type in var_and_types_with_predicates:
-#     print(f"{var_and_type.var_name}")
-#     print(f"{var_and_type.predicates_name_list}")
-
-nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates)
-nta_partial = upu.generate_default_verifiable_queries(nta=nta_partial)
-nta_partial = upu.generate_declarations_of_struct_variables_in_nta(nta=nta_partial, variables_set=set(var_and_types_with_predicates))
-nta_partial = upu.generate_boolean_declarations_for_capabilities(method_data=method_data, nta=nta_partial)
-nta_partial = upu.generate_system_declarations(nta=nta_partial, method_data=method_data)
-# Add template example below
-# upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
-
-# Debug
-# for tp in nta_partial.templates:
-#     upu.print_nodes_from_template(tp)
-
-nta_partial.to_file(path='models\empty_model_new.xml')
-
-#End UPPAAL Region
+    return method_data, abstract_task_data, var_and_types_list, types_set, predicate_dict, goal_node_info

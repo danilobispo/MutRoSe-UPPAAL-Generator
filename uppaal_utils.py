@@ -1,7 +1,5 @@
 # Utilitary functions for UPPAAL template generation
 import re
-from turtle import update
-from typing import List, Tuple
 import uppaalpy
 import copy
 
@@ -21,7 +19,7 @@ def print_nta_declaration(nta: uppaalpy.NTA):
     print(nta.declaration.text)
 
 
-def get_nodes_from_template(template: uppaalpy.Template) -> List[uppaalpy.Node]:
+def get_nodes_from_template(template: uppaalpy.Template) -> list[uppaalpy.Node]:
     return template.graph.get_nodes()
 
 
@@ -31,7 +29,7 @@ def retrieve_node_copy(template: uppaalpy.Template) -> uppaalpy.Location:
     return node_copy
 
 
-def add_location(template: uppaalpy.Template, id: str, pos: Tuple[int, int], name: str):
+def add_location(template: uppaalpy.Template, id: str, pos:tuple[int, int], name: str):
     nc = retrieve_node_copy(template)
     nc.id = id  # e.g idX(switch X for a)
     nc.pos = pos
@@ -53,7 +51,7 @@ def add_transition(template: uppaalpy.Template, source: str, target: str):
     tc.target = target  # e.g idX(switch X for a)
     template.graph.add_transition(tc)
 
-def generate_transitions_at_template(template: uppaalpy.Template, order: list, current_method: MethodData, node_data: List[AbstractTask], nta: uppaalpy.NTA, method_name:str) -> uppaalpy.Template:
+def generate_transitions_at_template(template: uppaalpy.Template, order: list, current_method: MethodData, node_data: list[AbstractTask], nta: uppaalpy.NTA, method_name:str) -> uppaalpy.Template:
     preconditions_list: list[Precondition] = current_method.preconditions
     effects_list: list[Effect] = current_method.effects
     capabilities_list: list[Capability] = current_method.capabilities
@@ -185,7 +183,7 @@ def create_capability_fail_transition(template, nta, method_name, id_count, capa
     template.graph.add_transition(additional_trans)
     template.graph.add_transition(trans_to_init_node)
 
-def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: List[AbstractTask]):
+def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[AbstractTask]):
     locations = template.graph.get_nodes()
     for i in range(len(locations)):
         if(check_camel_case_regex(locations[i].name.name)):
@@ -243,12 +241,12 @@ def add_template(
         nta.templates.append(tp_copy)
 
 
-def generate_declaration_for_nta(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]):
+def generate_declaration_for_nta(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: list[Variable], set_of_types: set[str]):
     var_and_types_with_predicates: list[Variable] = []
     nta, var_and_types_with_predicates = generate_structs_for_types(nta, predicates, var_and_types_list, set_of_types)
     return nta, var_and_types_with_predicates
 
-def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: List[Variable], set_of_types: set[str]):
+def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and_types_list: list[Variable], set_of_types: set[str]):
     # For each of the types in the set we gotta create a struct, so the types can have specific predicates
     var_and_types_with_predicates:list[Variable] = []
     nta.declaration.text += "\n"
@@ -287,7 +285,7 @@ def generate_structs_for_types(nta: uppaalpy.NTA, predicates: dict[str], var_and
 
     return nta, var_and_types_with_predicates
 
-def generate_uppaal_methods_templates(method_data: List[MethodData], nta: uppaalpy.NTA, node_data: List[AbstractTask], var_and_types_list_in_predicates: list[Variable]) -> uppaalpy.NTA:
+def generate_uppaal_methods_templates(method_data: list[MethodData], nta: uppaalpy.NTA, node_data: list[AbstractTask], var_and_types_list_in_predicates: list[Variable]) -> uppaalpy.NTA:
     for m in method_data:
         m = trim_method_predicates(method=m, var_and_types_list_in_predicates=var_and_types_list_in_predicates)
     for m in method_data:
@@ -639,7 +637,7 @@ def generate_declarations_of_struct_variables_in_nta(nta: uppaalpy.NTA, variable
     return nta
 
         
-def link_variables_with_predicates_and_types(var_and_types_list_with_predicates: List[Variable]):
+def link_variables_with_predicates_and_types(var_and_types_list_with_predicates: list[Variable]):
     # Adds remaining predicates to variables still without them
     aux_var_and_types_list_with_predicates = copy.deepcopy(var_and_types_list_with_predicates)
     

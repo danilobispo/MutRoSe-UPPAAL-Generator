@@ -1,5 +1,3 @@
-from typing import List
-
 class Precondition:
     def __init__(self, name, type, value, tied_to=None):
         self.name = name
@@ -73,7 +71,7 @@ class Variable(object):
 class GoalTreeNode:
     def __init__(self, name: str, children: list, isTask: bool) -> None:
         self.name : str = name
-        self.children : List[self] = children,
+        self.children : list[self] = children,
         self.isTask: bool =  isTask
 
     def __repr__(self) -> str:
