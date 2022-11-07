@@ -11,14 +11,13 @@ def execute_generator(method_data, abstract_task_data, var_and_types_list, types
     # for var_and_type in var_and_types_with_predicates:
     #     print(f"{var_and_type.var_name}")
     #     print(f"{var_and_type.predicates_name_list}")
+    nta_partial = upu.generate_goal_model_template(goal_nodes_info=goal_node_info, nta=nta_partial)
 
     nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates)
     nta_partial = upu.generate_default_verifiable_queries(nta=nta_partial)
     nta_partial = upu.generate_declarations_of_struct_variables_in_nta(nta=nta_partial, variables_set=set(var_and_types_with_predicates))
     nta_partial = upu.generate_boolean_declarations_for_capabilities(method_data=method_data, nta=nta_partial)
     nta_partial = upu.generate_system_declarations(nta=nta_partial, method_data=method_data)
-    # Add template example below
-    # upu.add_template(nta= nta_partial, template_name="task_1", template_to_copy=nta.templates[0], parameters=None, declaration=None)
 
     # Debug
     # for tp in nta_partial.templates:

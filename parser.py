@@ -1,3 +1,4 @@
+from array import array
 import utils
 import copy
 
@@ -211,11 +212,16 @@ def open_and_parse_goal_orderings(filename: str):
             # Debug
             # print(line)
             if(len(line.rstrip()) > 0):
-                source, targets = line.split(sep=const_dash_sep)[0], line.split(sep=const_dash_sep)[1]
+                source, targets = line.split(sep=const_dash_sep)[0].strip(), line.split(sep=const_dash_sep)[1]
+                if source[:2] == "AT":
+                    source = trim_tasks_names(source)
                 targets = targets.split(sep=" ")[1:]
                 for target in targets:
-                    if(target == "\n"):
+                    if target == "\n":
                         targets.remove(target)
+                    if target[:2] == "AT" :
+                        index = targets.index(target)
+                        targets[index] = trim_tasks_names(target)
                 tree_node = utils.GoalTreeNode(source, targets, isTask=check_if_node_is_task(source))
                 tree_node_list.append(tree_node)
                 # Debug
@@ -229,13 +235,18 @@ def check_if_node_is_task(node: str):
     elif(node[:2] == "AT"):
         return True
 
+def trim_tasks_names(task_name: str):
+    # We're going to remove characters starting from the _ character, so we find its index and
+    # delete all the string from then on
+    return task_name[0:task_name.find("_")]
+
 
 def execute_parser():
     method_data: list[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
     abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
     var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
     predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
-    goal_node_info = open_and_parse_goal_orderings("goal_ordering.txt")
+    goal_node_info = open_and_parse_goal_orderings("general_annot_orderings.txt")
     # print(goal_node_info)
     # for data in method_data:
     #     print(data)
