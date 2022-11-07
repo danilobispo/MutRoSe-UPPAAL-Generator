@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
-typedef struct {
 bool pickedmeal;
 bool pickeddishes;
 bool at;
 } Robot;
+typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -65,13 +65,29 @@ broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
 Robot r2 = {false,false,false};
-Robot r1 = {false,false,false};
-Robot r = {false,false,false};
 Patient p = {false,false};
+Robot r = {false,false,false};
+Robot r1 = {false,false,false};
 
-bool manipulation = true;
 bool door_opening = true;
+bool manipulation = true;
 </declaration>
+	<template>
+		<name x="0" y="0">goal_model_template</name>
+		<parameter></parameter>
+		<declaration></declaration>
+		<location id="id0" x="490" y="490">
+			<name x="490" y="470">beginMissionNode</name>
+		</location>
+		<location id="id1" x="600" y="500">
+			<name x="600" y="470">goal_G3</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+		</transition>
+	</template>
 	<template>
 		<name x="5" y="5">temp_food_pickup_0</name>
 		<parameter>Robot &amp;r </parameter>
@@ -914,7 +930,7 @@ var_temp_pick_dishes_with_robot_not_at_location_0 = temp_pick_dishes_with_robot_
 var_temp_pickup_without_door_opening_0 = temp_pickup_without_door_opening_0(p,r1);
 var_temp_pick_dishes_one_robot_at_location_0 = temp_pick_dishes_one_robot_at_location_0(r1,r2);
 var_temp_dishes_retrieval_0 = temp_dishes_retrieval_0();
-system var_temp_food_pickup_0,var_temp_table_deliver_0,var_temp_fetch_deliver_0,var_temp_fetch_meal_with_human_0,var_temp_fetch_meal_with_robot_0,var_temp_pickup_with_door_opening_0,var_temp_pick_dishes_two_robots_at_location_0,var_temp_pick_dishes_with_human_0,var_temp_pick_dishes_with_robot_at_location_0,var_temp_pick_dishes_with_robot_not_at_location_0,var_temp_pickup_without_door_opening_0,var_temp_pick_dishes_one_robot_at_location_0,var_temp_dishes_retrieval_0;</system>
+system var_goal_model_template,var_temp_food_pickup_0,var_temp_table_deliver_0,var_temp_fetch_deliver_0,var_temp_fetch_meal_with_human_0,var_temp_fetch_meal_with_robot_0,var_temp_pickup_with_door_opening_0,var_temp_pick_dishes_two_robots_at_location_0,var_temp_pick_dishes_with_human_0,var_temp_pick_dishes_with_robot_at_location_0,var_temp_pick_dishes_with_robot_not_at_location_0,var_temp_pickup_without_door_opening_0,var_temp_pick_dishes_one_robot_at_location_0,var_temp_dishes_retrieval_0;</system>
 	<queries>
 		<query>
 			<formula/>
