@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool pickedmeal;
-bool pickeddishes;
-bool at;
-} Robot;
-typedef struct {
 bool patientcanfetch;
 bool patientcanopen;
 } Patient;
+typedef struct {
+bool pickeddishes;
+bool at;
+bool pickedmeal;
+} Robot;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -64,28 +64,70 @@ broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
-Robot r2 = {false,false,false};
 Patient p = {false,false};
+Robot r2 = {false,false,false};
 Robot r = {false,false,false};
 Robot r1 = {false,false,false};
 
-bool door_opening = true;
 bool manipulation = true;
+bool door_opening = true;
 </declaration>
 	<template>
 		<name x="0" y="0">goal_model_template</name>
 		<parameter></parameter>
 		<declaration></declaration>
-		<location id="id0" x="490" y="490">
-			<name x="490" y="470">beginMissionNode</name>
+		<location id="id0" x="420" y="500">
+			<name x="420" y="470">beginMissionNode</name>
 		</location>
 		<location id="id1" x="600" y="500">
 			<name x="600" y="470">goal_G3</name>
+		</location>
+		<location id="id2" x="720" y="500">
+			<name x="720" y="470">goal_G4</name>
+		</location>
+		<location id="id3" x="960" y="500">
+			<name x="960" y="470">goal_G6</name>
+		</location>
+		<location id="id4" x="840" y="500">
+			<name x="840" y="470">goal_G7</name>
+		</location>
+		<location id="id5" x="1080" y="500">
+			<name x="1080" y="470">goal_G10</name>
+		</location>
+		<location id="id6" x="1320" y="500">
+			<name x="1320" y="470">goal_G11</name>
+		</location>
+		<location id="id7" x="1440" y="500">
+			<name x="1440" y="470">goal_G12</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
 		</transition>
 	</template>
 	<template>
