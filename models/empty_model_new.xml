@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
-typedef struct {
 bool pickeddishes;
 bool at;
 bool pickedmeal;
 } Robot;
+typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
 
 broadcast chan start_food_pickup_0;
 broadcast chan finish_food_pickup_0;
@@ -65,12 +65,12 @@ broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
 Patient p = {false,false};
-Robot r2 = {false,false,false};
 Robot r = {false,false,false};
+Robot r2 = {false,false,false};
 Robot r1 = {false,false,false};
 
-bool manipulation = true;
 bool door_opening = true;
+bool manipulation = true;
 </declaration>
 	<template>
 		<name x="0" y="0">goal_model_template</name>
@@ -79,28 +79,41 @@ bool door_opening = true;
 		<location id="id0" x="420" y="500">
 			<name x="420" y="470">beginMissionNode</name>
 		</location>
+		<location id="id777" x="420" y="100">
+			<name x="420" y="70">missionFailed</name>
+		</location>
 		<location id="id1" x="600" y="500">
 			<name x="600" y="470">goal_G3</name>
 		</location>
 		<location id="id2" x="720" y="500">
 			<name x="720" y="470">goal_G4</name>
 		</location>
-		<location id="id3" x="960" y="500">
-			<name x="960" y="470">goal_G6</name>
+		<location id="id3" x="840" y="500">
+			<name x="840" y="470">goal_G6</name>
 		</location>
-		<location id="id4" x="840" y="500">
-			<name x="840" y="470">goal_G7</name>
+		<location id="id4" x="840" y="400">
+			<name x="840" y="370">exec_AT1</name>
 		</location>
-		<location id="id5" x="1080" y="500">
-			<name x="1080" y="470">goal_G10</name>
+		<location id="id5" x="840" y="300">
+			<name x="840" y="270">finish_AT1</name>
 		</location>
-		<location id="id6" x="1320" y="500">
-			<name x="1320" y="470">goal_G11</name>
+		<location id="id6" x="990" y="500">
+			<name x="990" y="470">goal_G7</name>
 		</location>
-		<location id="id7" x="1440" y="500">
-			<name x="1440" y="470">goal_G12</name>
+		<location id="id7" x="1110" y="500">
+			<name x="1110" y="470">goal_G10</name>
+		</location>
+		<location id="id8" x="1230" y="500">
+			<name x="1230" y="470">goal_G11</name>
+		</location>
+		<location id="id9" x="1350" y="500">
+			<name x="1350" y="470">goal_G12</name>
 		</location>
 		<init ref="id0"/>
+		<transition>
+			<source ref="id777"/>
+			<target ref="id0"/>
+		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
@@ -116,10 +129,17 @@ bool door_opening = true;
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
+			<label kind="synchronisation" x="840" y="450">start_food_pickup_0!</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id5"/>
+			<label kind="synchronisation" x="840" y="350">finish_food_pickup_0?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id777"/>
+			<label kind="guard" x="700" y="220">food_pickup_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
@@ -128,6 +148,14 @@ bool door_opening = true;
 		<transition>
 			<source ref="id6"/>
 			<target ref="id7"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
 		</transition>
 	</template>
 	<template>

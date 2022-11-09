@@ -240,13 +240,40 @@ def trim_tasks_names(task_name: str):
     # delete all the string from then on
     return task_name[0:task_name.find("_")]
 
+def open_and_parse_goal_properties(filename:str):
+    init_line = 0
+    last_line = 5
+    goal_properties_list = []
+    with open(filename) as fp:
+        lines = fp.readlines()
+        while last_line <= len(lines):
+            goal_lines: list = lines[init_line: last_line]
+            first_line = goal_lines[0].split(sep=":")
+            node_id, node_name = first_line[1].strip(), first_line[2].split(sep="[")[0].strip()
+            node_context = goal_lines[1].split(sep=":")[1].strip()
+            # print(goal_lines[3].split(sep="?")[1].strip())
+            node_group = True if goal_lines[3].split(sep="?")[1].strip() == "1" else False
+            node_divisible = True if goal_lines[4].split(sep="?")[1].strip() == "1" else False
+            goal_info = utils.GoalInfo(node_id, node_name, node_context, node_group, node_divisible)
+            goal_properties_list.append(goal_info)
+            init_line += 6
+            last_line = init_line + 5
+
+    return goal_properties_list
+
 
 def execute_parser():
     method_data: list[utils.MethodData] = open_and_parse_method_file("method_orderings.txt")
     abstract_task_data = open_and_parse_abstract_tasks_file("node_data.txt")
     var_and_types_list, types_set= open_and_parse_types_and_variables_file("types_and_variables_data.txt")
     predicate_dict = create_predicate_vars_for_uppaal(method_data=method_data)
-    goal_node_info = open_and_parse_goal_orderings("general_annot_orderings.txt")
+    goal_orderings = open_and_parse_goal_orderings("general_annot_orderings.txt")
+    goal_properties_list = open_and_parse_goal_properties("goal_nodes_info.txt")
+
+    # Debug
+    # for goal in goal_properties_list:
+        # print(goal)
+
     # print(goal_node_info)
     # for data in method_data:
     #     print(data)
@@ -261,4 +288,4 @@ def execute_parser():
     f.truncate(0) # need '0' when using r+
     f.close()
 
-    return method_data, abstract_task_data, var_and_types_list, types_set, predicate_dict, goal_node_info
+    return method_data, abstract_task_data, var_and_types_list, types_set, predicate_dict, goal_orderings, goal_properties_list
