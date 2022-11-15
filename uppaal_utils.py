@@ -13,6 +13,9 @@ const_or_sequential = "OR"
 const_operators = [const_sequential, const_parallel,
                    const_or_sequential, const_fallback]
 
+const_mission_complete_var = "mission_complete"
+const_mission_failed_var = "mission_failed"
+
 
 def check_camel_case_regex(string: str):
     return re.match("(?:[A-Z])(?:\S?)+(?:[A-Z])(?:[a-z])+", string)
@@ -713,6 +716,8 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
                     nta.system.text += ");\n"
                 else:
                     nta.system.text += ");\n"
+    # Goal model template section
+    nta.system.text += f"var_goal_model_template = goal_model_template();\n"  
     nta.system.text += "system "
     for i, temp in enumerate(nta.templates):
         nta.system.text += f"var_{temp.name.name}"
@@ -776,6 +781,9 @@ def add_failed_channels_booleans_in_nta(method_name: str, nta: uppaalpy.NTA):
 
 def is_gm_task(node: str):
     return True if (node.startswith("AT")) else False
+
+def is_finish_task_node(node: str):
+    return True if (node.find("finish_AT") != -1) else False
 
 
 def get_list_of_tasks(goal_orderings: list[GoalTreeNode]):
@@ -1016,6 +1024,12 @@ def get_parent_operation(goal_orderings: list[GoalTreeNode], node: GoalTreeNode)
                         get_parent_operation(
                             goal_orderings, find_node_by_name(item.name, goal_orderings))
 
+def get_immediate_parent(goal_orderings: list[GoalTreeNode], node: GoalTreeNode):
+    for item in goal_orderings:
+        for child in item.children:
+            if child == node.name:
+                return item, separate_goal_operator(item.name)
+
 
 def find_node_by_name(name: str, goal_orderings: list[GoalTreeNode]) -> GoalTreeNode:
     for node in goal_orderings:
@@ -1029,6 +1043,22 @@ def has_children(goal: GoalTreeNode) -> str:
     else:
         return False
 
+def create_update_for_mission_end(nta: uppaalpy.NTA, completedOrFailed: bool, pos = None) -> uppaalpy.Label:
+    if pos is not None:
+        if completedOrFailed:
+            return uppaalpy.UpdateLabel(kind="assignment",ctx =nta.context, pos=pos,value=f"{const_mission_complete_var} = true")
+        else:
+            return uppaalpy.UpdateLabel(kind="assignment", ctx=nta.context, pos=pos,value=f"{const_mission_failed_var} = true")
+    else:
+        if completedOrFailed:
+            return uppaalpy.UpdateLabel(kind="assignment", ctx=nta.context, pos=(500, 300),value=f"{const_mission_complete_var} = true")
+        else:
+            return uppaalpy.UpdateLabel(kind="assignment", ctx=nta.context, pos=(500, 300),value=f"{const_mission_failed_var} = true")
+
+
+def create_nta_declaration_for_mission_end(nta: uppaalpy.NTA):
+    nta.declaration.text += f"bool {const_mission_complete_var} = false;\n"
+    nta.declaration.text += f"bool {const_mission_failed_var} = false;\n"
 
 def get_goal_children(goal_orderings: list[GoalTreeNode], node: str):
     for goal_node in goal_orderings:
@@ -1084,6 +1114,29 @@ def get_available_methods_for_task_id(task_id: str, tasks_names: list[AbstractTa
         if task_id == task.id:
             return task.methods
 
+def get_tasks_transitions(template: uppaalpy.Template):
+    nodes: list[uppaalpy.Location] = template.graph.get_nodes()
+    task_nodes_list: list[uppaalpy.Location] = []
+    transition_list = template.graph._transitions
+    for node in nodes:
+        # Get all tasks nodes
+        if is_finish_task_node(node.name.name):
+            task_nodes_list.append(node)
+    for node in task_nodes_list:
+        transition_count = 0
+        node_transition_list: list[uppaalpy.Transition] = []
+        for transition in transition_list:
+            if node.id == transition.source:
+                transition_count += 1
+                node_transition_list.append(transition)
+        # By checking the connections the node has, it is possible to infer if its connected with the last node
+        if transition_count == 1: # Only one connection stems from this node, it should be 2 normally
+            if node_transition_list[0].target == "id777": #If the only connection is with the error node, made by default
+                # We'll add another, with the connection to the end node
+                template.graph.add_transition(uppaalpy.Transition(source=node.id, target="id9000"))
+    return task_nodes_list
+        
+
 
 def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaalpy.NTA, tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]) -> uppaalpy.NTA:
     tasks_list = get_list_of_tasks(goal_orderings)
@@ -1121,75 +1174,145 @@ def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaal
         f"Common ancestor of all tasks {separate_goal_name(node)} operation is {node_op}")
 
     initial_pos_x, initial_pos_y = 720, 500
+    or_children: list[str] = []
     generate_subsequent_goals_for_child_node(
-        goal_orderings, node, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data)
+        goal_orderings, node, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data, or_children)
+    # Add remaining connections to the end of the task and trigger the variables which declare missionFailed or missionCompleted
+    get_tasks_transitions(goal_model_template)
     return nta
 
 
-def create_sequential_tasks_location_template(task_list: list, template: uppaalpy.Template, tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]):
-    for task in task_list:
-        nodes = template.graph.get_nodes()
-        last_node: uppaalpy.Node = nodes[-1]
-        (updated_x_position, updated_y_position) = last_node.pos
-        updated_y_position -= 100
-        exec_location_id_number = separate_number_from_id_and_get_number(
-            last_node.id) + 1
-        finish_location_id_number = separate_number_from_id_and_get_number(
-            last_node.id) + 2
-        exec_location_id = "id"+str(exec_location_id_number)
-        finish_location_id = "id"+str(finish_location_id_number)
+def create_sequential_tasks_location_template(task: str, template: uppaalpy.Template, tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]):
+    
+    nodes = template.graph.get_nodes()
+    last_node: uppaalpy.Node = nodes[-1]
+    (updated_x_position, updated_y_position) = last_node.pos
+    updated_y_position -= 100
+    exec_location_id_number = separate_number_from_id_and_get_number(
+        last_node.id) + 1
+    finish_location_id_number = separate_number_from_id_and_get_number(
+        last_node.id) + 2
+    exec_location_id = "id"+str(exec_location_id_number)
+    finish_location_id = "id"+str(finish_location_id_number)
 
-        # Exec Location
-        exec_location = uppaalpy.Location(
-            id=exec_location_id,
-            pos=(updated_x_position, updated_y_position),
-            name=uppaalpy.Name(name="exec_"+task, pos=(updated_x_position, updated_y_position-30)))
+    # Exec Location
+    exec_location = uppaalpy.Location(
+        id=exec_location_id,
+        pos=(updated_x_position, updated_y_position),
+        name=uppaalpy.Name(name="exec_"+task, pos=(updated_x_position, updated_y_position-30)))
 
-        updated_y_position -= 100
+    updated_y_position -= 100
 
-        # Finish location
-        finish_location = uppaalpy.Location(
-            id=finish_location_id,
-            pos=(updated_x_position, updated_y_position),
-            name=uppaalpy.Name(name="finish_"+task, pos=(updated_x_position, updated_y_position-30)))
+    # Finish location
+    finish_location = uppaalpy.Location(
+        id=finish_location_id,
+        pos=(updated_x_position, updated_y_position),
+        name=uppaalpy.Name(name="finish_"+task, pos=(updated_x_position, updated_y_position-30)))
 
-        methods = get_available_methods_for_task_id(task, tasks_names)
-        for method in methods:
-            for m in method_data:
-                if m.method_name.__contains__(method):
-                    # Last goal to task transition
-                    # I must add the start channel to this transition
-                    exec_sync_channel_str = create_channel_synch_for_transition(
-                        get_channel_name(method_name=m.method_name, finished=False), target=False)
-                    exec_synch_label = uppaalpy.Label(
-                        kind="synchronisation", value=exec_sync_channel_str, pos=(updated_x_position, updated_y_position+150))
-                    goal_to_task_transition = uppaalpy.Transition(
-                        source=last_node.id, target=exec_location_id, synchronisation=exec_synch_label)
+    methods = get_available_methods_for_task_id(task, tasks_names)
+    for method in methods:
+        for m in method_data:
+            if m.method_name.__contains__(method):
+                # Last goal to task transition
+                # I must add the start channel to this transition
+                exec_sync_channel_str = create_channel_synch_for_transition(
+                    get_channel_name(method_name=m.method_name, finished=False), target=False)
+                exec_synch_label = uppaalpy.Label(
+                    kind="synchronisation", value=exec_sync_channel_str, pos=(updated_x_position, updated_y_position+150))
+                goal_to_task_transition = uppaalpy.Transition(
+                    source=last_node.id, target=exec_location_id, synchronisation=exec_synch_label)
 
-                    # Exec to finish location transition
-                    # I must add the finish channel to this transition
-                    finish_sync_channel_str = create_channel_synch_for_transition(
-                        get_channel_name(method_name=m.method_name, finished=True), target=True)
-                    finish_synch_label = uppaalpy.Label(
-                        kind="synchronisation", value=finish_sync_channel_str, pos=(updated_x_position, updated_y_position+50))
-                    exec_location_transition = uppaalpy.Transition(
-                        source=exec_location_id, target=finish_location_id, synchronisation=finish_synch_label)
+                # Exec to finish location transition
+                # I must add the finish channel to this transition
+                finish_sync_channel_str = create_channel_synch_for_transition(
+                    get_channel_name(method_name=m.method_name, finished=True), target=True)
+                finish_synch_label = uppaalpy.Label(
+                    kind="synchronisation", value=finish_sync_channel_str, pos=(updated_x_position, updated_y_position+50))
+                exec_location_transition = uppaalpy.Transition(
+                    source=exec_location_id, target=finish_location_id, synchronisation=finish_synch_label)
 
-                    # Add transition to failure node with guard condition
-                    # by definition, the failed node is "id777"
-                    fail_transition = uppaalpy.Transition(
-                        source=finish_location_id, 
-                        target="id777", 
-                        guard=
-                            uppaalpy.ConstraintLabel(kind="guard", 
-                            value=generate_failed_boolean_transition_guard(m.method_name, True), 
-                            pos=(updated_x_position-140, updated_y_position-80),
-                            ctx=template.context))
-                    template.graph.add_transition(goal_to_task_transition)
-                    template.graph.add_location(exec_location)
-                    template.graph.add_transition(exec_location_transition)
-                    template.graph.add_location(finish_location)
-                    template.graph.add_transition(fail_transition)
+                # Add transition to failure node with guard condition
+                # by definition, the failed node is "id777"
+                fail_transition = uppaalpy.Transition(
+                    source=finish_location_id, 
+                    target="id777", 
+                    guard=
+                        uppaalpy.ConstraintLabel(kind="guard", 
+                        value=generate_failed_boolean_transition_guard(m.method_name, True), 
+                        pos=(updated_x_position-140, updated_y_position-80),
+                        ctx=template.context))
+                template.graph.add_transition(goal_to_task_transition)
+                template.graph.add_location(exec_location)
+                template.graph.add_transition(exec_location_transition)
+                template.graph.add_location(finish_location)
+                template.graph.add_transition(fail_transition)
+
+def create_OR_tasks_location_template(task: str, template: uppaalpy.Template, tasks_names: list[AbstractTaskWithId], method_data: list[MethodData], parent: GoalTreeNode):
+    # In this case, since all are mutually exclusive (XOR)
+    # We'll find the parent and only then 
+    nodes: list[uppaalpy.Location] = template.graph.get_nodes()
+    last_node = nodes[-1]
+    (updated_x_position, updated_y_position) = last_node.pos
+    updated_y_position -= 100 
+    exec_location_id_number = separate_number_from_id_and_get_number(
+        last_node.id) + 1
+    finish_location_id_number = separate_number_from_id_and_get_number(
+        last_node.id) + 2
+    exec_location_id = "id"+str(exec_location_id_number)
+    finish_location_id = "id"+str(finish_location_id_number)
+
+    # Exec Location
+    exec_location = uppaalpy.Location(
+        id=exec_location_id,
+        pos=(updated_x_position, updated_y_position),
+        name=uppaalpy.Name(name="exec_"+task, pos=(updated_x_position, updated_y_position-30)))
+
+    updated_y_position -= 100
+
+    # Finish location
+    finish_location = uppaalpy.Location(
+        id=finish_location_id,
+        pos=(updated_x_position, updated_y_position),
+        name=uppaalpy.Name(name="finish_"+task, pos=(updated_x_position, updated_y_position-30)))
+
+    template.graph.add_location(exec_location)
+    template.graph.add_location(finish_location)
+
+    methods = get_available_methods_for_task_id(task, tasks_names)
+    for method in methods:
+        for m in method_data:
+            if m.method_name.__contains__(method):
+                # Last goal to task transition
+                # I must add the start channel to this transition
+                exec_sync_channel_str = create_channel_synch_for_transition(
+                    get_channel_name(method_name=m.method_name, finished=False), target=False)
+                exec_synch_label = uppaalpy.Label(
+                    kind="synchronisation", value=exec_sync_channel_str, pos=(updated_x_position, updated_y_position+150))
+                goal_to_task_transition = uppaalpy.Transition(
+                    source=last_node.id, target=exec_location_id, synchronisation=exec_synch_label)
+
+                # Exec to finish location transition
+                # I must add the finish channel to this transition
+                finish_sync_channel_str = create_channel_synch_for_transition(
+                    get_channel_name(method_name=m.method_name, finished=True), target=True)
+                finish_synch_label = uppaalpy.Label(
+                    kind="synchronisation", value=finish_sync_channel_str, pos=(updated_x_position, updated_y_position+50))
+                exec_location_transition = uppaalpy.Transition(
+                    source=exec_location_id, target=finish_location_id, synchronisation=finish_synch_label)
+
+                # Add transition to failure node with guard condition
+                # by definition, the failed node is "id777"
+                fail_transition = uppaalpy.Transition(
+                    source=finish_location_id, 
+                    target="id777", 
+                    guard=
+                        uppaalpy.ConstraintLabel(kind="guard", 
+                        value=generate_failed_boolean_transition_guard(m.method_name, True), 
+                        pos=(updated_x_position-200, updated_y_position-80),
+                        ctx=template.context))
+    template.graph.add_transition(goal_to_task_transition)
+    template.graph.add_transition(exec_location_transition)
+    template.graph.add_transition(fail_transition)
 
 
 def generate_subsequent_goals_for_child_node(
@@ -1199,33 +1322,40 @@ def generate_subsequent_goals_for_child_node(
         initial_pos_x: int,
         initial_pos_y: int,
         tasks_names: list[AbstractTaskWithId],
-        method_data: list[MethodData]):
+        method_data: list[MethodData],
+        or_children: list[str]):
     children=get_goal_children(goal_orderings=goal_orderings, node=node)
     # print(f"children: {children}")
+    # no children, so it is the last node
+    if len(children) == 0 and not is_gm_task(node):
+        print(f"node {node} has no children!")
+
     for child in children:
         if is_gm_task(child):  # is Task?
             parent, parent_operation=get_parent_operation(
                 goal_orderings, find_node_by_name(node, goal_orderings))
             # First, gather all possible operands from the parent
-            child_task_list: list[str]=[]
+            # child_task_list: list[str]=[]
             print(f"parent: {parent}")
-            recursive_get_goal_children_tasks(
-                goal_orderings, parent.name, child_task_list)
-            print(f"child List: {child_task_list}")
+            # recursive_get_goal_children_tasks(
+                # goal_orderings, parent.name, child_task_list)
+            # print(f"child List: {child_task_list}")
             # Find parent and perform operation on node
-            print("is task")
+            print(f"is task {child}")
             print(f"parent_operation: {parent_operation}")
-            # TODO: Perform operation
+            # Perform operation if its not already performed
             if parent_operation == const_sequential:  # Sequential operation?
                 print("Task sequential operation")
                 create_sequential_tasks_location_template(
-                    child_task_list, goal_model_template, tasks_names, method_data)
+                    child, goal_model_template, tasks_names, method_data)
             elif parent_operation == const_fallback:  # FALLBACK operation?
                 print("Task fallback operation")
             elif parent_operation == const_parallel:  # Parallel operation?
                 print("Task parallel operation")
             elif parent_operation == const_or_sequential:  # OR Operation?
                 print("Task OR operation")
+                create_OR_tasks_location_template(
+                    child, goal_model_template, tasks_names, method_data, parent)
         else:  # is Goal?
             # If it's a goal, check if goal leads to a task, otherwise its dismissible
             print(f"it is goal {child}")
@@ -1234,38 +1364,62 @@ def generate_subsequent_goals_for_child_node(
             # Debug
             print(f"child {child} has path to children tasks? {has_path}")
             if has_path:  # Means that goal is not dismissable and must be put into the goal model template
-                # This means i must go to the end of the first node goal
-                # tree in order to assure the right order is maintained
-                # e.g. G4;G7 means all inside G4 tree must be executed first
-                child_operator=separate_goal_operator(child)
-                node_list=goal_model_template.graph.get_nodes()
+                child_operator = separate_goal_operator(child)
+                node_list: list[uppaalpy.Location] = goal_model_template.graph.get_nodes()
                 last_node: uppaalpy.Node=node_list[-1]
                 last_node_id_plus_one="id" + \
                     str(separate_number_from_id_and_get_number(
                         last_node.id)+1)
                 last_node_pos_x, last_node_pos_y=last_node.pos
+                # Due to bug in tasks generation, where tasks would overlap each other
+                # may not be necessary at the end
                 if (last_node_pos_x == initial_pos_x):
                     initial_pos_x += 150
-
-                goal_model_template.graph.add_location(uppaalpy.Location(
+                
+                goal_location = uppaalpy.Location(
                     id=last_node_id_plus_one,
                     pos=(initial_pos_x, initial_pos_y),
                     name=uppaalpy.Name(
                         name="goal_" +
                         str(separate_goal_name(child)),
-                        pos=(initial_pos_x, initial_pos_y-30))))
-                goal_model_template.graph.add_transition(
-                    uppaalpy.Transition(source=last_node.id, target=last_node_id_plus_one))
-                # Decomposition for goals without children
+                        pos=(initial_pos_x, initial_pos_y-30)))
+
+                # Specific loop where OR 
+                if child in or_children:
+                    goal_location, trans = or_insertion_function(goal_orderings, initial_pos_x, initial_pos_y, child, node_list, last_node_id_plus_one)
+                else:
+                    trans = uppaalpy.Transition(source=last_node.id, target=last_node_id_plus_one)
+
+                goal_model_template.graph.add_location(goal_location)
+                goal_model_template.graph.add_transition(trans)
+                    # Decomposition for goals without children
                 if child_operator is not None:
                     # Case ; (SEQUENTIAL)
                     if child_operator == const_sequential:
                         print("it is sequential!")
+                    if child_operator == const_or_sequential:
+                        or_children = get_goal_children(goal_orderings, child)
                 initial_pos_x += 120
 
 
         generate_subsequent_goals_for_child_node(
-            goal_orderings, child, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data)
+            goal_orderings, child, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data, or_children)
+
+
+def or_insertion_function(goal_orderings, initial_pos_x, initial_pos_y, child, node_list, last_node_id_plus_one):
+    goal_location = uppaalpy.Location(
+                    id=last_node_id_plus_one,
+                    pos=(initial_pos_x, initial_pos_y+60),
+                    name=uppaalpy.Name(
+                        name="goal_" +
+                        str(separate_goal_name(child)),
+                        pos=(initial_pos_x, initial_pos_y+30)))
+    or_parent, or_parent_operation = get_immediate_parent(goal_orderings, find_node_by_name(child, goal_orderings))
+    for goal_node in node_list:
+        if goal_node.name.name.endswith(separate_goal_name(or_parent.name)):
+            or_node_parent_id = goal_node.id
+    trans = uppaalpy.Transition(source=or_node_parent_id, target=last_node_id_plus_one)
+    return goal_location, trans
 
 
 def create_goal_model_initial_template(nta: uppaalpy.NTA) -> uppaalpy.Template:
@@ -1281,6 +1435,9 @@ def create_goal_model_initial_template(nta: uppaalpy.NTA) -> uppaalpy.Template:
         name=uppaalpy.Name("beginMissionNode", pos=(420, 470))
     ))
 
+    create_nta_declaration_for_mission_end(nta = nta)
+    mission_complete_label = create_update_for_mission_end(nta=nta, completedOrFailed=True, pos=(450, 720))
+    mission_failed_label = create_update_for_mission_end(nta=nta, completedOrFailed=False, pos=(280, 272))
 
     # mission failed location
     mission_failed_id="id777"
@@ -1291,7 +1448,18 @@ def create_goal_model_initial_template(nta: uppaalpy.NTA) -> uppaalpy.Template:
     ))
     # mission failed transition back to initial node
     goal_model_template.graph.add_transition(uppaalpy.Transition(
-        source=mission_failed_id, target=goal_model_template.graph.initial_location))
+        source=mission_failed_id, target=goal_model_template.graph.initial_location, assignment=mission_failed_label))
+
+    # mission complete location
+    mission_complete_id="id9000"
+    goal_model_template.graph.add_location(uppaalpy.Location(
+        id=mission_complete_id,
+        pos=(1500, 750),
+        name=uppaalpy.Name("missionComplete", pos=(1500, 720))
+    ))
+    # mission complete transition back to initial node
+    goal_model_template.graph.add_transition(uppaalpy.Transition(
+        source=mission_complete_id, target=goal_model_template.graph.initial_location, nails=[uppaalpy.Nail(425, 739)], assignment=mission_complete_label))
 
     nta.templates.append(goal_model_template)
     return goal_model_template
