@@ -727,6 +727,17 @@ def generate_system_declarations(nta: uppaalpy.NTA, method_data: list[MethodData
     return nta
 
 
+def generate_start_mission_function_definition(nta: uppaalpy.NTA, variables_set: set[Variable]):
+    
+    nta.declaration.text += "\nvoid startMission() {\n"
+    nta.declaration.text += "// starts mission with following values, you may change the values to your liking\n"
+    nta.declaration.text += f"\t{const_mission_complete_var} = false;\n"
+    nta.declaration.text += f"\t{const_mission_failed_var} = false;\n"
+    for var in variables_set:
+        for i, predicate in enumerate(var.predicates_name_list):
+            nta.declaration.text += f"\t{var.var_name}.{predicate} = false;\n"
+    nta.declaration.text += "\r}\n\n"
+
 def generate_declarations_of_struct_variables_in_nta(nta: uppaalpy.NTA, variables_set: set[Variable]) -> uppaalpy.NTA:
     nta.declaration.text += "\n"
     for var in variables_set:
@@ -1057,7 +1068,7 @@ def create_update_for_mission_end(nta: uppaalpy.NTA, completedOrFailed: bool, po
 
 
 def create_nta_declaration_for_mission_end(nta: uppaalpy.NTA):
-    nta.declaration.text += f"bool {const_mission_complete_var} = false;\n"
+    nta.declaration.text += f"\nbool {const_mission_complete_var} = false;\n"
     nta.declaration.text += f"bool {const_mission_failed_var} = false;\n"
 
 def get_goal_children(goal_orderings: list[GoalTreeNode], node: str):
@@ -1459,7 +1470,7 @@ def create_goal_model_initial_template(nta: uppaalpy.NTA) -> uppaalpy.Template:
     ))
     # mission complete transition back to initial node
     goal_model_template.graph.add_transition(uppaalpy.Transition(
-        source=mission_complete_id, target=goal_model_template.graph.initial_location, nails=[uppaalpy.Nail(425, 739)], assignment=mission_complete_label))
+        source=mission_complete_id, target=goal_model_template.graph.initial_location, nails=[uppaalpy.Nail(420, 740)], assignment=mission_complete_label))
 
     nta.templates.append(goal_model_template)
     return goal_model_template

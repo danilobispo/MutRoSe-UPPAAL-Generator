@@ -11,6 +11,7 @@ bool pickedmeal;
 bool pickeddishes;
 bool at;
 } Robot;
+
 bool mission_complete = false;
 bool mission_failed = false;
 
@@ -67,9 +68,27 @@ broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
 Robot r1 = {false,false,false};
-Patient p = {false,false};
-Robot r2 = {false,false,false};
 Robot r = {false,false,false};
+Robot r2 = {false,false,false};
+Patient p = {false,false};
+
+void startMission() {
+// starts mission with following values, you may change the values to your liking
+	mission_complete = false;
+	mission_failed = false;
+	r1.pickeddishes = false;
+	r1.at = false;
+	r1.pickedmeal = false;
+	r.pickedmeal = false;
+	r.pickeddishes = false;
+	r.at = false;
+	r2.pickedmeal = false;
+	r2.pickeddishes = false;
+	r2.at = false;
+	p.patientcanfetch = false;
+	p.patientcanopen = false;
+&#13;}
+
 
 bool manipulation = true;
 bool door_opening = true;
@@ -136,7 +155,7 @@ bool door_opening = true;
 			<source ref="id9000"/>
 			<target ref="id0"/>
 			<label kind="assignment" x="450" y="720">mission_complete = true</label>
-			<nail x="425" y="739"/>
+			<nail x="420" y="740"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
