@@ -246,19 +246,31 @@ def open_and_parse_goal_properties(filename:str):
     goal_properties_list = []
     with open(filename) as fp:
         lines = fp.readlines()
-        while last_line <= len(lines):
-            goal_lines: list = lines[init_line: last_line]
-            first_line = goal_lines[0].split(sep=":")
-            node_id, node_name = first_line[1].strip(), first_line[2].split(sep="[")[0].strip()
-            node_context = goal_lines[1].split(sep=":")[1].strip()
-            # print(goal_lines[3].split(sep="?")[1].strip())
-            node_group = True if goal_lines[3].split(sep="?")[1].strip() == "1" else False
-            node_divisible = True if goal_lines[4].split(sep="?")[1].strip() == "1" else False
-            goal_info = utils.GoalInfo(node_id, node_name, node_context, node_group, node_divisible)
-            goal_properties_list.append(goal_info)
-            init_line += 6
-            last_line = init_line + 5
-
+        # If the line is empty, then close the loop
+        # stop criteria is that if the line is empty, then we can create a new data structure
+        i = 0
+        const_node_line = "Node:"
+        const_context_line = "Context:"
+        const_group_line = "Group?"
+        const_divisible_line = "Divisible?"
+        while i < len(lines)-1:
+            if lines[i] == "\n":
+                goal_info = utils.GoalInfo(node_id, node_name, node_context, node_group, node_divisible)
+                goal_properties_list.append(goal_info)
+            else:
+                # If it starts with 
+                if lines[i].startswith(const_node_line):
+                    first_line = lines[i].split(sep=":")
+                    node_id, node_name = first_line[1].strip(), first_line[2].split(sep="[")[0].strip()
+                # If it starts with "Context: "
+                elif lines[i].startswith(const_context_line):
+                    node_context = lines[i].split(sep=":")[1].strip()
+                # If it starts with "Group? "
+                elif lines[i].startswith(const_group_line):
+                    node_group = True if lines[i].split(sep="?")[1].strip() == "1" else False
+                elif lines[i].startswith(const_divisible_line):
+                    node_divisible = True if lines[i].split(sep="?")[1].strip() == "1" else False
+            i += 1
     return goal_properties_list
 
 
@@ -271,8 +283,8 @@ def execute_parser():
     goal_properties_list = open_and_parse_goal_properties("goal_nodes_info.txt")
 
     # Debug
-    # for goal in goal_properties_list:
-        # print(goal)
+    for goal in goal_properties_list:
+        print(goal)
 
     # print(goal_node_info)
     # for data in method_data:
