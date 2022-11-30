@@ -241,8 +241,6 @@ def trim_tasks_names(task_name: str):
     return task_name[0:task_name.find("_")]
 
 def open_and_parse_goal_properties(filename:str):
-    init_line = 0
-    last_line = 5
     goal_properties_list = []
     with open(filename) as fp:
         lines = fp.readlines()
@@ -253,7 +251,7 @@ def open_and_parse_goal_properties(filename:str):
         const_context_line = "Context:"
         const_group_line = "Group?"
         const_divisible_line = "Divisible?"
-        while i < len(lines)-1:
+        while i < len(lines):
             if lines[i] == "\n":
                 goal_info = utils.GoalInfo(node_id, node_name, node_context, node_group, node_divisible)
                 goal_properties_list.append(goal_info)
