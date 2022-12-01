@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
+typedef struct {
 bool pickedmeal;
 bool pickeddishes;
 bool at;
 } Robot;
-typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
 
 bool mission_complete = false;
 bool mission_failed = false;
@@ -67,26 +67,26 @@ broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
-Robot r1 = {false,false,false};
-Robot r = {false,false,false};
-Robot r2 = {false,false,false};
 Patient p = {false,false};
+Robot r1 = {false,false,false};
+Robot r2 = {false,false,false};
+Robot r = {false,false,false};
 
 void startMission() {
 // starts mission with following values, you may change the values to your liking
 	mission_complete = false;
 	mission_failed = false;
+	p.patientcanfetch = false;
+	p.patientcanopen = false;
 	r1.pickeddishes = false;
 	r1.at = false;
 	r1.pickedmeal = false;
-	r.pickedmeal = false;
-	r.pickeddishes = false;
-	r.at = false;
 	r2.pickedmeal = false;
 	r2.pickeddishes = false;
 	r2.at = false;
-	p.patientcanfetch = false;
-	p.patientcanopen = false;
+	r.pickedmeal = false;
+	r.pickeddishes = false;
+	r.at = false;
 &#13;}
 
 
@@ -160,7 +160,7 @@ bool door_opening = true;
 		<transition>
 			<source ref="id0"/>
 			<target ref="id1"/>
-			<label kind="assignment" x="620" y="470">startMission()</label>
+			<label kind="assignment" x="467" y="501">startMission()</label>
 		</transition>
 		<transition>
 			<source ref="id1"/>

@@ -1172,7 +1172,7 @@ def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaal
     
     start_mission_str = "startMission()"
     # add the startMission task method call
-    start_mission_label = uppaalpy.Label(kind="assignment", pos=(620, 470),value=f"{const_start_mission_var}")
+    start_mission_label = uppaalpy.Label(kind="assignment", pos=(467,501),value=f"{const_start_mission_var}")
     # Then add a transition for the initial node
 
     goal_model_template.graph.add_transition(
