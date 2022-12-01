@@ -1425,18 +1425,16 @@ def generate_subsequent_goals_for_child_node(
             print(f"is task {child}")
             print(f"parent_operation: {parent_operation}")
             # Perform operation if its not already performed
+            create_sequential_tasks_location_template(
+                    child, goal_model_template, tasks_names, method_data)
             if parent_operation == const_sequential:  # Sequential operation?
                 print("Task sequential operation")
-                create_sequential_tasks_location_template(
-                    child, goal_model_template, tasks_names, method_data)
             elif parent_operation == const_fallback:  # FALLBACK operation?
                 print("Task fallback operation")
             elif parent_operation == const_parallel:  # Parallel operation?
                 print("Task parallel operation")
             elif parent_operation == const_or_sequential:  # OR Operation?
                 print("Task OR operation")
-                create_OR_tasks_location_template(
-                    child, goal_model_template, tasks_names, method_data, parent)
         else:  # is Goal?
             # If it's a goal, check if goal leads to a task, otherwise its dismissible
             print(f"it is goal {child}")

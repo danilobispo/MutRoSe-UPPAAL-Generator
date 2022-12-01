@@ -67,24 +67,24 @@ broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
-Robot r2 = {false,false,false};
-Robot r = {false,false,false};
 Robot r1 = {false,false,false};
+Robot r = {false,false,false};
+Robot r2 = {false,false,false};
 Patient p = {false,false};
 
 void startMission() {
 // starts mission with following values, you may change the values to your liking
 	mission_complete = false;
 	mission_failed = false;
-	r2.pickedmeal = false;
-	r2.pickeddishes = false;
-	r2.at = false;
-	r.pickedmeal = false;
-	r.pickeddishes = false;
-	r.at = false;
 	r1.pickeddishes = false;
 	r1.at = false;
 	r1.pickedmeal = false;
+	r.pickedmeal = false;
+	r.pickeddishes = false;
+	r.at = false;
+	r2.pickedmeal = false;
+	r2.pickeddishes = false;
+	r2.at = false;
 	p.patientcanfetch = false;
 	p.patientcanopen = false;
 &#13;}
@@ -210,7 +210,7 @@ bool door_opening = true;
 		<transition>
 			<source ref="id10"/>
 			<target ref="id777"/>
-			<label kind="guard" x="1030" y="280">table_deliver_0_failed == true</label>
+			<label kind="guard" x="1090" y="280">table_deliver_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
@@ -229,7 +229,7 @@ bool door_opening = true;
 		<transition>
 			<source ref="id13"/>
 			<target ref="id777"/>
-			<label kind="guard" x="1150" y="280">fetch_deliver_0_failed == true</label>
+			<label kind="guard" x="1210" y="280">fetch_deliver_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
