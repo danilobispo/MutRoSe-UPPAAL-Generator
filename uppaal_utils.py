@@ -15,7 +15,7 @@ const_operators = [const_sequential, const_parallel,
 
 const_mission_complete_var = "mission_complete"
 const_mission_failed_var = "mission_failed"
-
+const_start_mission_var = "startMission()"
 
 def check_camel_case_regex(string: str):
     return re.match("(?:[A-Z])(?:\S?)+(?:[A-Z])(?:[a-z])+", string)
@@ -1170,8 +1170,9 @@ def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaal
         pos=(600, 500),
         name=uppaalpy.Name(name="goal_"+separate_goal_name(node), pos=(600, 470))))
     
+    start_mission_str = "startMission()"
     # add the startMission task method call
-    start_mission_label = uppaalpy.UpdateLabel(kind="assignment", ctx=goal_model_template.context, value="queerogozar", pos=(620, 470))
+    start_mission_label = uppaalpy.Label(kind="assignment", pos=(620, 470),value=f"{const_start_mission_var}")
     # Then add a transition for the initial node
 
     goal_model_template.graph.add_transition(
