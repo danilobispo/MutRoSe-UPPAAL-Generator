@@ -107,5 +107,13 @@ class AbstractTaskWithId:
     def __repr__(self) -> str:
         return f'Abstract Task (AT): ("{self.id} {self.name}","{self.methods}")'
 
+class TasksRequiringLinking:
+    def __init__(self, id, sibling: GoalTreeNode | None):
+        self.id = id
+        self.sibling: GoalTreeNode = sibling if sibling is not None else None
+    
+    def __repr__(self) -> str:
+        return f'Require Linking task: ("Id:{self.id} Sibling: {self.sibling}")'
+
 
 

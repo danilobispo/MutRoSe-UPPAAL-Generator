@@ -3,7 +3,7 @@ import re
 import uppaalpy
 import copy
 
-from utils import AbstractTask, AbstractTaskWithId, Capability, Effect, GoalInfo, GoalTreeNode, MethodData, Precondition, Variable
+from utils import AbstractTask, AbstractTaskWithId, Capability, Effect, GoalInfo, GoalTreeNode, MethodData, Precondition, TasksRequiringLinking, Variable
 
 const_end_method_name = "end_method"
 const_sequential = ";"
@@ -902,8 +902,7 @@ def separate_goal_name(goal: str) -> str:
 def find_childrens_tasks(goal: str, goal_orderings: list[GoalTreeNode], children_task_list: list):
     for node in goal_orderings:
         if node.name == goal:
-            childrenList = [item for child in node.children for item in child]
-            for child in childrenList:
+            for child in node.children:
                 if is_gm_task(child):
                     children_task_list.append(child)
                 else:
@@ -1149,6 +1148,10 @@ def get_tasks_transitions(template: uppaalpy.Template):
         # Get all tasks nodes
         if is_finish_task_node(node.name.name):
             task_nodes_list.append(node)
+    return template, task_nodes_list, transition_list
+    
+
+def add_remaining_transition_for_general_tasks(template, task_nodes_list, transition_list):
     for node in task_nodes_list:
         transition_count = 0
         node_transition_list: list[uppaalpy.Transition] = []
@@ -1161,9 +1164,61 @@ def get_tasks_transitions(template: uppaalpy.Template):
             if node_transition_list[0].target == "id777": #If the only connection is with the error node, made by default
                 # We'll add another, with the connection to the end node
                 template.graph.add_transition(uppaalpy.Transition(source=node.id, target="id9000"))
-    return task_nodes_list
-        
 
+def add_remaining_transitions_for_fallback_tasks(template: uppaalpy.Template, fb_tasks_requiring_linking: list[TasksRequiringLinking], tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]):
+    node_list = template.graph.get_nodes()
+    tasks_names: list[AbstractTaskWithId]
+    for task in fb_tasks_requiring_linking:
+        available_methods = get_available_methods_for_task_id(task.id, tasks_names)
+        for node in node_list:
+            # First, get task node in graph
+            if node.name.name.__contains__("finish_"+task.id):
+                task_node = node            
+        if task.sibling is not None:
+            goal_name = separate_goal_name(task.sibling.name)
+            for node in node_list:
+                # if there's a sibling, we need to get its target node where the transition shall occur
+                if node.name.name.__contains__("goal_"+goal_name):
+                    target_node = node
+        else: # if there's no sibling, then straight to mission complete!
+            target_node = None
+        for method in available_methods:
+            for m in method_data:
+                if m.method_name.__contains__(method):    
+                    grd_lbl_x, grd_lbl_y = task_node.pos
+                    guard = uppaalpy.ConstraintLabel(
+                        kind="guard", 
+                    value=generate_failed_boolean_transition_guard(m.method_name, False),
+                    pos=(grd_lbl_x, grd_lbl_y), 
+                    ctx=template.context)
+                    if target_node is not None:
+                        trans = uppaalpy.Transition(source=task_node.id, target=target_node.id, guard=guard)
+                    else: # transition to mission complete node directly
+                        trans = uppaalpy.Transition(source=task_node.id, target="id9000", guard=guard)
+                    template.graph.add_transition(trans)
+        
+    # Create the mission_failed linking 
+    tasks_names_id = [task.id for task in tasks_names] # Get all tasks id's in list of all tasks
+    task_id = [task.id for task in fb_tasks_requiring_linking] # Get all tasks id's in list of tasks that require linking
+    tasks_not_linked = [task for task in tasks_names_id if task not in task_id] # Find the difference between them
+    if tasks_not_linked is not None: 
+        for task in tasks_not_linked:
+            for node in node_list:
+                if node.name.name.__contains__("finish_"+task):
+                    task_node = node
+            for method in available_methods:
+                for m in method_data:
+                    if m.method_name.__contains__(method):    
+                        fail_transition = uppaalpy.Transition(
+                                    source=task_node.id, 
+                                    target="id777", 
+                                    guard=
+                                        uppaalpy.ConstraintLabel(kind="guard", 
+                                        value=generate_failed_boolean_transition_guard(m.method_name, True), 
+                                        pos=task_node.pos,
+                                        ctx=template.context))
+                        template.graph.add_transition(fail_transition)
+                
 
 def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaalpy.NTA, tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]) -> uppaalpy.NTA:
     tasks_list = get_list_of_tasks(goal_orderings)
@@ -1207,10 +1262,14 @@ def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaal
 
     initial_pos_x, initial_pos_y = 720, 500
     or_children: list[str] = []
+    fb_tasks_requiring_linking: list[TasksRequiringLinking] = []
     generate_subsequent_goals_for_child_node(
-        goal_orderings, node, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data, or_children)
+        goal_orderings, node, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data, or_children, fb_tasks_requiring_linking)
     # Add remaining connections to the end of the task and trigger the variables which declare missionFailed or missionCompleted
-    get_tasks_transitions(goal_model_template)
+    template, task_nodes_list, transition_list = get_tasks_transitions(goal_model_template)
+    print(fb_tasks_requiring_linking)
+    add_remaining_transitions_for_fallback_tasks(template, fb_tasks_requiring_linking, tasks_names, method_data)
+    add_remaining_transition_for_general_tasks(template, task_nodes_list, transition_list)
     return nta
 
 
@@ -1316,6 +1375,24 @@ def is_first_operand_of_fallback(goal: str, goal_orderings: list[GoalTreeNode]) 
         if(children[0] == goal):
             return True
 
+def get_sibling_of_fallback_node(goal: str, goal_orderings: list[GoalTreeNode]):
+    fallback_node, operator = get_immediate_parent(goal_orderings, find_node_by_name(goal, goal_orderings))
+    if operator == const_fallback:
+        fallback_parent, fallback_parent_op = get_immediate_parent(goal_orderings, find_node_by_name(fallback_node.name, goal_orderings) )
+        children = get_goal_children(goal_orderings, fallback_parent.name)
+        print(f"Children of {fallback_parent.name}")
+        for i, child in enumerate(children):
+            if child == fallback_node.name:
+                # Debug
+                # for child in children:
+                if i+1 in range(len(children)):
+                    print(f"{children[i+1]} is the sibling of {fallback_node.name}")
+                    return find_node_by_name(children[i+1], goal_orderings)
+                else:
+                    print(f"No sibling found for goal {goal}")
+                    return None
+
+
 def generate_subsequent_goals_for_child_node(
         goal_orderings: list[GoalTreeNode],
         node: str,
@@ -1324,7 +1401,8 @@ def generate_subsequent_goals_for_child_node(
         initial_pos_y: int,
         tasks_names: list[AbstractTaskWithId],
         method_data: list[MethodData],
-        or_children: list[str]):
+        or_children: list[str],
+        fb_tasks_requiring_linking: list[TasksRequiringLinking]):
     children=get_goal_children(goal_orderings=goal_orderings, node=node)
     # print(f"children: {children}")
     # no children, so it is the last node
@@ -1356,6 +1434,7 @@ def generate_subsequent_goals_for_child_node(
             # Debug
             print(f"child {child} has path to children tasks? {has_path}")
             if has_path:  # Means that goal is not dismissable and must be put into the goal model template
+                already_added_trans = False
                 child_operator = separate_goal_operator(child)
                 node_list: list[uppaalpy.Location] = goal_model_template.graph.get_nodes()
                 last_node: uppaalpy.Node=node_list[-1]
@@ -1390,7 +1469,7 @@ def generate_subsequent_goals_for_child_node(
                 # Specific loop of FALLBACK
                 # If it's the second operand, then the order changes, as it must contain a failure node linked directly
                 elif is_second_operand_of_fallback(goal=child, goal_orderings=goal_orderings):
-                    print(f"Goal {child} is second child of FALLBACK")
+                    print(f"Goal {child} is second operand of FALLBACK")
                     # Add the failed condition for last task executed
                     task_id = separate_goal_operator(last_node.name.name)
                     methods = get_available_methods_for_task_id(task_id, tasks_names)
@@ -1406,18 +1485,26 @@ def generate_subsequent_goals_for_child_node(
                                 ctx=goal_model_template.context))
                                 # added early due to iteration
                                 goal_model_template.graph.add_transition(fall_trans)
-                # elif is_first_operand_of_fallback(child, goal_orderings):
-                #     # Whitelist the task as one that must contain 
-                #     # two transitions in its task final node, in order
-                #     # to avoid deadlocks
-                #     print("TODO")
-
+                                already_added_trans = True
+                
                 else:
                     trans = uppaalpy.Transition(source=last_node.id, target=last_node_id_plus_one)
-
+                
+                if is_first_operand_of_fallback(child, goal_orderings):
+                    # Whitelist the task as one that must contain 
+                    # two transitions in its task final node, in order
+                    # to avoid deadlocks
+                    print(f"{child} is first operand of fallback")
+                    sibling = get_sibling_of_fallback_node(child, goal_orderings)
+                    first_operands_tasks = []
+                    find_childrens_tasks(goal=child, goal_orderings=goal_orderings, children_task_list=first_operands_tasks)
+                    if first_operands_tasks is not None:
+                        for task in first_operands_tasks:
+                            new_task = TasksRequiringLinking(task, sibling)
+                            fb_tasks_requiring_linking.append(new_task)    
                 
                 goal_model_template.graph.add_location(goal_location)
-                if trans is not None:
+                if trans is not None and already_added_trans is not True:
                     goal_model_template.graph.add_transition(trans)
                     # Decomposition for goals without children
                 if child_operator is not None:
@@ -1428,7 +1515,7 @@ def generate_subsequent_goals_for_child_node(
                         or_children = get_goal_children(goal_orderings, child)
                 initial_pos_x += 100
         generate_subsequent_goals_for_child_node(
-            goal_orderings, child, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data, or_children)
+            goal_orderings, child, goal_model_template, initial_pos_x, initial_pos_y, tasks_names, method_data, or_children, fb_tasks_requiring_linking)
 
 
 def create_goal_model_initial_template(nta: uppaalpy.NTA) -> uppaalpy.Template:
