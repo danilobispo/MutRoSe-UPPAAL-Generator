@@ -1203,6 +1203,7 @@ def add_remaining_transitions_for_fallback_tasks(template: uppaalpy.Template, fb
     tasks_not_linked = [task for task in tasks_names_id if task not in task_id] # Find the difference between them
     if tasks_not_linked is not None: 
         for task in tasks_not_linked:
+            available_methods = get_available_methods_for_task_id(task, tasks_names)
             for node in node_list:
                 if node.name.name.__contains__("finish_"+task):
                     task_node = node
@@ -1268,7 +1269,8 @@ def generate_goal_model_template(goal_orderings: list[GoalTreeNode], nta: uppaal
     # Add remaining connections to the end of the task and trigger the variables which declare missionFailed or missionCompleted
     template, task_nodes_list, transition_list = get_tasks_transitions(goal_model_template)
     print(fb_tasks_requiring_linking)
-    add_remaining_transitions_for_fallback_tasks(template, fb_tasks_requiring_linking, tasks_names, method_data)
+    if len(fb_tasks_requiring_linking) is not 0:
+        add_remaining_transitions_for_fallback_tasks(template, fb_tasks_requiring_linking, tasks_names, method_data)
     add_remaining_transition_for_general_tasks(template, task_nodes_list, transition_list)
     return nta
 

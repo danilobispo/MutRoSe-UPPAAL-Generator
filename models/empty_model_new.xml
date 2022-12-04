@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
-typedef struct {
 bool pickedmeal;
 bool pickeddishes;
 bool at;
 } Robot;
+typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
 
 bool mission_complete = false;
 bool mission_failed = false;
@@ -67,31 +67,31 @@ broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
-Patient p = {false,false};
-Robot r1 = {false,false,false};
-Robot r2 = {false,false,false};
 Robot r = {false,false,false};
+Robot r1 = {false,false,false};
+Patient p = {false,false};
+Robot r2 = {false,false,false};
 
 void startMission() {
 // starts mission with following values, you may change the values to your liking
 	mission_complete = false;
 	mission_failed = false;
-	p.patientcanfetch = false;
-	p.patientcanopen = false;
-	r1.pickeddishes = false;
-	r1.at = false;
-	r1.pickedmeal = false;
-	r2.pickedmeal = false;
-	r2.pickeddishes = false;
-	r2.at = false;
 	r.pickedmeal = false;
 	r.pickeddishes = false;
 	r.at = false;
+	r1.pickeddishes = false;
+	r1.at = false;
+	r1.pickedmeal = false;
+	p.patientcanfetch = false;
+	p.patientcanopen = false;
+	r2.pickedmeal = false;
+	r2.pickeddishes = false;
+	r2.at = false;
 &#13;}
 
 
-bool manipulation = true;
 bool door_opening = true;
+bool manipulation = true;
 </declaration>
 	<template>
 		<name x="0" y="0">goal_model_template</name>
@@ -112,38 +112,38 @@ bool door_opening = true;
 		<location id="id2" x="720" y="500">
 			<name x="720" y="470">goal_G4</name>
 		</location>
-		<location id="id3" x="840" y="500">
-			<name x="840" y="470">goal_G6</name>
+		<location id="id3" x="820" y="500">
+			<name x="820" y="470">goal_G6</name>
 		</location>
-		<location id="id4" x="840" y="400">
-			<name x="840" y="370">exec_AT1</name>
+		<location id="id4" x="820" y="400">
+			<name x="820" y="370">exec_AT1</name>
 		</location>
-		<location id="id5" x="840" y="300">
-			<name x="840" y="270">finish_AT1</name>
+		<location id="id5" x="820" y="300">
+			<name x="820" y="270">finish_AT1</name>
 		</location>
-		<location id="id6" x="990" y="500">
-			<name x="990" y="470">goal_G7</name>
+		<location id="id6" x="970" y="500">
+			<name x="970" y="470">goal_G7</name>
 		</location>
-		<location id="id7" x="1110" y="500">
-			<name x="1110" y="470">goal_G10</name>
+		<location id="id7" x="1070" y="500">
+			<name x="1070" y="470">goal_G10</name>
 		</location>
-		<location id="id8" x="1230" y="560">
-			<name x="1230" y="530">goal_G11</name>
+		<location id="id8" x="1170" y="560">
+			<name x="1170" y="530">goal_G11</name>
 		</location>
-		<location id="id9" x="1230" y="460">
-			<name x="1230" y="430">exec_AT2</name>
+		<location id="id9" x="1170" y="460">
+			<name x="1170" y="430">exec_AT2</name>
 		</location>
-		<location id="id10" x="1230" y="360">
-			<name x="1230" y="330">finish_AT2</name>
+		<location id="id10" x="1170" y="360">
+			<name x="1170" y="330">finish_AT2</name>
 		</location>
-		<location id="id11" x="1350" y="560">
-			<name x="1350" y="530">goal_G12</name>
+		<location id="id11" x="1270" y="560">
+			<name x="1270" y="530">goal_G12</name>
 		</location>
-		<location id="id12" x="1350" y="460">
-			<name x="1350" y="430">exec_AT3</name>
+		<location id="id12" x="1270" y="460">
+			<name x="1270" y="430">exec_AT3</name>
 		</location>
-		<location id="id13" x="1350" y="360">
-			<name x="1350" y="330">finish_AT3</name>
+		<location id="id13" x="1270" y="360">
+			<name x="1270" y="330">finish_AT3</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
@@ -173,17 +173,17 @@ bool door_opening = true;
 		<transition>
 			<source ref="id3"/>
 			<target ref="id4"/>
-			<label kind="synchronisation" x="840" y="450">start_food_pickup_0!</label>
+			<label kind="synchronisation" x="820" y="450">start_food_pickup_0!</label>
 		</transition>
 		<transition>
 			<source ref="id4"/>
 			<target ref="id5"/>
-			<label kind="synchronisation" x="840" y="350">finish_food_pickup_0?</label>
+			<label kind="synchronisation" x="820" y="350">finish_food_pickup_0?</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
 			<target ref="id777"/>
-			<label kind="guard" x="700" y="220">food_pickup_0_failed == true</label>
+			<label kind="guard" x="680" y="220">food_pickup_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id5"/>
@@ -200,17 +200,17 @@ bool door_opening = true;
 		<transition>
 			<source ref="id8"/>
 			<target ref="id9"/>
-			<label kind="synchronisation" x="1230" y="510">start_table_deliver_0!</label>
+			<label kind="synchronisation" x="1170" y="510">start_table_deliver_0!</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id10"/>
-			<label kind="synchronisation" x="1230" y="410">finish_table_deliver_0?</label>
+			<label kind="synchronisation" x="1170" y="410">finish_table_deliver_0?</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id777"/>
-			<label kind="guard" x="1090" y="280">table_deliver_0_failed == true</label>
+			<label kind="guard" x="1030" y="280">table_deliver_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
@@ -219,17 +219,17 @@ bool door_opening = true;
 		<transition>
 			<source ref="id11"/>
 			<target ref="id12"/>
-			<label kind="synchronisation" x="1350" y="510">start_fetch_deliver_0!</label>
+			<label kind="synchronisation" x="1270" y="510">start_fetch_deliver_0!</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id13"/>
-			<label kind="synchronisation" x="1350" y="410">finish_fetch_deliver_0?</label>
+			<label kind="synchronisation" x="1270" y="410">finish_fetch_deliver_0?</label>
 		</transition>
 		<transition>
 			<source ref="id13"/>
 			<target ref="id777"/>
-			<label kind="guard" x="1210" y="280">fetch_deliver_0_failed == true</label>
+			<label kind="guard" x="1130" y="280">fetch_deliver_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
