@@ -1,89 +1,140 @@
-Node: G1: Deliver Food to Patients [G2;G3]
+Node: G1: Deliver Goods or Equipment [G2;G3]
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G2: Fetch Rooms That Need Food Delivering
+Node: G2: Find Agents That Need Equipment
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G4: Get Food In Kitchen [G5;G6]
+Node: G3: Get Necessary Objects For Agents [G4;G5;G6;G11]
 Context: 
+	No Context
+Parameters: 
+Group? 0
+Divisible? 1
+
+Node: G4: Get Agent Requesting Objects
+Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G5: Fetch Kitchen Location
+Node: G5: Get Delivery Location
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G3: Get Foods and Deliver Them in Rooms [G4;G7]
+Node: G7: Retrieve Objects [G8;G9]
 Context: 
-Parameters: 
-Group? 1
-Divisible? 0
-
-Node: G6: Get Food In Kitchen
-Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: AT1: GetFood
+Node: G8: Get Storage That Contains Object
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G7: Deliver Food [G8;G9;G10]
+Node: G6: Get Requested Objects [FALLBACK(G7,G10)]
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G8: Fetch Delivery's Patient
+Node: G9: Get Object
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G9: Fetch Delivery's Room
+Node: AT1: GetObject
 Context: 
+	No Context
+Parameters: 
+	Param: current_object
+Group? 1
+Divisible? 1
+
+Node: G10: Recharge Battery
+Context: 
+	Type: trigger
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G10: Deliver Food To Patient
+Node: AT2: RechargeBattery
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G11: Deliver Food To Room Table
+Node: G11: Deliver Requested Objects [FALLBACK(G12,G13)]
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: AT2: DeliverToTable
+Node: G12: Deliver Objects
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: G12: Food Fetched From Robot Tray
+Node: AT3: DeliverObjects
 Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
 
-Node: AT3: DeliverToFetch
+Node: G14: Return Objects
 Context: 
+	No Context
+Parameters: 
+Group? 1
+Divisible? 1
+
+Node: AT4: ReturnObjectsToCheckpoint
+Context: 
+	No Context
+Parameters: 
+Group? 1
+Divisible? 1
+
+Node: G13: Return Objects To Checkpoint [FALLBACK(G14,G15)]
+Context: 
+	No Context
+Parameters: 
+Group? 1
+Divisible? 1
+
+Node: G15: Trigger Alert
+Context: 
+	No Context
+Parameters: 
+Group? 1
+Divisible? 1
+
+Node: AT5: AlertTrigger
+Context: 
+	No Context
 Parameters: 
 Group? 1
 Divisible? 1
