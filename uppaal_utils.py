@@ -93,7 +93,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
                 trans = uppaalpy.Transition(
                     source="id0", target="id1", guard=constraint_label, synchronisation=synch_label)
                 create_precondition_fail_transition(
-                    template, nta, method_name, id_count, prec_neg_label)
+                    template, nta, method_name, id_count, prec_neg_label, True)
             else:
                 trans = uppaalpy.Transition(
                     source="id0", target="id1", synchronisation=synch_label)
@@ -163,7 +163,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
     return template
 
 
-def create_precondition_fail_transition(template, nta, method_name, id_count, prec_neg_label):
+def create_precondition_fail_transition(template, nta, method_name, id_count, prec_neg_label, is_neg:bool = None):
     # Generate precondition location transition to where it would fail and another transition back to the initial node:
     # First we create a location
     # number 700+ ids are restricted to locations like these
@@ -172,7 +172,7 @@ def create_precondition_fail_transition(template, nta, method_name, id_count, pr
                  name="failed_precondition", pos=(-59, 17))
     # Then a negation condition for the precondition, along with the transition
     constraint_neg_label = create_precondition_label_for_transition(
-        prec_label=prec_neg_label, context_nta=nta, pos=(-552, 17))
+        prec_label=prec_neg_label, context_nta=nta, pos=(-552, 17), is_neg=True)
     # Adding a nail so it is easily identifiable in the graph
     additional_trans_list = []
     additional_trans_nail = uppaalpy.Nail(x=-552, y=8)
@@ -210,7 +210,7 @@ def create_capability_fail_transition(template, nta, method_name, id_count, capa
                      name="failed_capability", pos=(-246, -331))
     # Then a negation condition for the precondition, along with the transition
     constraint_neg_label = create_precondition_label_for_transition(
-        prec_label=capab_neg_label, context_nta=nta, pos=(-442, -280))
+        prec_label=capab_neg_label, context_nta=nta, pos=(-442, -280), is_neg=True)
 
     # Create the first transition, that begins from the first node to the last
     additional_trans = uppaalpy.Transition(
@@ -512,14 +512,17 @@ def search_and_generate_preconditions_in_node(preconditions_list: list[Precondit
     return has_precs, prec_label, prec_neg_label
 
 
-def create_precondition_label_for_transition(prec_label: list[str], context_nta: uppaalpy.NTA, pos=None):
+def create_precondition_label_for_transition(prec_label: list[str], context_nta: uppaalpy.NTA, pos=None, is_neg: bool = None):
     guard_value = ""
     constraint_label = None
+    operator = " && "
+    if is_neg:
+        operator = " || "
     # Debug precondition
     # print("Connecting", source_id, "to", target_id, "in template", template.name.name, "with precondition", prec_label.value)
     for i in range(len(prec_label)):
         if i != len(prec_label)-1:
-            guard_value += prec_label[i] + " && "
+            guard_value += prec_label[i] + operator
         else:
             guard_value += prec_label[i]
 
