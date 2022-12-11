@@ -77,13 +77,14 @@ class Variable(object):
 
 
 class GoalTreeNode:
-    def __init__(self, name: str, children: list[str], isTask: bool) -> None:
+    def __init__(self, name: str, children: list[str], is_task: bool, is_inside_fallback: bool = None) -> None:
         self.name: str = name
         self.children: list[str] = children
-        self.isTask: bool = isTask
+        self.is_task: bool = is_task
+        self.is_inside_fallback: bool = is_inside_fallback if is_inside_fallback is not None else None
 
     def __repr__(self) -> str:
-        return f'GoalTreeNode: ("{self.name}","{self.children}, {self.isTask}")'
+        return f'GoalTreeNode: ("{self.name}","{self.children}, {self.is_task}")'
 
 
 class GoalInfo:

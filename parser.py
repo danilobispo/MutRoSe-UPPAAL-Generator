@@ -222,7 +222,7 @@ def open_and_parse_goal_orderings(filename: str):
                     if target[:2] == "AT" :
                         index = targets.index(target)
                         targets[index] = trim_tasks_names(target)
-                tree_node = utils.GoalTreeNode(source, targets, isTask=check_if_node_is_task(source))
+                tree_node = utils.GoalTreeNode(source, targets, is_task=check_if_node_is_task(source))
                 tree_node_list.append(tree_node)
                 # Debug
                 # print(f"Source: {source}")

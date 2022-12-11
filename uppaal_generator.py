@@ -11,7 +11,7 @@ def execute_generator(method_data, abstract_task_data, var_and_types_list, types
     tasks_names = upu.link_tasks_and_method_names(goal_properties_list, abstract_task_data)
 
     nta_partial = upu.generate_goal_model_template(goal_orderings, nta_partial, tasks_names, method_data)
-    nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates)
+    nta_partial = upu.generate_uppaal_methods_templates(method_data=method_data, nta=nta_partial, node_data=abstract_task_data, var_and_types_list_in_predicates=var_and_types_with_predicates, tasks_names=tasks_names)
     nta_partial = upu.generate_default_verifiable_queries(nta=nta_partial)
     nta_partial = upu.generate_declarations_of_struct_variables_in_nta(nta=nta_partial, variables_set=set(var_and_types_with_predicates))
     upu.generate_start_mission_function_definition(nta_partial, set(var_and_types_with_predicates))
