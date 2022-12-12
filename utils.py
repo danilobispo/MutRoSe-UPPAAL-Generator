@@ -48,12 +48,13 @@ class AbstractTask:
 
 
 class MethodData:
-    def __init__(self, name, order, effects, preconditions, capabilities):
+    def __init__(self, name, order, effects, preconditions, capabilities, is_inside_fallback: bool = None):
         self.method_name = name
         self.order = order
         self.effects = effects
         self.preconditions = preconditions
         self.capabilities = capabilities
+        self.is_inside_fallback: bool = is_inside_fallback if is_inside_fallback is not None else None 
 
     def __repr__(self) -> str:
         return f'MethodData: ("{self.method_name}","{self.order}","{self.effects}","{self.preconditions}","{self.capabilities}")'
@@ -81,7 +82,6 @@ class GoalTreeNode:
         self.name: str = name
         self.children: list[str] = children
         self.is_task: bool = is_task
-        self.is_inside_fallback: bool = is_inside_fallback if is_inside_fallback is not None else None
 
     def __repr__(self) -> str:
         return f'GoalTreeNode: ("{self.name}","{self.children}, {self.is_task}")'

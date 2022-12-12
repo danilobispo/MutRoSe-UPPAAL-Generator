@@ -255,12 +255,26 @@ void startMission() {
 		<location id="id999" x="-177" y="-220">
 			<name x="-193" y="-251">end_method</name>
 		</location>
+		<location id="id4321" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-427" y="-115">finish_object_get_0!</label>
 			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4321"/>
+			<label kind="assignment" x="-799" y="-215">object_get_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id4321"/>
+			<target ref="id999"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -283,12 +297,26 @@ void startMission() {
 		<location id="id999" x="-177" y="-220">
 			<name x="-193" y="-251">end_method</name>
 		</location>
+		<location id="id4321" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-427" y="-115">finish_battery_recharge_0!</label>
 			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4321"/>
+			<label kind="assignment" x="-799" y="-215">battery_recharge_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id4321"/>
+			<target ref="id999"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -311,12 +339,26 @@ void startMission() {
 		<location id="id999" x="-177" y="-220">
 			<name x="-193" y="-251">end_method</name>
 		</location>
+		<location id="id4321" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-427" y="-115">finish_objects_delivery_0!</label>
 			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4321"/>
+			<label kind="assignment" x="-799" y="-215">objects_delivery_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id4321"/>
+			<target ref="id999"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -339,12 +381,26 @@ void startMission() {
 		<location id="id999" x="-177" y="-220">
 			<name x="-193" y="-251">end_method</name>
 		</location>
+		<location id="id4321" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-427" y="-115">finish_object_returning_0!</label>
 			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4321"/>
+			<label kind="assignment" x="-799" y="-215">object_returning_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id4321"/>
+			<target ref="id999"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
@@ -367,12 +423,26 @@ void startMission() {
 		<location id="id999" x="-177" y="-220">
 			<name x="-193" y="-251">end_method</name>
 		</location>
+		<location id="id4321" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id999"/>
 			<target ref="id0"/>
 			<label kind="synchronisation" x="-427" y="-115">finish_alert_trigger_0!</label>
 			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4321"/>
+			<label kind="assignment" x="-799" y="-215">alert_trigger_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id4321"/>
+			<target ref="id999"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>

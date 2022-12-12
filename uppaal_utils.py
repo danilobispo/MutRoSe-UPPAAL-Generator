@@ -374,7 +374,12 @@ def generate_uppaal_methods_templates(method_data: list[MethodData], nta: uppaal
                         add_end_location_and_transition(m, temp, posX, posY)
 
                         # We might also want to add a failure default node if the task is fallback
-                        print(m.method_name)
+                        if m.is_inside_fallback:
+                            method_fail_update_str = f"{m.method_name}_failed = true"
+                            add_location(temp, "id4321", (-864, posY), name= "default_failure_node")
+                            update_label_for_failed_trans = uppaalpy.UpdateLabel(kind="assignment", value=method_fail_update_str, pos=(-799, posY+5), ctx=temp.context)
+                            temp.graph.add_transition(uppaalpy.Transition(source=id_str ,target="id4321", assignment=update_label_for_failed_trans))
+                            temp.graph.add_transition(uppaalpy.Transition(source="id4321", target="id999", nails=[uppaalpy.Nail(-864, 68), uppaalpy.Nail(100, 76)]))
                 temp = generate_transitions_at_template(
                     template=temp, order=m.order, current_method=m, node_data=node_data, nta=nta, method_name=m.method_name)
                 # TODO: Generate parameters for each of the templates
@@ -387,7 +392,7 @@ def generate_uppaal_methods_templates(method_data: list[MethodData], nta: uppaal
 
 def add_end_location_and_transition(m, temp, posX, posY):
     temp.graph.add_location(uppaalpy.Location(id="id999",
-    pos=(posX + 150, posY),name=uppaalpy.Name(name=const_end_method_name,pos=(posX+134, posY-31))))
+                                              pos=(posX + 150, posY), name=uppaalpy.Name(name=const_end_method_name, pos=(posX+134, posY-31))))
     # Channel for end method
     sync_channel_str = create_channel_synch_for_transition(
         get_channel_name(method_name=m.method_name, finished=True), target=False)
@@ -1461,6 +1466,15 @@ def generate_subsequent_goals_for_child_node(
             print(f"parent: {parent}")
             # recursive_get_goal_children_tasks(
             # goal_orderings, parent.name, child_task_list)
+            if is_inside_fallback(goal_orderings, find_node_by_name(child, goal_orderings)):
+                methods = get_available_methods_for_task_id(
+                    child, tasks_names)
+                for method in methods:
+                    for m in method_data:
+                        if m.method_name.__contains__(method):
+                            # Flag it as a fallback method so we can insert the default failure node afterwards
+                            m.is_inside_fallback = True
+                
             # print(f"child List: {child_task_list}")
             # Find parent and perform operation on node
             print(f"is task {child}")
