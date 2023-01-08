@@ -160,7 +160,7 @@ def generate_transitions_at_template(template: uppaalpy.Template, order: list, c
                 trans = uppaalpy.Transition(
                     source=source_id, target=target_id)
             template.graph.add_transition(trans)
-    template = add_AT_transitions_in_template(template, node_data)
+    template = add_AT_transitions_in_template(template, node_data, current_method_name=method_name)
     return template
 
 
@@ -234,7 +234,7 @@ def create_capability_fail_transition(template, nta, method_name, id_count, capa
     template.graph.add_transition(trans_to_init_node)
 
 
-def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[AbstractTask]):
+def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[AbstractTask], current_method_name: str):
     locations = template.graph.get_nodes()
     for i in range(len(locations)):
         if (check_camel_case_regex(locations[i].name.name)):
@@ -243,6 +243,13 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[
                 if (locations[i].name.name == node.name):
                     posX, posY = locations[i].pos
                     posY -= 100
+                    # Create a fail transition for the current method, so the method knows the underlying method failed
+                    add_location(template, "id998", (400, -370), "failed_AT")
+                    
+                    fail_AT_transition = uppaalpy.Transition(source="id998", target="id999",
+                    assignment=uppaalpy.UpdateLabel(kind="assignment", value=f"{current_method_name}_failed = true", pos=(416, -382), ctx= template.context),
+                        ctx=template.context)
+                    template.graph.add_transition(fail_AT_transition) 
                     for method in node.methods:
                         # Create location for each method and add a Transition to it from the AT Task
                         location_method_name = "exec_" + method
@@ -261,6 +268,9 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[
                         trans = uppaalpy.Transition(
                             source=locations[i].id, target=location_method_id, synchronisation=synch_label)
                         template.graph.add_transition(trans)
+
+                        
+
                         # now locate the next node and a Transition to it
                         if i+1 in range(len(locations)):
                             target_id = locations[i+1].id
@@ -272,6 +282,10 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[
 
                             template.graph.add_transition(uppaalpy.Transition(
                                 source=location_method_id, target=target_id, synchronisation=synch_label))
+                        # Adding failed transition to method so the parent method knows it has failed and goes to a failure state as well
+                            failed_precondition = uppaalpy.ConstraintLabel(kind="guard", value=f"{current_method_name}_failed == true", pos=(posX+20, posY-15), ctx=template.context)
+                            template.graph.add_transition(uppaalpy.Transition(
+                                source=location_method_id, target="id998", synchronisation=synch_label, guard=failed_precondition))
                         j += 1
                         posX += 100
                         posY -= 100
