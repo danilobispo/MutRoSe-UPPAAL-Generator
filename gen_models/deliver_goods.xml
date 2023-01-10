@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+
+bool mission_complete = false;
+bool mission_failed = false;
+
+broadcast chan start_object_get_0;
+broadcast chan finish_object_get_0;
+bool object_get_0_failed = false;
+
+broadcast chan start_battery_recharge_0;
+broadcast chan finish_battery_recharge_0;
+bool battery_recharge_0_failed = false;
+
+broadcast chan start_objects_delivery_0;
+broadcast chan finish_objects_delivery_0;
+bool objects_delivery_0_failed = false;
+
+broadcast chan start_object_returning_0;
+broadcast chan finish_object_returning_0;
+bool object_returning_0_failed = false;
+
+broadcast chan start_alert_trigger_0;
+broadcast chan finish_alert_trigger_0;
+bool alert_trigger_0_failed = false;
+
+
+void startMission() {
+// starts mission with following values, you may change the values to your liking
+	mission_complete = false;
+	mission_failed = false;
+}
+
+
+</declaration>
+	<template>
+		<name x="0" y="0">goal_model_template</name>
+		<location id="id0" x="420" y="500">
+			<name x="420" y="470">beginMissionNode</name>
+		</location>
+		<location id="id1" x="420" y="100">
+			<name x="420" y="70">missionFailed</name>
+		</location>
+		<location id="id2" x="1500" y="750">
+			<name x="1500" y="720">missionComplete</name>
+		</location>
+		<location id="id3" x="600" y="500">
+			<name x="600" y="470">goal_G3</name>
+		</location>
+		<location id="id4" x="720" y="500">
+			<name x="720" y="470">goal_G6</name>
+		</location>
+		<location id="id5" x="820" y="500">
+			<name x="820" y="470">goal_G7</name>
+		</location>
+		<location id="id6" x="920" y="500">
+			<name x="920" y="470">goal_G9</name>
+		</location>
+		<location id="id7" x="920" y="400">
+			<name x="920" y="370">exec_AT1</name>
+		</location>
+		<location id="id8" x="920" y="300">
+			<name x="920" y="270">finish_AT1</name>
+		</location>
+		<location id="id9" x="1070" y="500">
+			<name x="1070" y="470">goal_G10</name>
+		</location>
+		<location id="id10" x="1070" y="400">
+			<name x="1070" y="370">exec_AT2</name>
+		</location>
+		<location id="id11" x="1070" y="300">
+			<name x="1070" y="270">finish_AT2</name>
+		</location>
+		<location id="id12" x="820" y="400">
+			<name x="820" y="370">goal_G11</name>
+		</location>
+		<location id="id13" x="920" y="100">
+			<name x="920" y="70">goal_G12</name>
+		</location>
+		<location id="id14" x="920" y="0">
+			<name x="920" y="-30">exec_AT3</name>
+		</location>
+		<location id="id15" x="920" y="-100">
+			<name x="920" y="-130">finish_AT3</name>
+		</location>
+		<location id="id16" x="1020" y="100">
+			<name x="1020" y="70">goal_G13</name>
+		</location>
+		<location id="id17" x="1120" y="100">
+			<name x="1120" y="70">goal_G14</name>
+		</location>
+		<location id="id18" x="1120" y="0">
+			<name x="1120" y="-30">exec_AT4</name>
+		</location>
+		<location id="id19" x="1120" y="-100">
+			<name x="1120" y="-130">finish_AT4</name>
+		</location>
+		<location id="id20" x="1220" y="100">
+			<name x="1220" y="70">goal_G15</name>
+		</location>
+		<location id="id21" x="1220" y="0">
+			<name x="1220" y="-30">exec_AT5</name>
+		</location>
+		<location id="id22" x="1220" y="-100">
+			<name x="1220" y="-130">finish_AT5</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="280" y="272">mission_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="450" y="720">mission_complete = true</label>
+			<nail x="420" y="740"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="467" y="501">startMission()</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="920" y="450">start_object_get_0!</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="920" y="350">finish_object_get_0?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="guard" x="970" y="420">object_get_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="1070" y="450">start_battery_recharge_0!</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="1070" y="350">finish_battery_recharge_0?</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="920" y="50">start_objects_delivery_0!</label>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="920" y="-50">finish_objects_delivery_0?</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="920" y="20">objects_delivery_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id17"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="synchronisation" x="1120" y="50">start_object_returning_0!</label>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id19"/>
+			<label kind="synchronisation" x="1120" y="-50">finish_object_returning_0?</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id20"/>
+			<label kind="guard" x="1120" y="20">object_returning_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id20"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="1220" y="50">start_alert_trigger_0!</label>
+		</transition>
+		<transition>
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="synchronisation" x="1220" y="-50">finish_alert_trigger_0?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id12"/>
+			<label kind="guard" x="920" y="300">object_get_0_failed == false</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id2"/>
+			<label kind="guard" x="920" y="-100">objects_delivery_0_failed == false</label>
+		</transition>
+		<transition>
+			<source ref="id19"/>
+			<target ref="id2"/>
+			<label kind="guard" x="1120" y="-100">object_returning_0_failed == false</label>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id1"/>
+			<label kind="guard" x="1070" y="300">battery_recharge_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id1"/>
+			<label kind="guard" x="1220" y="-100">alert_trigger_0_failed == true</label>
+		</transition>
+		<transition>
+			<source ref="id22"/>
+			<target ref="id2"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_object_get_0</name>
+		<location id="id23" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id24" x="-552" y="-220">
+			<name x="-566" y="-251">get_object</name>
+		</location>
+		<location id="id25" x="-177" y="-220">
+			<name x="-193" y="-251">end_method</name>
+		</location>
+		<location id="id26" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
+		<init ref="id23"/>
+		<transition>
+			<source ref="id25"/>
+			<target ref="id23"/>
+			<label kind="synchronisation" x="-427" y="-115">finish_object_get_0!</label>
+			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id26"/>
+			<label kind="assignment" x="-799" y="-215">object_get_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id26"/>
+			<target ref="id25"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id23"/>
+			<target ref="id24"/>
+			<label kind="synchronisation" x="-705" y="-144">start_object_get_0?</label>
+		</transition>
+		<transition>
+			<source ref="id24"/>
+			<target ref="id25"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_battery_recharge_0</name>
+		<location id="id27" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id28" x="-552" y="-220">
+			<name x="-566" y="-251">recharge_battery</name>
+		</location>
+		<location id="id29" x="-177" y="-220">
+			<name x="-193" y="-251">end_method</name>
+		</location>
+		<location id="id30" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
+		<init ref="id27"/>
+		<transition>
+			<source ref="id29"/>
+			<target ref="id27"/>
+			<label kind="synchronisation" x="-427" y="-115">finish_battery_recharge_0!</label>
+			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id30"/>
+			<label kind="assignment" x="-799" y="-215">battery_recharge_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id30"/>
+			<target ref="id29"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id27"/>
+			<target ref="id28"/>
+			<label kind="synchronisation" x="-705" y="-144">start_battery_recharge_0?</label>
+		</transition>
+		<transition>
+			<source ref="id28"/>
+			<target ref="id29"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_objects_delivery_0</name>
+		<location id="id31" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id32" x="-552" y="-220">
+			<name x="-566" y="-251">deliver_objects</name>
+		</location>
+		<location id="id33" x="-177" y="-220">
+			<name x="-193" y="-251">end_method</name>
+		</location>
+		<location id="id34" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
+		<init ref="id31"/>
+		<transition>
+			<source ref="id33"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-427" y="-115">finish_objects_delivery_0!</label>
+			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id32"/>
+			<target ref="id34"/>
+			<label kind="assignment" x="-799" y="-215">objects_delivery_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id34"/>
+			<target ref="id33"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id31"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="-705" y="-144">start_objects_delivery_0?</label>
+		</transition>
+		<transition>
+			<source ref="id32"/>
+			<target ref="id33"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_object_returning_0</name>
+		<location id="id35" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id36" x="-552" y="-220">
+			<name x="-566" y="-251">return_objects</name>
+		</location>
+		<location id="id37" x="-177" y="-220">
+			<name x="-193" y="-251">end_method</name>
+		</location>
+		<location id="id38" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
+		<init ref="id35"/>
+		<transition>
+			<source ref="id37"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-427" y="-115">finish_object_returning_0!</label>
+			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id38"/>
+			<label kind="assignment" x="-799" y="-215">object_returning_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id38"/>
+			<target ref="id37"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id35"/>
+			<target ref="id36"/>
+			<label kind="synchronisation" x="-705" y="-144">start_object_returning_0?</label>
+		</transition>
+		<transition>
+			<source ref="id36"/>
+			<target ref="id37"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">temp_alert_trigger_0</name>
+		<location id="id39" x="-552" y="-93">
+			<name x="-594" y="-127">init_node</name>
+		</location>
+		<location id="id40" x="-552" y="-220">
+			<name x="-566" y="-251">trigger_alert</name>
+		</location>
+		<location id="id41" x="-177" y="-220">
+			<name x="-193" y="-251">end_method</name>
+		</location>
+		<location id="id42" x="-864" y="-220">
+			<name x="-878" y="-251">default_failure_node</name>
+		</location>
+		<init ref="id39"/>
+		<transition>
+			<source ref="id41"/>
+			<target ref="id39"/>
+			<label kind="synchronisation" x="-427" y="-115">finish_alert_trigger_0!</label>
+			<nail x="-177" y="-93"/>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id42"/>
+			<label kind="assignment" x="-799" y="-215">alert_trigger_0_failed = true</label>
+		</transition>
+		<transition>
+			<source ref="id42"/>
+			<target ref="id41"/>
+			<nail x="-864" y="68"/>
+			<nail x="100" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id39"/>
+			<target ref="id40"/>
+			<label kind="synchronisation" x="-705" y="-144">start_alert_trigger_0?</label>
+		</transition>
+		<transition>
+			<source ref="id40"/>
+			<target ref="id41"/>
+		</transition>
+	</template>
+	<system>var_temp_object_get_0 = temp_object_get_0();
+var_temp_battery_recharge_0 = temp_battery_recharge_0();
+var_temp_objects_delivery_0 = temp_objects_delivery_0();
+var_temp_object_returning_0 = temp_object_returning_0();
+var_temp_alert_trigger_0 = temp_alert_trigger_0();
+var_goal_model_template = goal_model_template();
+system var_goal_model_template,var_temp_object_get_0,var_temp_battery_recharge_0,var_temp_objects_delivery_0,var_temp_object_returning_0,var_temp_alert_trigger_0;</system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] not deadlock</formula>
+			<comment>Basic formula query to verify absence of deadlocks</comment>
+		</query>
+	</queries>
+</nta>
