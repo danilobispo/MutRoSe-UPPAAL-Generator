@@ -1192,6 +1192,29 @@ def invert_guard_value(valueStr: str):
         newValue = newValue.replace("== true", "== false")
     return newValue
 
+def create_inverted_guard_constraint(template: uppaalpy.Template, node: uppaalpy.Location):
+    # Similar to add_remaining_transition_for_general_tasks, but this one takes the transitions from
+    # the template itself, use carefully since the other one is called after all transitions are
+    # generated. This one, however, is not
+    node_transition_list: list[uppaalpy.Transition] = []
+    transition_list = template.graph._transitions
+    transition_count = 0
+    for transition in transition_list:
+            if node.id == transition.source:
+                transition_count += 1
+                node_transition_list.append(transition)
+    if transition_count == 1:  # Only one connection stems from this node, it should be 2 normally
+            nodePosX, nodePosY = node.pos
+            # If the only connection is with the error node, made by default
+            if node_transition_list[0].target == "id777":
+                # We'll add another, with the connection to the end node
+                guard_invert_value = invert_guard_value(node_transition_list[0].guard.value)
+                # this is a random value because i don't have the reference for the node nor the transition position in the template
+                posX,posY = (nodePosX-(10*random.randrange(4)),(nodePosY+(4*random.randrange(4))))
+                guard=uppaalpy.ConstraintLabel("guard", guard_invert_value,(posX, posY), template.context)
+                return guard
+
+
 def add_remaining_transition_for_general_tasks(template, task_nodes_list, transition_list):
     for node in task_nodes_list:
         transition_count = 0
@@ -1207,10 +1230,13 @@ def add_remaining_transition_for_general_tasks(template, task_nodes_list, transi
                 # We'll add another, with the connection to the end node
                 guard_invert_value = invert_guard_value(node_transition_list[0].guard.value)
                 # this is a random value because i don't have the reference for the node nor the transition position in the template
-                posX,posY = (1420+(10*random.randrange(4)),(555+(2*random.randrange(4))))
+                posX,posY = (1420+(10*random.randrange(4)),(555+(4*random.randrange(4))))
                 guard=uppaalpy.ConstraintLabel("guard", guard_invert_value,(posX, posY), template.context)
                 template.graph.add_transition(
                     uppaalpy.Transition(source=node.id, target="id9000", guard=guard))
+
+
+
 
 
 def add_remaining_transitions_for_fallback_tasks(template: uppaalpy.Template, fb_tasks_requiring_linking: list[TasksRequiringLinking], tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]):
@@ -1484,6 +1510,7 @@ def generate_subsequent_goals_for_child_node(
         print(f"node {node} has no children!")
 
     for child in children:
+        guard_const = None # this was added for a special case inside this function
         if is_gm_task(child):  # is Task?
             parent, parent_operation = get_parent_operation(
                 goal_orderings, find_node_by_name(node, goal_orderings))
@@ -1576,10 +1603,12 @@ def generate_subsequent_goals_for_child_node(
                                 already_added_trans = True
 
                 else:
-                    # if(last_node.name.name.startswith("finish_")): # if its a task finish_AT
-                    #     invert_guard_value(last_node)
+                    if(last_node.name.name.startswith("finish_")): # if its a task finish_AT
+                        guard_const = create_inverted_guard_constraint(template=goal_model_template, node=last_node)
                     trans = uppaalpy.Transition(
                         source=last_node.id, target=last_node_id_plus_one)
+                    if(guard_const != None):
+                        trans.guard = guard_const
 
                 if is_first_operand_of_fallback(child, goal_orderings):
                     # Whitelist the task as one that must contain
