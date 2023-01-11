@@ -280,9 +280,9 @@ def add_AT_transitions_in_template(template: uppaalpy.Template, node_data: list[
                                 get_channel_name(method_name=method_name, finished=True), target=True)
                             synch_label = uppaalpy.Label(
                                 kind="synchronisation", value=method_channel_sync_str, pos=(posX+100, posY+55))
-
+                            inverted_failed_precondition = uppaalpy.ConstraintLabel(kind="guard", value=f"{current_method_name}_failed == false", pos=(posX+25, posY-20), ctx=template.context)
                             template.graph.add_transition(uppaalpy.Transition(
-                                source=location_method_id, target=target_id, synchronisation=synch_label))
+                                source=location_method_id, target=target_id, synchronisation=synch_label, guard=inverted_failed_precondition))
                         # Adding failed transition to method so the parent method knows it has failed and goes to a failure state as well
                             failed_precondition = uppaalpy.ConstraintLabel(kind="guard", value=f"{current_method_name}_failed == true", pos=(posX+20, posY-15), ctx=template.context)
                             template.graph.add_transition(uppaalpy.Transition(
