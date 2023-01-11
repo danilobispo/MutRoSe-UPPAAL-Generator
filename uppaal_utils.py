@@ -1,4 +1,5 @@
 # Utilitary functions for UPPAAL template generation
+import random
 import re
 import uppaalpy
 import copy
@@ -1183,6 +1184,13 @@ def get_tasks_transitions(template: uppaalpy.Template):
             task_nodes_list.append(node)
     return template, task_nodes_list, transition_list
 
+def invert_guard_value(valueStr: str):
+    newValue = valueStr
+    if newValue.endswith("== false"):
+        newValue = newValue.replace("== false", "== true")
+    else:
+        newValue = newValue.replace("== true", "== false")
+    return newValue
 
 def add_remaining_transition_for_general_tasks(template, task_nodes_list, transition_list):
     for node in task_nodes_list:
@@ -1197,8 +1205,12 @@ def add_remaining_transition_for_general_tasks(template, task_nodes_list, transi
             # If the only connection is with the error node, made by default
             if node_transition_list[0].target == "id777":
                 # We'll add another, with the connection to the end node
+                guard_invert_value = invert_guard_value(node_transition_list[0].guard.value)
+                # this is a random value because i don't have the reference for the node nor the transition position in the template
+                posX,posY = (1420+(10*random.randrange(4)),(555+(2*random.randrange(4))))
+                guard=uppaalpy.ConstraintLabel("guard", guard_invert_value,(posX, posY), template.context)
                 template.graph.add_transition(
-                    uppaalpy.Transition(source=node.id, target="id9000"))
+                    uppaalpy.Transition(source=node.id, target="id9000", guard=guard))
 
 
 def add_remaining_transitions_for_fallback_tasks(template: uppaalpy.Template, fb_tasks_requiring_linking: list[TasksRequiringLinking], tasks_names: list[AbstractTaskWithId], method_data: list[MethodData]):
@@ -1564,6 +1576,8 @@ def generate_subsequent_goals_for_child_node(
                                 already_added_trans = True
 
                 else:
+                    # if(last_node.name.name.startswith("finish_")): # if its a task finish_AT
+                    #     invert_guard_value(last_node)
                     trans = uppaalpy.Transition(
                         source=last_node.id, target=last_node_id_plus_one)
 
