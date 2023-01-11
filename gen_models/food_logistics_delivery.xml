@@ -3,14 +3,14 @@
 <nta>
 	<declaration>// Place global declarations here.
 typedef struct {
-bool patientcanfetch;
-bool patientcanopen;
-} Patient;
-typedef struct {
 bool pickeddishes;
 bool at;
 bool pickedmeal;
 } Robot;
+typedef struct {
+bool patientcanfetch;
+bool patientcanopen;
+} Patient;
 
 bool mission_complete = false;
 bool mission_failed = false;
@@ -67,18 +67,15 @@ broadcast chan start_dishes_retrieval_0;
 broadcast chan finish_dishes_retrieval_0;
 bool dishes_retrieval_0_failed = false;
 
-Robot r1 = {false,false,false};
 Robot r = {false,false,false};
 Patient p = {false,false};
 Robot r2 = {false,false,false};
+Robot r1 = {false,false,false};
 
 void startMission() {
 // starts mission with following values, you may change the values to your liking
 	mission_complete = false;
 	mission_failed = false;
-	r1.pickeddishes = false;
-	r1.at = false;
-	r1.pickedmeal = false;
 	r.pickedmeal = false;
 	r.pickeddishes = false;
 	r.at = false;
@@ -87,12 +84,14 @@ void startMission() {
 	r2.pickeddishes = false;
 	r2.at = false;
 	r2.pickedmeal = false;
+	r1.pickeddishes = false;
+	r1.at = false;
+	r1.pickedmeal = false;
+}
 
-}
 
-
-bool manipulation = true;
 bool door_opening = true;
+bool manipulation = true;
 </declaration>
 	<template>
 		<name x="0" y="0">goal_model_template</name>
@@ -148,12 +147,12 @@ bool door_opening = true;
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="assignment" x="425" y="306">mission_failed = true</label>
+			<label kind="assignment" x="280" y="272">mission_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id0"/>
-			<label kind="assignment" x="476" y="722">mission_complete = true</label>
+			<label kind="assignment" x="450" y="720">mission_complete = true</label>
 			<nail x="420" y="740"/>
 		</transition>
 		<transition>
@@ -182,11 +181,12 @@ bool door_opening = true;
 		<transition>
 			<source ref="id7"/>
 			<target ref="id1"/>
-			<label kind="guard" x="552" y="263">food_pickup_0_failed == true</label>
+			<label kind="guard" x="680" y="220">food_pickup_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id8"/>
+			<label kind="guard" x="810" y="304">food_pickup_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
@@ -209,7 +209,7 @@ bool door_opening = true;
 		<transition>
 			<source ref="id12"/>
 			<target ref="id1"/>
-			<label kind="guard" x="943" y="323">table_deliver_0_failed == true</label>
+			<label kind="guard" x="1030" y="280">table_deliver_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id9"/>
@@ -228,15 +228,17 @@ bool door_opening = true;
 		<transition>
 			<source ref="id15"/>
 			<target ref="id1"/>
-			<label kind="guard" x="1215" y="289">fetch_deliver_0_failed == true</label>
+			<label kind="guard" x="1130" y="280">fetch_deliver_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id12"/>
 			<target ref="id2"/>
+			<label kind="guard" x="1420" y="559">table_deliver_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id2"/>
+			<label kind="guard" x="1450" y="559">fetch_deliver_0_failed == false</label>
 		</transition>
 	</template>
 	<template>
@@ -1191,18 +1193,6 @@ system var_goal_model_template,var_temp_food_pickup_0,var_temp_table_deliver_0,v
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment>Basic formula query to verify absence of deadlocks</comment>
-		</query>
-		<query>
-			<formula>var_goal_model_template.goal_G3 --&gt; var_goal_model_template.missionComplete or var_goal_model_template.missionFailed</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>A&lt;&gt; var_goal_model_template.missionComplete</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>A[] var_goal_model_template.missionComplete</formula>
-			<comment></comment>
 		</query>
 	</queries>
 </nta>

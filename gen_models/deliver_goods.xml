@@ -181,7 +181,7 @@ void startMission() {
 		<transition>
 			<source ref="id15"/>
 			<target ref="id16"/>
-			<label kind="guard" x="920" y="20">objects_delivery_0_failed == true</label>
+			<label kind="guard" x="875" y="25">objects_delivery_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id16"/>
@@ -215,22 +215,22 @@ void startMission() {
 		<transition>
 			<source ref="id8"/>
 			<target ref="id12"/>
-			<label kind="guard" x="920" y="300">object_get_0_failed == false</label>
+			<label kind="guard" x="841" y="331">object_get_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id2"/>
-			<label kind="guard" x="920" y="-100">objects_delivery_0_failed == false</label>
+			<label kind="guard" x="1037" y="136">objects_delivery_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id2"/>
-			<label kind="guard" x="1120" y="-100">object_returning_0_failed == false</label>
+			<label kind="guard" x="1173" y="68">object_returning_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id1"/>
-			<label kind="guard" x="1070" y="300">battery_recharge_0_failed == true</label>
+			<label kind="guard" x="994" y="238">battery_recharge_0_failed == true</label>
 		</transition>
 		<transition>
 			<source ref="id22"/>
@@ -240,6 +240,7 @@ void startMission() {
 		<transition>
 			<source ref="id22"/>
 			<target ref="id2"/>
+			<label kind="guard" x="1420" y="555">alert_trigger_0_failed == false</label>
 		</transition>
 	</template>
 	<template>

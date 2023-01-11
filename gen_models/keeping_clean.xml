@@ -44,23 +44,24 @@ broadcast chan start_objects_retrieval_0;
 broadcast chan finish_objects_retrieval_0;
 bool objects_retrieval_0_failed = false;
 
-Robot r = {false};
 Room rm = {false};
 Room eqrm = {false};
+Robot r = {false};
 
 void startMission() {
 // starts mission with following values, you may change the values to your liking
 	mission_complete = false;
 	mission_failed = false;
-	r.equipmentok = false;
 	rm.occupied = false;
 	eqrm.occupied = false;
-}
+	r.equipmentok = false;
+
+}
 
 
-bool organization = true;
 bool equipmentsearch = true;
 bool sndmessage = true;
+bool organization = true;
 </declaration>
 	<template>
 		<name x="0" y="0">goal_model_template</name>
@@ -203,6 +204,7 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id7"/>
 			<target ref="id8"/>
+			<label kind="guard" x="800" y="304">find_equipment_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
@@ -253,6 +255,7 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id16"/>
 			<target ref="id17"/>
+			<label kind="guard" x="1370" y="304">enter_room_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id17"/>
@@ -272,6 +275,7 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id19"/>
 			<target ref="id20"/>
+			<label kind="guard" x="1460" y="304">covers_change_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id20"/>
@@ -291,6 +295,7 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id22"/>
 			<target ref="id23"/>
+			<label kind="guard" x="1570" y="300">floor_vacuum_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id23"/>
@@ -310,6 +315,7 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id25"/>
 			<target ref="id26"/>
+			<label kind="guard" x="1650" y="312">floor_wiping_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id26"/>
@@ -329,6 +335,7 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id28"/>
 			<target ref="id29"/>
+			<label kind="guard" x="1740" y="300">room_sterilization_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id29"/>
@@ -348,10 +355,12 @@ bool sndmessage = true;
 		<transition>
 			<source ref="id11"/>
 			<target ref="id2"/>
+			<label kind="guard" x="1430" y="559">abort_mission_0_failed == false</label>
 		</transition>
 		<transition>
 			<source ref="id31"/>
 			<target ref="id2"/>
+			<label kind="guard" x="1420" y="559">objects_retrieval_0_failed == false</label>
 		</transition>
 	</template>
 	<template>
