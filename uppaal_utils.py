@@ -1211,7 +1211,7 @@ def create_inverted_guard_constraint(template: uppaalpy.Template, node: uppaalpy
             if node.target == "id777":
                 guard_invert_value = invert_guard_value(node.guard.value)
                 if node != node_transition_list[-1]: # If it is not the last node
-                    whole_guard_str += guard_invert_value + " || "
+                    whole_guard_str += guard_invert_value + " && "
                 else:
                     whole_guard_str += guard_invert_value
                     # this is a random value because i don't have the reference for the node nor the transition position in the template
