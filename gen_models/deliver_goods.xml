@@ -37,91 +37,91 @@ void startMission() {
 </declaration>
 	<template>
 		<name x="0" y="0">goal_model_template</name>
-		<location id="id0" x="420" y="500">
-			<name x="420" y="470">beginMissionNode</name>
+		<location id="id0" x="417" y="502">
+			<name x="417" y="468">beginMissionNode</name>
 		</location>
-		<location id="id1" x="420" y="100">
-			<name x="420" y="70">missionFailed</name>
+		<location id="id1" x="417" y="204">
+			<name x="434" y="170">missionFailed</name>
 		</location>
-		<location id="id2" x="1500" y="750">
-			<name x="1500" y="720">missionComplete</name>
+		<location id="id2" x="1496" y="561">
+			<name x="1368" y="535">missionComplete</name>
 		</location>
-		<location id="id3" x="600" y="500">
-			<name x="600" y="470">goal_G3</name>
+		<location id="id3" x="604" y="502">
+			<name x="604" y="468">goal_G3</name>
 		</location>
-		<location id="id4" x="720" y="500">
-			<name x="720" y="470">goal_G6</name>
+		<location id="id4" x="723" y="502">
+			<name x="723" y="468">goal_G6</name>
 		</location>
-		<location id="id5" x="820" y="500">
-			<name x="820" y="470">goal_G7</name>
+		<location id="id5" x="816" y="502">
+			<name x="816" y="468">goal_G7</name>
 		</location>
-		<location id="id6" x="920" y="500">
-			<name x="920" y="470">goal_G9</name>
+		<location id="id6" x="918" y="502">
+			<name x="918" y="468">goal_G9</name>
 		</location>
-		<location id="id7" x="920" y="400">
-			<name x="920" y="370">exec_AT1</name>
+		<location id="id7" x="918" y="400">
+			<name x="918" y="374">exec_AT1</name>
 		</location>
-		<location id="id8" x="920" y="300">
-			<name x="920" y="270">finish_AT1</name>
+		<location id="id8" x="918" y="298">
+			<name x="918" y="272">finish_AT1</name>
 		</location>
-		<location id="id9" x="1070" y="500">
-			<name x="1070" y="470">goal_G10</name>
+		<location id="id9" x="1164" y="510">
+			<name x="1164" y="476">goal_G10</name>
 		</location>
-		<location id="id10" x="1070" y="400">
-			<name x="1070" y="370">exec_AT2</name>
+		<location id="id10" x="1164" y="391">
+			<name x="1164" y="365">exec_AT2</name>
 		</location>
-		<location id="id11" x="1070" y="300">
-			<name x="1070" y="270">finish_AT2</name>
+		<location id="id11" x="1164" y="289">
+			<name x="1164" y="263">finish_AT2</name>
 		</location>
-		<location id="id12" x="820" y="400">
-			<name x="820" y="370">goal_G11</name>
+		<location id="id12" x="977" y="161">
+			<name x="977" y="127">goal_G11</name>
 		</location>
-		<location id="id13" x="920" y="100">
-			<name x="920" y="70">goal_G12</name>
+		<location id="id13" x="791" y="102">
+			<name x="791" y="68">goal_G12</name>
 		</location>
-		<location id="id14" x="920" y="0">
-			<name x="920" y="-30">exec_AT3</name>
+		<location id="id14" x="791" y="0">
+			<name x="791" y="-34">exec_AT3</name>
 		</location>
-		<location id="id15" x="920" y="-100">
-			<name x="920" y="-130">finish_AT3</name>
+		<location id="id15" x="791" y="-102">
+			<name x="808" y="-119">finish_AT3</name>
 		</location>
-		<location id="id16" x="1020" y="100">
-			<name x="1020" y="70">goal_G13</name>
+		<location id="id16" x="1114" y="102">
+			<name x="1105" y="68">goal_G13</name>
 		</location>
-		<location id="id17" x="1120" y="100">
-			<name x="1120" y="70">goal_G14</name>
+		<location id="id17" x="1284" y="102">
+			<name x="1284" y="68">goal_G14</name>
 		</location>
-		<location id="id18" x="1120" y="0">
-			<name x="1120" y="-30">exec_AT4</name>
+		<location id="id18" x="1284" y="0">
+			<name x="1284" y="-34">exec_AT4</name>
 		</location>
-		<location id="id19" x="1120" y="-100">
-			<name x="1120" y="-130">finish_AT4</name>
+		<location id="id19" x="1284" y="-102">
+			<name x="1292" y="-127">finish_AT4</name>
 		</location>
-		<location id="id20" x="1220" y="100">
-			<name x="1220" y="70">goal_G15</name>
+		<location id="id20" x="1623" y="102">
+			<name x="1623" y="68">goal_G15</name>
 		</location>
-		<location id="id21" x="1220" y="0">
-			<name x="1220" y="-30">exec_AT5</name>
+		<location id="id21" x="1623" y="-17">
+			<name x="1623" y="-51">exec_AT5</name>
 		</location>
-		<location id="id22" x="1220" y="-100">
-			<name x="1220" y="-130">finish_AT5</name>
+		<location id="id22" x="1623" y="-145">
+			<name x="1640" y="-171">finish_AT5</name>
 		</location>
 		<init ref="id0"/>
 		<transition>
 			<source ref="id1"/>
 			<target ref="id0"/>
-			<label kind="assignment" x="280" y="272">mission_failed = true</label>
+			<label kind="assignment" x="425" y="331">mission_failed = true</label>
 		</transition>
 		<transition>
 			<source ref="id2"/>
 			<target ref="id0"/>
-			<label kind="assignment" x="450" y="720">mission_complete = true</label>
-			<nail x="420" y="740"/>
+			<label kind="assignment" x="484" y="535">mission_complete = true</label>
+			<nail x="417" y="553"/>
 		</transition>
 		<transition>
 			<source ref="id0"/>
 			<target ref="id3"/>
-			<label kind="assignment" x="467" y="501">startMission()</label>
+			<label kind="assignment" x="468" y="502">startMission()</label>
 		</transition>
 		<transition>
 			<source ref="id3"/>
@@ -138,31 +138,34 @@ void startMission() {
 		<transition>
 			<source ref="id6"/>
 			<target ref="id7"/>
-			<label kind="synchronisation" x="920" y="450">start_object_get_0!</label>
+			<label kind="synchronisation" x="918" y="451">start_object_get_0!</label>
 		</transition>
 		<transition>
 			<source ref="id7"/>
 			<target ref="id8"/>
-			<label kind="synchronisation" x="920" y="350">finish_object_get_0?</label>
+			<label kind="synchronisation" x="918" y="349">finish_object_get_0?</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id9"/>
-			<label kind="guard" x="970" y="420">object_get_0_failed == true</label>
+			<label kind="guard" x="986" y="484">object_get_0_failed == true</label>
+			<nail x="986" y="510"/>
 		</transition>
 		<transition>
 			<source ref="id9"/>
 			<target ref="id10"/>
-			<label kind="synchronisation" x="1070" y="450">start_battery_recharge_0!</label>
+			<label kind="synchronisation" x="1164" y="442">start_battery_recharge_0!</label>
 		</transition>
 		<transition>
 			<source ref="id10"/>
 			<target ref="id11"/>
-			<label kind="synchronisation" x="1070" y="350">finish_battery_recharge_0?</label>
+			<label kind="synchronisation" x="1164" y="340">finish_battery_recharge_0?</label>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id12"/>
+			<label kind="guard" x="986" y="161">battery_recharge_0_failed == false</label>
+			<nail x="1207" y="161"/>
 		</transition>
 		<transition>
 			<source ref="id12"/>
@@ -171,17 +174,18 @@ void startMission() {
 		<transition>
 			<source ref="id13"/>
 			<target ref="id14"/>
-			<label kind="synchronisation" x="920" y="50">start_objects_delivery_0!</label>
+			<label kind="synchronisation" x="621" y="51">start_objects_delivery_0!</label>
 		</transition>
 		<transition>
 			<source ref="id14"/>
 			<target ref="id15"/>
-			<label kind="synchronisation" x="920" y="-50">finish_objects_delivery_0?</label>
+			<label kind="synchronisation" x="612" y="-59">finish_objects_delivery_0?</label>
 		</transition>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id16"/>
-			<label kind="guard" x="875" y="25">objects_delivery_0_failed == true</label>
+			<label kind="guard" x="893" y="77">objects_delivery_0_failed == true</label>
+			<nail x="892" y="102"/>
 		</transition>
 		<transition>
 			<source ref="id16"/>
@@ -190,57 +194,68 @@ void startMission() {
 		<transition>
 			<source ref="id17"/>
 			<target ref="id18"/>
-			<label kind="synchronisation" x="1120" y="50">start_object_returning_0!</label>
+			<label kind="synchronisation" x="1292" y="34">start_object_returning_0!</label>
 		</transition>
 		<transition>
 			<source ref="id18"/>
 			<target ref="id19"/>
-			<label kind="synchronisation" x="1120" y="-50">finish_object_returning_0?</label>
+			<label kind="synchronisation" x="1122" y="-68">finish_object_returning_0?</label>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id20"/>
-			<label kind="guard" x="1120" y="20">object_returning_0_failed == true</label>
+			<label kind="guard" x="1385" y="76">object_returning_0_failed == true</label>
+			<nail x="1377" y="102"/>
 		</transition>
 		<transition>
 			<source ref="id20"/>
 			<target ref="id21"/>
-			<label kind="synchronisation" x="1220" y="50">start_alert_trigger_0!</label>
+			<label kind="synchronisation" x="1623" y="8">start_alert_trigger_0!</label>
 		</transition>
 		<transition>
 			<source ref="id21"/>
 			<target ref="id22"/>
-			<label kind="synchronisation" x="1220" y="-50">finish_alert_trigger_0?</label>
+			<label kind="synchronisation" x="1623" y="-76">finish_alert_trigger_0?</label>
 		</transition>
 		<transition>
 			<source ref="id8"/>
 			<target ref="id12"/>
-			<label kind="guard" x="841" y="331">object_get_0_failed == false</label>
+			<label kind="guard" x="731" y="272">object_get_0_failed == false</label>
+			<nail x="714" y="297"/>
+			<nail x="833" y="161"/>
 		</transition>
 		<transition>
 			<source ref="id15"/>
 			<target ref="id2"/>
-			<label kind="guard" x="1037" y="136">objects_delivery_0_failed == false</label>
+			<label kind="guard" x="850" y="-102">objects_delivery_0_failed == false</label>
+			<nail x="1079" y="-102"/>
 		</transition>
 		<transition>
 			<source ref="id19"/>
 			<target ref="id2"/>
-			<label kind="guard" x="1173" y="68">object_returning_0_failed == false</label>
+			<label kind="guard" x="1351" y="-102">object_returning_0_failed == false</label>
+			<nail x="1572" y="-102"/>
+			<nail x="1606" y="187"/>
 		</transition>
 		<transition>
 			<source ref="id11"/>
 			<target ref="id1"/>
-			<label kind="guard" x="994" y="238">battery_recharge_0_failed == true</label>
+			<label kind="guard" x="569" y="178">battery_recharge_0_failed == true</label>
+			<nail x="782" y="204"/>
 		</transition>
 		<transition>
 			<source ref="id22"/>
 			<target ref="id1"/>
-			<label kind="guard" x="1220" y="-100">alert_trigger_0_failed == true</label>
+			<label kind="guard" x="901" y="-170">alert_trigger_0_failed == true</label>
+			<nail x="1224" y="-144"/>
+			<nail x="417" y="-136"/>
 		</transition>
 		<transition>
 			<source ref="id22"/>
 			<target ref="id2"/>
-			<label kind="guard" x="1420" y="555">alert_trigger_0_failed == false</label>
+			<label kind="guard" x="1649" y="-144">alert_trigger_0_failed == false</label>
+			<nail x="1853" y="-144"/>
+			<nail x="1521" y="561"/>
 		</transition>
 	</template>
 	<template>
