@@ -1225,5 +1225,9 @@ For all paths, if the mission is complete it implies that the goal G6 is also co
 AND
 AT2 or AT3 were completed as well</comment>
 		</query>
+		<query>
+			<formula>not manipulation --&gt; fetch_deliver_0_failed</formula>
+			<comment></comment>
+		</query>
 	</queries>
 </nta>
