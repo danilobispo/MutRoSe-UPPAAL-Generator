@@ -87,7 +87,8 @@ void startMission() {
 	r.at = false;
 	p.patientcanfetch = false;
 	p.patientcanopen = false;
-}
+
+}
 
 
 bool manipulation = true;
@@ -1182,7 +1183,7 @@ bool door_opening = true;
 	</template>
 	<system>var_temp_food_pickup_0 = temp_food_pickup_0(r);
 var_temp_table_deliver_0 = temp_table_deliver_0(r);
-var_temp_fetch_deliver_0 = temp_fetch_deliver_0(r1);
+var_temp_fetch_deliver_0 = temp_fetch_deliver_0(r);
 var_temp_fetch_meal_with_human_0 = temp_fetch_meal_with_human_0(p,r);
 var_temp_fetch_meal_with_robot_0 = temp_fetch_meal_with_robot_0(r2,r1,r);
 var_temp_pickup_with_door_opening_0 = temp_pickup_with_door_opening_0(r1);
@@ -1203,6 +1204,26 @@ system var_goal_model_template,var_temp_food_pickup_0,var_temp_table_deliver_0,v
 		<query>
 			<formula>A[] not deadlock</formula>
 			<comment>Basic formula query to verify absence of deadlocks</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; mission_complete</formula>
+			<comment>Reachability, a mission has a path of success in this given configuration</comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; mission_failed</formula>
+			<comment>Reachability, a mission has a path of failure in this given configuration</comment>
+		</query>
+		<query>
+			<formula>A[] mission_complete imply not food_pickup_0_failed</formula>
+			<comment>Mission G6 concluded: 
+For all paths, if the mission is complete it implies that the goal G6 is also complete (AT1 did not fail)</comment>
+		</query>
+		<query>
+			<formula>A[] mission_complete imply (not food_pickup_0_failed) and (not fetch_deliver_0_failed or not table_deliver_0_failed)</formula>
+			<comment>Mission G10 Concluded
+For all paths, if the mission is complete it implies that the goal G6 is also complete (AT1 was completed successfully)
+AND
+AT2 or AT3 were completed as well</comment>
 		</query>
 	</queries>
 </nta>
